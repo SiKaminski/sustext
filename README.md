@@ -27,7 +27,7 @@ More info about different commands in the editor found in [Editor Commands](#edi
 ## TODO
 
 - [ ] Add input from the user
-- [ ] Add splash screen upon start
+- [X] Add splash screen upon start
 - [ ] Resize the row count if the terminal window is resized
 - [ ] Add more useful commands in the editor
 - [ ] Add documentation

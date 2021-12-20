@@ -128,10 +128,10 @@ void editorProcessKeypress(){
 void editorDrawRows(struct abuf *ab){
 	int y;
 	for(y = 0; y < E.screenRows; y++){
-		if(y == E.screenRows / 3){
+		if(y == E.screenRows / 2){
 			char welcome[80];
 			int welcomelen = snprintf(welcome, sizeof(welcome), 
-			"sustext -- Verison: %s", SUSTEXT_VERSION);
+			"sustext -- Verison: %s\n\r -----\n\r- __  -\n\r-     --\n\r- --- --\n\r--- ---", SUSTEXT_VERSION);
 			if(welcomelen > E.screenCols) welcomelen = E.screenCols;
 			abAppend(ab, welcome, welcomelen);
 		} else {
