@@ -1,7 +1,7 @@
 #include "Output.h"
 
-using namespace AppendBuffer; // Might need to rework to not do this
 namespace Output{
+	using namespace AppendBuffer; // Might need to rework to not do this
 	void editorDrawRows(struct abuf *ab) {
 		int y;
 		for (y = 0; y < E.screenRows; y++) {

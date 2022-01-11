@@ -2,7 +2,7 @@
 
 namespace AppendBuffer{
 	void abAppend(struct abuf* ab, const void* s, int len){
-	char* ptr = (char*)realloc(ab->b, ab->len + len);
+		char* ptr = (char*)realloc(ab->b, ab->len + len);
 
 		if(ptr == NULL) return;
 		memcpy(&ptr[ab->len], s, len);

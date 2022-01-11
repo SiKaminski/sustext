@@ -1,5 +1,4 @@
-#ifndef MACROS_H
-#define MACROS_H
+#pragma once
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define SUSTEXT_VERSION "0.0.1"
@@ -15,5 +14,3 @@ enum editorKey{
 	PAGE_UP,
 	PAGE_DOWN
 };
-
-#endif // MACROS_H

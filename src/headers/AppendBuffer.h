@@ -1,6 +1,4 @@
-#ifndef APPEND_BUFFER_H
-#define APPEND_BUFFER_H
-
+#pragma once
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
@@ -16,5 +14,3 @@ namespace AppendBuffer{
 	void abAppend(struct abuf *ab, const char *s, int len);
 	void abFree(struct abuf *ab);
 }
-
-#endif // APPEND_BUFFER_H
