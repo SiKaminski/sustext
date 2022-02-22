@@ -1,32 +1,40 @@
-CPP = gcc 
-LD = ld
-LDFLAGS = #Undecided Linker flags
-CPPFLAGS = -Wall -Wextra -pedantic
-HEADERS = src/headers
+#File Directory things (might be overkill idk yet)
+INCLUDE = -I
+BIN_DIR = bin
+SRC_DIR = src
+OBJ_DIR = obj
+LD = LD
+LDFLAGS = 
 
-OBJ = sus
-SRCDIR = src
-OBJDIR = lib
-rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+dir_guard=@mkdir -p $(@D)
 
-SRC = $(call rwildcard,$(SRCDIR),*.cpp)      
-CXX_SOURCES := $(wildcard $(SRCDIR)/*.cpp)
-CXX_OBJS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+#Compiler and linker things
+CC = g++
+CCFLAGS = -c -Wall -pedantic $(INCLUDE) 
 
-$(CXX_OBJS): link
+#Essential files and groups
+OBJ = $(addprefix $(BIN_DIR)/, sus-paint)
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+OBJS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
-$(CXX_OBJS): $(CXX_SOURCES)
-	@echo -- COMPILING --
-	$(CPP) $(CPPFLAGS) -I$(HEADERS) -c $^ -o $@ 
-link:
-	@echo -- LINKING --
-	$(LD) $^ -o $@ $(CXX_OBJS)
+run: all
+	@echo
+	@./$(OBJ)
+
+all: $(OBJ) 
+	$(dir_guard)
+	@echo ---- Generating $^ ---
+
+$(OBJ): $(OBJS)
+	$(dir_guard)
+	@echo ---- Linking $^ ----
+	$(CC) $^ -o $@
+
+$(OBJ_DIR)/%.o: %.cpp
+	$(dir_guard)
+	@echo ---- Compiling $^ ----
+	$(CC) $(CCFLAGS) -c $< -o $@
+
 clean:
-	rm $(OBJDIR)/* -rf
-	rm $(OBJ)
-
-# sustext: sustext.c
-# 	$(CC) sustext.c -o sustext -Wall -Wextra -pedantic -std=c99
-# 	./sustext
-# clean: sustext
-# 	rm $^
+	rm -rf $(BIN_DIR)/
+	rm -rf $(OBJ_DIR)/

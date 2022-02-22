@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __DEFINES_H
+#define __DEFINES_H
 
 #include <ctype.h>
 #include <errno.h>
@@ -9,10 +10,7 @@
 #include <unistd.h>
 #include <termios.h>
 
-#include "Terminal.h"
-#include "Data.h"
+#define CTRL_KEY(k) ((k) & 0x1f)
+#define SUSTEXT_VERSION "0.0.1"
 
-namespace Input{
-    void editorMoveCursor(int key);
-    void editorProcessKeypress();
-}
+#endif // __DEFINES_H
