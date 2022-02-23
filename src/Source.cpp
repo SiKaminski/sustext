@@ -1,5 +1,7 @@
 #include "headers/sustext.hpp"
 #include "headers/defines.hpp"
+#include "headers/data.hpp"
+
 int main(){
     Sustext sustext;
     sustext.terminal.enableRawMode();

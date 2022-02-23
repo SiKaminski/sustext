@@ -10,7 +10,7 @@ dir_guard=@mkdir -p $(@D)
 
 #Compiler and linker things
 CC = g++
-CCFLAGS = -c -Wall -pedantic $(INCLUDE) 
+CCFLAGS = -c -g -Wall -Wextra -pedantic $(INCLUDE) 
 
 #Essential files and groups
 OBJ = $(addprefix $(BIN_DIR)/, sustext)
