@@ -10,6 +10,9 @@ class Terminal{
         void die(const char* s);
         static void disableRawMode();
         void enableRawMode();
+        int editorReadKey();
+        int getCursorPosition(int* rows, int* cols);
+        int getWindowSize(int* rows, int* cols);
         // Terminal(); 
         // static termios orig_termios;
         // void die(const char* s);

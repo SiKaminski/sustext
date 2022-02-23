@@ -3,6 +3,7 @@
 
 #include "defines.hpp"
 #include "terminal.hpp"
+#include "io.hpp"
 
 class Sustext{
     public:

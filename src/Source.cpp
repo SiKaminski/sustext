@@ -1,13 +1,16 @@
 #include "headers/sustext.hpp"
 #include "headers/defines.hpp"
 #include "headers/data.hpp"
+#include "headers/io.hpp"
 
 int main(){
     Sustext sustext;
-    sustext.terminal.enableRawMode();
+	sustext.terminal.enableRawMode();
+	sustext.initEditor();
 
-    char c;
-    while(read(STDIN_FILENO, &c, 1) == 1 && c != 'q');
-
-    return 0;
+	while(1){
+		IO::editorRefreshScreen();
+		IO::editorProcessKeypress(&sustext.terminal);
+	}
+	return 0;
 }
