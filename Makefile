@@ -13,7 +13,7 @@ CC = g++
 CCFLAGS = -c -Wall -pedantic $(INCLUDE) 
 
 #Essential files and groups
-OBJ = $(addprefix $(BIN_DIR)/, sus-paint)
+OBJ = $(addprefix $(BIN_DIR)/, sustext)
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
