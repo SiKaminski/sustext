@@ -2,15 +2,21 @@
 
 - [sustext](#sustext)
   - [About](#about)
+  - [Pre requisites](#pre-requisites)
   - [Running the editor](#running-the-editor)
   - [Editor Commands](#editor-commands)
   - [TODO](#todo)
   
 ## About
 
-Text editor made in C ran in the terminal
+Text editor made in C++ ran in the linux terminal. 
 
-Using the C Compiler (cc)
+## Pre requisites 
+GCC compiler
+
+```bash
+sudo apt install gcc
+```
 
 ## Running the editor
 
