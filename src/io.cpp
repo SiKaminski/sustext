@@ -1,5 +1,7 @@
 #include "headers/io.hpp"
 
+IO::IO(){}
+
 void IO::editorMoveCursor(int key){
 	switch(key){
 		case ARROW_LEFT:
@@ -17,11 +19,12 @@ void IO::editorMoveCursor(int key){
 	}
 }
 
-void IO::editorProcessKeypress(Terminal* t){
-	int c = t->editorReadKey();
-
+void IO::editorProcessKeypress(){
+	int c = terminal->editorReadKey();
+	
 	switch(c){
 		case CTRL_KEY('q'):
+			write(STDOUT_FILENO, "Amonfda", 7);
 			write(STDOUT_FILENO, "\x1b[2J", 4);
 			write(STDOUT_FILENO, "\x1b[H", 3);
 			exit(0);

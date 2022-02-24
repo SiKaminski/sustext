@@ -9,6 +9,7 @@ class Sustext{
     public:
         Sustext();
         Terminal terminal;
+        IO io;
         void initEditor();
 };
 

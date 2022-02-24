@@ -9,8 +9,8 @@ int main(){
 	sustext.initEditor();
 
 	while(1){
-		IO::editorRefreshScreen();
-		IO::editorProcessKeypress(&sustext.terminal);
+		sustext.io.editorRefreshScreen();
+		sustext.io.editorProcessKeypress();
 	}
 	return 0;
 }
