@@ -1,7 +1,5 @@
 #include "headers/io.hpp"
 
-IO::IO(){}
-
 void IO::editorMoveCursor(int key){
 	switch(key){
 		case ARROW_LEFT:
@@ -19,12 +17,11 @@ void IO::editorMoveCursor(int key){
 	}
 }
 
-void IO::editorProcessKeypress(){
-	int c = terminal->editorReadKey();
-	
+void IO::editorProcessKeypress(Terminal terminal){
+	int c = terminal.editorReadKey();
+
 	switch(c){
 		case CTRL_KEY('q'):
-			write(STDOUT_FILENO, "Amonfda", 7);
 			write(STDOUT_FILENO, "\x1b[2J", 4);
 			write(STDOUT_FILENO, "\x1b[H", 3);
 			exit(0);
@@ -55,7 +52,7 @@ void IO::editorProcessKeypress(){
 }
 
 /*** output ***/
-void IO::editorDrawRows(appendbuffer::abuf* ab) {
+void IO::editorDrawRows(struct appendbuffer::abuf *ab) {
 	int y;
 	for (y = 0; y < E.screenRows; y++) {
 		if (y == E.screenRows / 3) {
@@ -80,8 +77,8 @@ void IO::editorDrawRows(appendbuffer::abuf* ab) {
 	}
 }
 
-void IO::editorRefreshScreen(){
-	appendbuffer::abuf ab = ABUF_INIT;
+void IO::editorRefreshScreen(Terminal terminal){
+	struct appendbuffer::abuf ab = ABUF_INIT;
 
 	abAppend(&ab, "\x1b[?25l", 6);
 	abAppend(&ab, "\x1b[H", 3);

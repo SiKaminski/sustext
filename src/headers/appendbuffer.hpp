@@ -4,12 +4,12 @@
 #include "defines.hpp"
 
 namespace appendbuffer{
-    #define ABUF_INIT {NULL, 0}
     struct abuf{
-    	char *b;
-    	int len;
+	    char *b;
+	    int len;
     };
 
+    #define ABUF_INIT {NULL, 0}
 
     void abAppend(abuf *ab, const char *s, int len); 
     void abFree(abuf *ab);

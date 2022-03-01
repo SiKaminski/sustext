@@ -5,18 +5,14 @@
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
 
-class IO{
-    public:
-        IO();
-        Terminal* terminal;
-
+namespace IO{
         /* INPUT */
         void editorMoveCursor(int key);
-        void editorProcessKeypress();
+        void editorProcessKeypress(Terminal terminal);
 
         /* OUTPUT */
         void editorDrawRows(appendbuffer::abuf* ab);
-        void editorRefreshScreen();
+        void editorRefreshScreen(Terminal terminal);
 };
 
 #endif // __IO_HPP

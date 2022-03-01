@@ -7,7 +7,7 @@
 class Terminal{
     public:
         Terminal();
-        void die(const char* s);
+        static void die(const char* s);
         static void disableRawMode();
         void enableRawMode();
         int editorReadKey();

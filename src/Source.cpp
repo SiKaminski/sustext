@@ -5,12 +5,13 @@
 
 int main(){
     Sustext sustext;
+	
 	sustext.terminal.enableRawMode();
 	sustext.initEditor();
 
 	while(1){
-		sustext.io.editorRefreshScreen();
-		sustext.io.editorProcessKeypress();
+		IO::editorRefreshScreen(sustext.terminal);
+		IO::editorProcessKeypress(sustext.terminal);
 	}
 	return 0;
 }

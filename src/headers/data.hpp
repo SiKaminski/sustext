@@ -3,11 +3,13 @@
 
 #include "defines.hpp"
 
-static struct EditorConfig{
+struct EditorConfig{
     int cx, cy;
     int screenRows;
     int screenCols;
-    termios orig_termios;
-}E;
+    struct termios orig_termios;
+};
+
+static struct EditorConfig E;
 
 #endif // __DATA_HPP

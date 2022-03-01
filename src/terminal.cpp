@@ -4,23 +4,32 @@ Terminal::Terminal(){
 
 }
 
+
 void Terminal::die(const char* s){
 	write(STDOUT_FILENO, "\x1b[2J", 4);
 	write(STDOUT_FILENO, "\x1b[H", 3);
 
 	perror(s);
+	exit(1);
 }
 
 void Terminal::disableRawMode(){
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios);
+	if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1) die("tcsetattr");
 }
 
 void Terminal::enableRawMode(){
-    tcgetattr(STDIN_FILENO, &E.orig_termios);
-    atexit(disableRawMode);
-    termios raw = E.orig_termios;
-    raw.c_lflag &= ~(ECHO | ICANON);
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+	if(tcgetattr(STDIN_FILENO, &E.orig_termios) == -1) die("tcgetattr");
+	atexit(disableRawMode);
+
+	struct termios raw = E.orig_termios;
+	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	raw.c_oflag &= ~(OPOST);
+	raw.c_cflag |= (CS8);
+	raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+	raw.c_cc[VMIN] = 0;
+	raw.c_cc[VTIME] = 1;
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+	if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
 
 int Terminal::editorReadKey(){
@@ -89,7 +98,7 @@ int Terminal::getCursorPosition(int *rows, int *cols){
 	return 0;
 }
 
-int Terminal::getWindowSize(int* rows, int* cols){
+int Terminal::getWindowSize(int *rows, int *cols){
 	struct winsize ws;
 
 	if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0){
