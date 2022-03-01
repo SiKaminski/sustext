@@ -1,10 +1,6 @@
 #include "headers/terminal.hpp"
 
-Terminal::Terminal(){
-
-}
-
-
+/*** Terminal ***/
 void Terminal::die(const char* s){
 	write(STDOUT_FILENO, "\x1b[2J", 4);
 	write(STDOUT_FILENO, "\x1b[H", 3);

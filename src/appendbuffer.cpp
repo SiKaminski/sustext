@@ -1,6 +1,6 @@
 #include "headers/appendbuffer.hpp"
 
-void appendbuffer::abAppend(struct abuf *ab, const char *s, int len){
+void AppendBuffer::abAppend(struct abuf *ab, const char *s, int len){
 	char* n = (char*)realloc(ab->b, ab->len + len);
 	if(n == NULL) return;
 	memcpy(&n[ab->len], s, len);
@@ -8,6 +8,6 @@ void appendbuffer::abAppend(struct abuf *ab, const char *s, int len){
 	ab->len += len;
 }
 
-void appendbuffer::abFree(struct abuf *ab){
+void AppendBuffer::abFree(struct abuf *ab){
 	free(ab->b);
 }

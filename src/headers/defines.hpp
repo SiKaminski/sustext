@@ -1,6 +1,5 @@
-#ifndef __DEFINES_HPP
-#define __DEFINES_HPP
-
+#pragma once
+/*** Includes ***/
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
@@ -25,5 +24,3 @@ enum editorKey{
 	PAGE_UP,
 	PAGE_DOWN
 };
-
-#endif // __DEFINES_HPP

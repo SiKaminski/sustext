@@ -1,18 +1,14 @@
-#ifndef __APPEND_BUFFER_HPP
-#define __APPEND_BUFFER_HPP
+#pragma once
 
 #include "defines.hpp"
 
-namespace appendbuffer{
+namespace AppendBuffer{
+    #define ABUF_INIT {NULL, 0}
     struct abuf{
-	    char *b;
-	    int len;
+    	char *b;
+    	int len;
     };
 
-    #define ABUF_INIT {NULL, 0}
-
-    void abAppend(abuf *ab, const char *s, int len); 
-    void abFree(abuf *ab);
+    void abAppend(struct abuf *ab, const char *s, int len);
+    void abFree(struct abuf *ab);
 }
-
-#endif // __APPEND_BUFFER_HPP

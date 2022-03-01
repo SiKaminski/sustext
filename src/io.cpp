@@ -1,5 +1,6 @@
 #include "headers/io.hpp"
 
+/*** input ***/
 void IO::editorMoveCursor(int key){
 	switch(key){
 		case ARROW_LEFT:
@@ -17,8 +18,8 @@ void IO::editorMoveCursor(int key){
 	}
 }
 
-void IO::editorProcessKeypress(Terminal terminal){
-	int c = terminal.editorReadKey();
+void IO::editorProcessKeypress(){
+	int c = Terminal::editorReadKey();
 
 	switch(c){
 		case CTRL_KEY('q'):
@@ -52,7 +53,7 @@ void IO::editorProcessKeypress(Terminal terminal){
 }
 
 /*** output ***/
-void IO::editorDrawRows(struct appendbuffer::abuf *ab) {
+void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 	int y;
 	for (y = 0; y < E.screenRows; y++) {
 		if (y == E.screenRows / 3) {
@@ -77,19 +78,19 @@ void IO::editorDrawRows(struct appendbuffer::abuf *ab) {
 	}
 }
 
-void IO::editorRefreshScreen(Terminal terminal){
-	struct appendbuffer::abuf ab = ABUF_INIT;
+void IO::editorRefreshScreen(){
+	struct AppendBuffer::abuf ab = ABUF_INIT;
 
-	abAppend(&ab, "\x1b[?25l", 6);
-	abAppend(&ab, "\x1b[H", 3);
+	AppendBuffer::abAppend(&ab, "\x1b[?25l", 6);
+	AppendBuffer::abAppend(&ab, "\x1b[H", 3);
 
 	editorDrawRows(&ab);
 
 	char buf[32];
 	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
-	abAppend(&ab, buf, strlen(buf));
+	AppendBuffer::abAppend(&ab, buf, strlen(buf));
 
-	abAppend(&ab, "\x1b[?25h", 6);
+	AppendBuffer::abAppend(&ab, "\x1b[?25h", 6);
 
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);

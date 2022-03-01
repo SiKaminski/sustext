@@ -1,15 +1,13 @@
-#ifndef __DATA_HPP
-#define __DATA_HPP
+#pragma once
 
 #include "defines.hpp"
 
-struct EditorConfig{
-    int cx, cy;
-    int screenRows;
-    int screenCols;
-    struct termios orig_termios;
+/*** Data ***/
+struct editorConfig{
+	int cx, cy;
+	int screenRows;
+	int screenCols;
+	struct termios orig_termios;
 };
 
-static struct EditorConfig E;
-
-#endif // __DATA_HPP
+static struct editorConfig E;
