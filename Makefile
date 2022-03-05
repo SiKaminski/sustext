@@ -1,40 +1,42 @@
 #File Directory things (might be overkill idk yet)
-INCLUDE = -I
-BIN_DIR = bin
+INCLUDE = -I$(SRC_DIR)/headers
+BUILD_DIR = bin
 SRC_DIR = src
 OBJ_DIR = obj
-LD = LD
-LDFLAGS = 
 
-dir_guard=@mkdir -p $(@D)
 
 #Compiler and linker things
 CC = g++
-CCFLAGS = -c -g -Wall -Wextra -pedantic $(INCLUDE) 
+CCFLAGS = -g -Wall -Wextra
+LD = ld
+LDFLAGS = 
+
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
 #Essential files and groups
-OBJ = $(addprefix $(BIN_DIR)/, sustext)
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+OBJNAME = sustext 
+SRCS = $(call rwildcard, $(SRC_DIR), *.cpp)
+OBJ = $(addprefix $(BUILD_DIR)/, $(OBJNAME))
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
-run: all
-	@echo
-	@./$(OBJ)
-
-all: $(OBJ) 
-	$(dir_guard)
+all: $(OBJ)
+	@mkdir -p $(@D)
 	@echo ---- Generating $^ ---
 
 $(OBJ): $(OBJS)
-	$(dir_guard)
 	@echo ---- Linking $^ ----
+	@mkdir -p $(@D)
 	$(CC) $^ -o $@
 
-$(OBJ_DIR)/%.o: %.cpp
-	$(dir_guard)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo ---- Compiling $^ ----
-	$(CC) $(CCFLAGS) -c $< -o $@
+	@mkdir -p $(@D)
+	$(CC) $(CCFLAGS) $(INCLUDE) -c $< -o $@
+
+setup:
+	@mkdir $(OBJ_DIR)
+	@mkdir $(BUILD_DIR)
 
 clean:
-	rm -rf $(BIN_DIR)/
+	rm -rf $(BUILD_DIR)/
 	rm -rf $(OBJ_DIR)/
