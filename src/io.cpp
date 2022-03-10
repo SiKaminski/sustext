@@ -29,16 +29,21 @@ void IO::editorProcessKeypress(){
 
 	switch(c){
 		case CTRL_KEY('q'):
+
+			//[2J will erase all of the diaply without moving the cursor position
 			write(STDOUT_FILENO, "\x1b[2J", 4);
+
+			//Return cursor to home
 			write(STDOUT_FILENO, "\x1b[H", 3);
 			exit(0);
 			break;
 
 		case HOME_KEY:
-			E.cx = 0;
-			break;
 		case END_KEY:
-			E.cx = E.screenCols - 1;
+			{
+				int times = E.screenCols;
+				while(times--) editorMoveCursor(c == HOME_KEY ? ARROW_LEFT : ARROW_RIGHT);
+			}
 			break;
 
 	    case PAGE_UP:
@@ -87,6 +92,7 @@ void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 void IO::editorRefreshScreen(){
 	struct AppendBuffer::abuf ab = ABUF_INIT;
 
+	//Use the ?25l esacape sequence to hide to cursor on refresh
 	abAppend(&ab, "\x1b[?25l", 6);
 	abAppend(&ab, "\x1b[H", 3);
 

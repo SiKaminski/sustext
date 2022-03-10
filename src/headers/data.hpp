@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __DATA_HPP
+#define __DATA_HPP
 
 #include "defines.hpp"
 
@@ -11,3 +12,5 @@ struct editorConfig{
 };
 
 static struct editorConfig E;
+
+#endif // __DATA_HPP

@@ -1,5 +1,6 @@
-#pragma once
-/*** Includes ***/
+#ifndef __DEFINES_HPP
+#define __DEFINES_HPP
+
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
@@ -9,7 +10,6 @@
 #include <unistd.h>
 #include <termios.h>
 
-/*** Defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define SUSTEXT_VERSION "0.0.1"
 
@@ -24,3 +24,5 @@ enum editorKey{
 	PAGE_UP,
 	PAGE_DOWN
 };
+
+#endif // __DEFINES_HPP

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __IO_HPP
+#define __IO_HPP
 
 #include "defines.hpp"
 #include "data.hpp"
@@ -6,9 +7,34 @@
 #include "terminal.hpp"
 
 namespace IO{
+
+    /**
+     * Initialize the editor functions 
+     */
     void initEditor();
+
+    /**
+     * Take key input from user and move cursor accordingly 
+     * @param key 
+     */
     void editorMoveCursor(int key);
+
+    /**
+     * Take in key input from terminal and determine
+     * what function to do
+     */
     void editorProcessKeypress();
-	void editorDrawRows(struct AppendBuffer::abuf *ab);
+
+    /**
+     * Prepare the inputted buffer with the next frame 
+     * @param ab 
+     */
+	void editorDrawRows(struct AppendBuffer::abuf* ab);
+
+    /**
+     * Update the screen buffer 
+     */
 	void editorRefreshScreen();	
 }
+
+#endif // __IO_HPP

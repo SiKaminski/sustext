@@ -22,7 +22,7 @@ sudo apt install gcc
 
 To run the editor as of currently, clone the repository and run `make`
 
-After doing so run `./sustext`
+After doing so run `./bin/sustext`
 
 More info about different commands in the editor found in [Editor Commands](#editor-commands)
 
