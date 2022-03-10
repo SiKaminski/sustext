@@ -1,5 +1,11 @@
 #include "headers/io.hpp"
 
+void IO::initEditor(){
+	E.cx = 0;
+	E.cy = 0;
+	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
+}
+
 /*** input ***/
 void IO::editorMoveCursor(int key){
 	switch(key){

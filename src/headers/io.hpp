@@ -6,6 +6,7 @@
 #include "terminal.hpp"
 
 namespace IO{
+    void initEditor();
     void editorMoveCursor(int key);
     void editorProcessKeypress();
 	void editorDrawRows(struct AppendBuffer::abuf *ab);
