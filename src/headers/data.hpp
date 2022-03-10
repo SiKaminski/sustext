@@ -3,11 +3,17 @@
 
 #include "defines.hpp"
 
-/*** Data ***/
+typedef struct erow{
+	int size;
+	char* chars;
+}erow;
+
 struct editorConfig{
 	int cx, cy;
 	int screenRows;
 	int screenCols;
+	int numrows;
+	erow row;
 	struct termios orig_termios;
 };
 

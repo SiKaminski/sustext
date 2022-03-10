@@ -3,6 +3,7 @@
 void IO::initEditor(){
 	E.cx = 0;
 	E.cy = 0;
+	E.numrows = 0;
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
 }
 
@@ -22,6 +23,29 @@ void IO::editorMoveCursor(int key){
 			if(E.cy != E.screenRows - 1) E.cy++;
 			break;
 	}
+}
+
+void IO::editorOpen(char* filename){
+	FILE* fp = fopen(filename, "r");
+	if(!fp) Terminal::die("fopen");
+
+	char* line = NULL;
+	size_t linecap = 0;
+	ssize_t linelen;
+	linelen = getline(&line, &linecap, fp);
+	if(linelen != -1){
+		while(linelen > 0 && (line[linelen - 1] == '\n' ||
+		line[linelen - 1] == '\r'))
+			linelen--;
+
+	E.row.size = linelen;
+	E.row.chars = (char*)malloc(linelen + 1);
+	memcpy(E.row.chars, line, linelen);
+	E.row.chars[linelen] = '\0';
+	E.numrows = 1;
+	}
+	free(line);
+	fclose(fp);
 }
 
 void IO::editorProcessKeypress(){
@@ -67,20 +91,26 @@ void IO::editorProcessKeypress(){
 void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 	int y;
 	for (y = 0; y < E.screenRows; y++) {
-		if (y == E.screenRows / 3) {
-			char welcome[80];
-			int welcomelen = snprintf(welcome, sizeof(welcome),
-			  "sustext editor -- version %s", SUSTEXT_VERSION);
-			if (welcomelen > E.screenCols) welcomelen = E.screenCols;
-			int padding = (E.screenCols - welcomelen) / 2;
-			if (padding) {
+		if(y >= E.numrows){
+			if (y == E.screenRows / 3) {
+				char welcome[80];
+				int welcomelen = snprintf(welcome, sizeof(welcome),
+				  "sustext editor -- version %s", SUSTEXT_VERSION);
+				if (welcomelen > E.screenCols) welcomelen = E.screenCols;
+				int padding = (E.screenCols - welcomelen) / 2;
+				if (padding) {
+					abAppend(ab, "~", 1);
+					padding--;
+			  	}
+			  while (padding--) abAppend(ab, " ", 1);
+			  abAppend(ab, welcome, welcomelen);
+			} else {
 				abAppend(ab, "~", 1);
-				padding--;
-		  }
-		  while (padding--) abAppend(ab, " ", 1);
-		  abAppend(ab, welcome, welcomelen);
+			}
 		} else {
-			abAppend(ab, "~", 1);
+			int len = E.row.size;
+			if(len > E.screenCols) len = E.screenCols;
+			AppendBuffer::abAppend(ab, E.row.chars, len);
 		}
 		abAppend(ab, "\x1b[K", 3);
 		if (y < E.screenRows - 1) {

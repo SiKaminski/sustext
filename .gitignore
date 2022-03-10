@@ -1,2 +1,4 @@
 .vscode
-sustext
+bin/*
+obj/*
+.dev_misc

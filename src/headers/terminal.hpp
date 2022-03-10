@@ -5,6 +5,10 @@
 #include "data.hpp"
 
 namespace Terminal{
+    /**
+     * Initialize the editor functions 
+     */
+    void initEditor();
 
     /**
      * exit the program with a message to display what error occured 

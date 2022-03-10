@@ -14,6 +14,12 @@ namespace IO{
     void initEditor();
 
     /**
+     * Text that will display when the editor opens a file
+     * @param filename
+     */
+    void editorOpen(char* filename);
+
+    /**
      * Take key input from user and move cursor accordingly 
      * @param key 
      */
