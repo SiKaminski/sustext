@@ -13,6 +13,8 @@ namespace IO{
      */
     void initEditor();
 
+    /*---- INPUTS ----*/
+
     /**
      * Text that will display when the editor opens a file
      * @param filename
@@ -31,6 +33,8 @@ namespace IO{
      */
     void editorProcessKeypress();
 
+    /*---- OUTPUTS ----*/
+
     /**
      * Prepare the inputted buffer with the next frame 
      * @param ab 
@@ -41,6 +45,16 @@ namespace IO{
      * Update the screen buffer 
      */
 	void editorRefreshScreen();	
+
+    /*---- ROW OPERATIONS ----*/
+
+    /**
+     * Append a new row onto the editor screen 
+     * 
+     * @param s (char*) characters in the row
+     * @param len (size_t) size of the row
+     */
+    void editorAppendRow(char* s, size_t len);
 }
 
 #endif // __IO_HPP

@@ -1,13 +1,15 @@
 #include "headers/io.hpp"
 
 void IO::initEditor(){
+	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
 	E.cy = 0;
 	E.numrows = 0;
+	E.row = {0, NULL};
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
 }
 
-/*** input ***/
+/*---- INPUT ----*/
 void IO::editorMoveCursor(int key){
 	switch(key){
 		case ARROW_LEFT:
@@ -26,24 +28,27 @@ void IO::editorMoveCursor(int key){
 }
 
 void IO::editorOpen(char* filename){
+
+	//Open a file in read mode
 	FILE* fp = fopen(filename, "r");
 	if(!fp) Terminal::die("fopen");
 
 	char* line = NULL;
 	size_t linecap = 0;
 	ssize_t linelen;
+
+	//Get the line at index 0 of the file
 	linelen = getline(&line, &linecap, fp);
+
+	//Get the length of the line from the file
 	if(linelen != -1){
+		//stop if the escape sequence for new line or return carriage is next
 		while(linelen > 0 && (line[linelen - 1] == '\n' ||
 		line[linelen - 1] == '\r'))
 			linelen--;
-
-	E.row.size = linelen;
-	E.row.chars = (char*)malloc(linelen + 1);
-	memcpy(E.row.chars, line, linelen);
-	E.row.chars[linelen] = '\0';
-	E.numrows = 1;
+		editorAppendRow(line, linelen);
 	}
+	//Deallocate memory from line and close file connection
 	free(line);
 	fclose(fp);
 }
@@ -87,12 +92,13 @@ void IO::editorProcessKeypress(){
 	}
 }
 
-/*** output ***/
+/*---- OUTPUT ----*/
+
 void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 	int y;
 	for (y = 0; y < E.screenRows; y++) {
 		if(y >= E.numrows){
-			if (y == E.screenRows / 3) {
+			if (E.numrows == 0 && y == E.screenRows / 3) {
 				char welcome[80];
 				int welcomelen = snprintf(welcome, sizeof(welcome),
 				  "sustext editor -- version %s", SUSTEXT_VERSION);
@@ -136,4 +142,15 @@ void IO::editorRefreshScreen(){
 
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);
+}
+
+/*---- ROW OPERATIONS ----*/
+
+void IO::editorAppendRow(char* s, size_t len){
+	E.row.size = len;
+	E.row.chars = (char*)malloc(len + 1);
+
+	memcpy(E.row.chars, s, len);
+	E.row.chars[len] = '\0';
+	E.numrows = 1;
 }

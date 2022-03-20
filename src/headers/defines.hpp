@@ -1,6 +1,18 @@
 #ifndef __DEFINES_HPP
 #define __DEFINES_HPP
 
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif // _DEFAULT_SOURCE
+
+#ifndef _BSD_SOURCE
+#define _BSD_SOURCE
+#endif // _BSD_SOURCE
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif // _GNU_SOURCE
+
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
