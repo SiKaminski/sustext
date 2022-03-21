@@ -13,6 +13,17 @@ namespace IO{
      */
     void initEditor();
 
+    /*---- ROW OPERATIONS ----*/
+    
+    /**
+     * Append a new row onto the editor screen 
+     * 
+     * @param s (char*) characters in the row
+     * @param len (size_t) size of the row
+     */
+    void editorAppendRow(char* s, size_t len);
+
+
     /*---- INPUTS ----*/
 
     /**
@@ -45,16 +56,6 @@ namespace IO{
      * Update the screen buffer 
      */
 	void editorRefreshScreen();	
-
-    /*---- ROW OPERATIONS ----*/
-
-    /**
-     * Append a new row onto the editor screen 
-     * 
-     * @param s (char*) characters in the row
-     * @param len (size_t) size of the row
-     */
-    void editorAppendRow(char* s, size_t len);
 }
 
 #endif // __IO_HPP

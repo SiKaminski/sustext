@@ -5,8 +5,22 @@ void IO::initEditor(){
 	E.cx = 0;
 	E.cy = 0;
 	E.numrows = 0;
-	E.row = {0, NULL};
+	E.row = new erow{0,NULL};
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
+}
+
+/*---- ROW OPERATIONS ----*/
+
+void IO::editorAppendRow(char* s, size_t len){
+	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
+
+	int at = E.numrows;
+	E.row[at].size = len;
+	E.row[at].chars = (char*)malloc(len+1);
+
+	memcpy(E.row[at].chars, s, len);
+	E.row[at].chars[len] = '\0';
+	E.numrows++;
 }
 
 /*---- INPUT ----*/
@@ -41,7 +55,7 @@ void IO::editorOpen(char* filename){
 	linelen = getline(&line, &linecap, fp);
 
 	//Get the length of the line from the file
-	if(linelen != -1){
+	while((linelen = getline(&line, &linecap, fp)) != -1){
 		//stop if the escape sequence for new line or return carriage is next
 		while(linelen > 0 && (line[linelen - 1] == '\n' ||
 		line[linelen - 1] == '\r'))
@@ -114,9 +128,9 @@ void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 				abAppend(ab, "~", 1);
 			}
 		} else {
-			int len = E.row.size;
+			int len = E.row[y].size;
 			if(len > E.screenCols) len = E.screenCols;
-			AppendBuffer::abAppend(ab, E.row.chars, len);
+			AppendBuffer::abAppend(ab, E.row[y].chars, len);
 		}
 		abAppend(ab, "\x1b[K", 3);
 		if (y < E.screenRows - 1) {
@@ -142,15 +156,4 @@ void IO::editorRefreshScreen(){
 
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);
-}
-
-/*---- ROW OPERATIONS ----*/
-
-void IO::editorAppendRow(char* s, size_t len){
-	E.row.size = len;
-	E.row.chars = (char*)malloc(len + 1);
-
-	memcpy(E.row.chars, s, len);
-	E.row.chars[len] = '\0';
-	E.numrows = 1;
 }

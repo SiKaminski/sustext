@@ -1,22 +1,24 @@
 #ifndef __DATA_HPP
 #define __DATA_HPP
 
-#include "defines.hpp"
+#ifndef __DEFINES_HPP
+	#include "defines.hpp"
+#endif
 
 typedef struct erow{
 	int size;
 	char* chars;
-};
+}erow;
 
 struct editorConfig{
 	int cx, cy;
 	int screenRows;
 	int screenCols;
 	int numrows;
-	erow row;
+	erow* row;
 	struct termios orig_termios;
 };
 
-static struct editorConfig E;
+static editorConfig E;
 
 #endif // __DATA_HPP
