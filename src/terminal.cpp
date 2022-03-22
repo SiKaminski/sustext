@@ -15,7 +15,7 @@ void Terminal::disableRawMode(){
 }
 
 void Terminal::enableRawMode(){
-	//Get terminal attributes, if there is an error disable raw mode and exit
+	//Store origional termios attribs, if there is an error disable raw mode and exit
 	if(tcgetattr(STDIN_FILENO, &E.orig_termios) == -1) die("tcgetattr");
 	atexit(disableRawMode);
 
@@ -42,12 +42,15 @@ int Terminal::editorReadKey(){
 		if(nread == -1 && errno != EAGAIN) die("read");
 	}
 
+	//Check for escape sequence
 	if (c == '\x1b'){
+		//Get a 3 byte buffer for the escape code
 		char seq[3];
 
 		if (read(STDIN_FILENO, &seq[0], 1) != 1) return '\x1b';
 		if (read(STDIN_FILENO, &seq[1], 1) != 1) return '\x1b';
-
+		
+		//'27'
 		if(seq[0] == '['){
 			if(seq[1] >= '0' && seq[1] <= '9'){
 				if(read(STDOUT_FILENO, &seq[2], 1) != 1) return '\x1b';
@@ -63,6 +66,7 @@ int Terminal::editorReadKey(){
 					}
 				}
 			} else {
+				//There has to be a better way of implementing keypresses right?
 				switch(seq[1]){
 					case 'A': return ARROW_UP;
 					case 'B': return ARROW_DOWN;
@@ -86,6 +90,7 @@ int Terminal::getCursorPosition(int* rows, int* cols){
 	char buf[32];
 	unsigned int i = 0;
 
+	//Failed to provide a position
 	if(write(STDOUT_FILENO, "\x1b[6n", 4) != 4) return -1;
 
 	while(i < sizeof(buf) - 1){
@@ -95,7 +100,10 @@ int Terminal::getCursorPosition(int* rows, int* cols){
 	}
 	buf[i] = '\0';
 	
+	//What the escape sequence doin?
 	if(buf[0] != '\x1b' || buf[1] != '[') return -1;
+
+	//If &buf[2] does not have the screen size then zad :(
 	if(sscanf(&buf[2], "%d;%d", rows, cols) != 2) return -1;
 
 	return 0;

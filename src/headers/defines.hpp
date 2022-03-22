@@ -24,7 +24,7 @@
 #include <sys/types.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "0.0.1"
+#define SUSTEXT_VERSION "0.4.1" // Forgor about version lol
 
 enum editorKey{
 	ARROW_LEFT = 1000,

@@ -7,7 +7,8 @@
 #include "terminal.hpp"
 
 namespace IO{
-
+    /*---- INITIALIZATION ----*/
+    
     /**
      * Initialize the editor functions 
      */

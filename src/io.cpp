@@ -1,5 +1,6 @@
 #include "headers/io.hpp"
 
+/*---- INITIALIZATION ----*/
 void IO::initEditor(){
 	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
@@ -10,7 +11,6 @@ void IO::initEditor(){
 }
 
 /*---- ROW OPERATIONS ----*/
-
 void IO::editorAppendRow(char* s, size_t len){
 	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
 
@@ -42,7 +42,6 @@ void IO::editorMoveCursor(int key){
 }
 
 void IO::editorOpen(char* filename){
-
 	//Open a file in read mode
 	FILE* fp = fopen(filename, "r");
 	if(!fp) Terminal::die("fopen");
@@ -70,6 +69,7 @@ void IO::editorOpen(char* filename){
 void IO::editorProcessKeypress(){
 	int c = Terminal::editorReadKey();
 
+	// Bane of my existance
 	switch(c){
 		case CTRL_KEY('q'):
 
@@ -107,35 +107,39 @@ void IO::editorProcessKeypress(){
 }
 
 /*---- OUTPUT ----*/
-
 void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
-	int y;
-	for (y = 0; y < E.screenRows; y++) {
+	for(int y = 0; y < E.screenRows; y++) {
 		if(y >= E.numrows){
+			//Prepare the append buffer
 			if (E.numrows == 0 && y == E.screenRows / 3) {
+				//The welcome text will only show if the editor is opened as a standalone
+				//program with no inputs, on file open there is no welcome
 				char welcome[80];
 				int welcomelen = snprintf(welcome, sizeof(welcome),
 				  "sustext editor -- version %s", SUSTEXT_VERSION);
 				if (welcomelen > E.screenCols) welcomelen = E.screenCols;
 				int padding = (E.screenCols - welcomelen) / 2;
+
+				//Padding will always be present on blank lines
 				if (padding) {
 					abAppend(ab, "~", 1);
 					padding--;
 			  	}
 			  while (padding--) abAppend(ab, " ", 1);
 			  abAppend(ab, welcome, welcomelen);
-			} else {
-				abAppend(ab, "~", 1);
-			}
+			} else { abAppend(ab, "~", 1); }
 		} else {
 			int len = E.row[y].size;
 			if(len > E.screenCols) len = E.screenCols;
 			AppendBuffer::abAppend(ab, E.row[y].chars, len);
 		}
+
+		//Since everything for the row is appended to the buffer everything 
+		// after the curse which effecively produces a clean row
 		abAppend(ab, "\x1b[K", 3);
-		if (y < E.screenRows - 1) {
-			abAppend(ab, "\r\n", 2);
-		}
+
+		//Account for the last row
+		if (y < E.screenRows - 1) { abAppend(ab, "\r\n", 2); }
 	}
 }
 

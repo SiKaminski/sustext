@@ -8,10 +8,11 @@ int main(int argc, char** argv){
 	Terminal::enableRawMode();
 	IO::initEditor();
 
+	//Check if parameters
 	if(argc >= 2){
 		IO::editorOpen(argv[1]);
 	}
-
+	
 	while(1){
 		IO::editorRefreshScreen();
 		IO::editorProcessKeypress();
