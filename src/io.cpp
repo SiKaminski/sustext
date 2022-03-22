@@ -5,6 +5,7 @@ void IO::initEditor(){
 	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
 	E.cy = 0;
+	E.rowOff = 0; //Scroll to the top of the file by default
 	E.numrows = 0;
 	E.row = new erow{0,NULL};
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
@@ -36,7 +37,7 @@ void IO::editorMoveCursor(int key){
 			if(E.cy != 0) E.cy--;
 			break;
 		case ARROW_DOWN:
-			if(E.cy != E.screenRows - 1) E.cy++;
+			if(E.cy < E.numrows) E.cy++;
 			break;
 	}
 }
@@ -83,7 +84,9 @@ void IO::editorProcessKeypress(){
 
 		case HOME_KEY:
 		case END_KEY:
-			{
+			{	
+				//Once horizontal scrolling is enabled, this will be relative to the columns
+				//visible on the screen
 				int times = E.screenCols;
 				while(times--) editorMoveCursor(c == HOME_KEY ? ARROW_LEFT : ARROW_RIGHT);
 			}
@@ -92,6 +95,8 @@ void IO::editorProcessKeypress(){
 	    case PAGE_UP:
 		case PAGE_DOWN:
 			{
+				//Once Scrolling is enabled, This will have to be relative to the amount of
+				//Rows visible on the screen
 				int times = E.screenRows;
 				while(times--) editorMoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
 			}
@@ -107,9 +112,19 @@ void IO::editorProcessKeypress(){
 }
 
 /*---- OUTPUT ----*/
+void IO::editorScroll(){
+	if(E.cy < E.rowOff){
+		E.rowOff = E.cy;
+	}
+	if(E.cy >= E.rowOff + E.screenRows){
+		E.rowOff = E.cy - E.screenRows + 1;
+	}
+}
+
 void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 	for(int y = 0; y < E.screenRows; y++) {
-		if(y >= E.numrows){
+		int filerow = y + E.rowOff;
+		if(filerow >= E.numrows){
 			//Prepare the append buffer
 			if (E.numrows == 0 && y == E.screenRows / 3) {
 				//The welcome text will only show if the editor is opened as a standalone
@@ -129,9 +144,9 @@ void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 			  abAppend(ab, welcome, welcomelen);
 			} else { abAppend(ab, "~", 1); }
 		} else {
-			int len = E.row[y].size;
+			int len = E.row[filerow].size;
 			if(len > E.screenCols) len = E.screenCols;
-			AppendBuffer::abAppend(ab, E.row[y].chars, len);
+			AppendBuffer::abAppend(ab, E.row[filerow].chars, len);
 		}
 
 		//Since everything for the row is appended to the buffer everything 
@@ -144,6 +159,7 @@ void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 }
 
 void IO::editorRefreshScreen(){
+	editorScroll();
 	struct AppendBuffer::abuf ab = ABUF_INIT;
 
 	//Use the ?25l esacape sequence to hide to cursor on refresh
@@ -153,7 +169,7 @@ void IO::editorRefreshScreen(){
 	editorDrawRows(&ab);
 
 	char buf[32];
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, E.cx + 1);
 	abAppend(&ab, buf, strlen(buf));
 
 	abAppend(&ab, "\x1b[?25h", 6);

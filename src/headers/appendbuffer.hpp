@@ -14,16 +14,16 @@ namespace AppendBuffer{
     /**
      * Append a value to a buffer with a given length 
      * 
-     * @param ab buffer to append to
-     * @param s 
-     * @param len 
+     * @param ab (abuf*) buffer to append to
+     * @param s (char*) bytes to append to buffer 
+     * @param len (int) amount of bytes needed to append to the buffer
      */
     void abAppend(struct abuf *ab, const char *s, int len);
 
     /**
      * free buffer from memory 
      * 
-     * @param ab 
+     * @param ab (abuf*)
      */
     void abFree(struct abuf *ab);
 }

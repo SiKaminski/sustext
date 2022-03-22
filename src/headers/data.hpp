@@ -11,11 +11,13 @@ typedef struct erow{
 }erow;
 
 struct editorConfig{
-	int cx, cy;
-	int screenRows;
-	int screenCols;
-	int numrows;
-	erow* row;
+	int 	cx, cy;
+	int 	rowOff;
+	int 	colOff;
+	int 	screenRows;
+	int 	screenCols;
+	int 	numrows;
+	erow* 	row;
 	struct termios orig_termios;
 };
 

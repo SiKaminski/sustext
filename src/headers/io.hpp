@@ -48,6 +48,11 @@ namespace IO{
     /*---- OUTPUTS ----*/
 
     /**
+     * Scroll the mouse/cursor around the editor
+     */
+    void editorScroll();
+
+    /**
      * Prepare the inputted buffer with the next frame 
      * @param ab 
      */
