@@ -5,7 +5,8 @@ void IO::initEditor(){
 	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
 	E.cy = 0;
-	E.rowOff = 0; //Scroll to the top of the file by default
+	E.rowOff = 0; // Scroll to the top of the file by default
+	E.colOff = 0; // Scroll cursor to the left of the screen by default 
 	E.numrows = 0;
 	E.row = new erow{0,NULL};
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
@@ -26,12 +27,15 @@ void IO::editorAppendRow(char* s, size_t len){
 
 /*---- INPUT ----*/
 void IO::editorMoveCursor(int key){
+	//Prevent cursor from going past the size of the screen not the file
+	erow* row = (E.cy >= E.numrows) ? NULL : &E.row[E.cy];
+
 	switch(key){
 		case ARROW_LEFT:
 			if(E.cx != 0) E.cx--;
 			break;
 		case ARROW_RIGHT:
-			if(E.cx != E.screenCols - 1) E.cx++;
+			if(row && E.cx < row->size) E.cx++;
 			break;
 		case ARROW_UP:
 			if(E.cy != 0) E.cy--;
@@ -119,23 +123,30 @@ void IO::editorScroll(){
 	if(E.cy >= E.rowOff + E.screenRows){
 		E.rowOff = E.cy - E.screenRows + 1;
 	}
+	if(E.cx < E.colOff){
+		E.colOff = E.cx;
+	}
+	if(E.cx >= E.colOff + E.screenCols){
+		E.colOff = E.cx - E.screenCols + 1;
+
+	}
 }
 
 void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 	for(int y = 0; y < E.screenRows; y++) {
 		int filerow = y + E.rowOff;
 		if(filerow >= E.numrows){
-			//Prepare the append buffer
+			// Prepare the append buffer
 			if (E.numrows == 0 && y == E.screenRows / 3) {
-				//The welcome text will only show if the editor is opened as a standalone
-				//program with no inputs, on file open there is no welcome
+				// The welcome text will only show if the editor is opened as a standalone
+				// program with no inputs, on file open there is no welcome
 				char welcome[80];
 				int welcomelen = snprintf(welcome, sizeof(welcome),
 				  "sustext editor -- version %s", SUSTEXT_VERSION);
 				if (welcomelen > E.screenCols) welcomelen = E.screenCols;
 				int padding = (E.screenCols - welcomelen) / 2;
 
-				//Padding will always be present on blank lines
+				// Padding will always be present on blank lines
 				if (padding) {
 					abAppend(ab, "~", 1);
 					padding--;
@@ -144,16 +155,18 @@ void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 			  abAppend(ab, welcome, welcomelen);
 			} else { abAppend(ab, "~", 1); }
 		} else {
-			int len = E.row[filerow].size;
+			int len = E.row[filerow].size - E.colOff;
+			// Prevent the length for being a negative number
+			if(len < 0) len = 0;
 			if(len > E.screenCols) len = E.screenCols;
 			AppendBuffer::abAppend(ab, E.row[filerow].chars, len);
 		}
 
-		//Since everything for the row is appended to the buffer everything 
-		// after the curse which effecively produces a clean row
+		// Since everything for the row is appended to the buffer everything 
+		// after the cursor which effecively produces a clean row
 		abAppend(ab, "\x1b[K", 3);
 
-		//Account for the last row
+		// Account for the last row
 		if (y < E.screenRows - 1) { abAppend(ab, "\r\n", 2); }
 	}
 }
@@ -162,14 +175,14 @@ void IO::editorRefreshScreen(){
 	editorScroll();
 	struct AppendBuffer::abuf ab = ABUF_INIT;
 
-	//Use the ?25l esacape sequence to hide to cursor on refresh
+	// Use the ?25l esacape sequence to hide to cursor on refresh
 	abAppend(&ab, "\x1b[?25l", 6);
 	abAppend(&ab, "\x1b[H", 3);
 
 	editorDrawRows(&ab);
 
 	char buf[32];
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, E.cx + 1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, (E.cx - E.colOff) + 1);
 	abAppend(&ab, buf, strlen(buf));
 
 	abAppend(&ab, "\x1b[?25h", 6);

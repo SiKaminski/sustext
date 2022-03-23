@@ -1,6 +1,7 @@
 #ifndef __DEFINES_HPP
 #define __DEFINES_HPP
 
+/* Compatability check for different platforms */
 #ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE
 #endif // _DEFAULT_SOURCE
@@ -24,7 +25,7 @@
 #include <sys/types.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "0.5.0" // Forgor about version lol
+#define SUSTEXT_VERSION "v0.6.0-Alpha" // Forgor about version lol
 
 enum editorKey{
 	ARROW_LEFT = 1000,

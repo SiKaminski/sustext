@@ -6,8 +6,8 @@
 #endif
 
 typedef struct erow{
-	int size;
-	char* chars;
+	int 	size;
+	char* 	chars;
 }erow;
 
 struct editorConfig{
