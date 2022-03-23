@@ -12,6 +12,7 @@ void Terminal::die(const char* s){
 void Terminal::disableRawMode(){
 	//Set the attributes of the terminal back to its origional state
 	if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1) die("tcsetattr");
+	system("clear");
 }
 
 void Terminal::enableRawMode(){
