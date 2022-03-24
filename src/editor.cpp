@@ -1,7 +1,7 @@
-#include "headers/io.hpp"
+#include "headers/editor.hpp"
 
 /*---- INITIALIZATION ----*/
-void IO::initEditor(){
+void Editor::Init(){
 	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
 	E.cy = 0;
@@ -13,7 +13,7 @@ void IO::initEditor(){
 }
 
 /*---- ROW OPERATIONS ----*/
-void IO::editorAppendRow(char* s, size_t len){
+void Editor::AppendRow(char* s, size_t len){
 	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
 
 	int at = E.numrows;
@@ -26,7 +26,7 @@ void IO::editorAppendRow(char* s, size_t len){
 }
 
 /*---- INPUT ----*/
-void IO::editorMoveCursor(int key){
+void Editor::MoveCursor(int key){
 	//Prevent cursor from going past the size of the screen not the file
 	erow* row = (E.cy >= E.numrows) ? NULL : &E.row[E.cy];
 
@@ -46,7 +46,7 @@ void IO::editorMoveCursor(int key){
 	}
 }
 
-void IO::editorOpen(char* filename){
+void Editor::OpenFile(char* filename){
 	//Open a file in read mode
 	FILE* fp = fopen(filename, "r");
 	if(!fp) Terminal::die("fopen");
@@ -64,14 +64,14 @@ void IO::editorOpen(char* filename){
 		while(linelen > 0 && (line[linelen - 1] == '\n' ||
 		line[linelen - 1] == '\r'))
 			linelen--;
-		editorAppendRow(line, linelen);
+		AppendRow(line, linelen);
 	}
 	//Deallocate memory from line and close file connection
 	free(line);
 	fclose(fp);
 }
 
-void IO::editorProcessKeypress(){
+void Editor::ProcessKeypress(){
 	int c = Terminal::editorReadKey();
 
 	// Bane of my existance
@@ -92,7 +92,7 @@ void IO::editorProcessKeypress(){
 				//Once horizontal scrolling is enabled, this will be relative to the columns
 				//visible on the screen
 				int times = E.screenCols;
-				while(times--) editorMoveCursor(c == HOME_KEY ? ARROW_LEFT : ARROW_RIGHT);
+				while(times--) MoveCursor(c == HOME_KEY ? ARROW_LEFT : ARROW_RIGHT);
 			}
 			break;
 
@@ -102,7 +102,7 @@ void IO::editorProcessKeypress(){
 				//Once Scrolling is enabled, This will have to be relative to the amount of
 				//Rows visible on the screen
 				int times = E.screenRows;
-				while(times--) editorMoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+				while(times--) MoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
 			}
 			break;
 
@@ -110,13 +110,13 @@ void IO::editorProcessKeypress(){
 		case ARROW_DOWN:
 		case ARROW_LEFT:
 		case ARROW_RIGHT:
-			editorMoveCursor(c);
+			MoveCursor(c);
 			break;
 	}
 }
 
 /*---- OUTPUT ----*/
-void IO::editorScroll(){
+void Editor::Scroll(){
 	if(E.cy < E.rowOff){
 		E.rowOff = E.cy;
 	}
@@ -132,7 +132,7 @@ void IO::editorScroll(){
 	}
 }
 
-void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
+void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 	for(int y = 0; y < E.screenRows; y++) {
 		int filerow = y + E.rowOff;
 		if(filerow >= E.numrows){
@@ -171,15 +171,15 @@ void IO::editorDrawRows(struct AppendBuffer::abuf *ab) {
 	}
 }
 
-void IO::editorRefreshScreen(){
-	editorScroll();
+void Editor::RefreshScreen(){
+	Scroll();
 	struct AppendBuffer::abuf ab = ABUF_INIT;
 
 	// Use the ?25l esacape sequence to hide to cursor on refresh
 	abAppend(&ab, "\x1b[?25l", 6);
 	abAppend(&ab, "\x1b[H", 3);
 
-	editorDrawRows(&ab);
+	DrawRows(&ab);
 
 	char buf[32];
 	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, (E.cx - E.colOff) + 1);

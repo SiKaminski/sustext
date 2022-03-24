@@ -48,9 +48,6 @@ More info about different commands in the editor found in [Editor Commands](#edi
 - Basic key bindings for control
 
 ## TODO
-- [X] Scroll through text file
-  - [X] Horizontal
-  - [X] Vertical
 - [ ] Add input from the user
   - [ ] Simple Typing
   - [ ] Keybinds (vim like)

@@ -2,20 +2,20 @@
 #include "headers/data.hpp"
 #include "headers/terminal.hpp"
 #include "headers/appendbuffer.hpp"
-#include "headers/io.hpp"
+#include "headers/editor.hpp"
 
 int main(int argc, char** argv){
 	Terminal::enableRawMode();
-	IO::initEditor();
+	Editor::Init();
 
 	//Check if parameters
 	if(argc >= 2){
-		IO::editorOpen(argv[1]);
+		Editor::OpenFile(argv[1]);
 	}
 	
 	while(1){
-		IO::editorRefreshScreen();
-		IO::editorProcessKeypress();
+		Editor::RefreshScreen();
+		Editor::ProcessKeypress();
 	}
 	return 0;
 }

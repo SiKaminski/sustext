@@ -6,13 +6,13 @@
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
 
-namespace IO{
+namespace Editor{
     /*---- INITIALIZATION ----*/
     
     /**
      * Initialize the editor functions 
      */
-    void initEditor();
+    void Init();
 
     /*---- ROW OPERATIONS ----*/
     
@@ -22,7 +22,7 @@ namespace IO{
      * @param s (char*) characters in the row
      * @param len (size_t) size of the row
      */
-    void editorAppendRow(char* s, size_t len);
+    void AppendRow(char* s, size_t len);
 
 
     /*---- INPUTS ----*/
@@ -31,37 +31,37 @@ namespace IO{
      * Text that will display when the editor opens a file
      * @param filename
      */
-    void editorOpen(char* filename);
+    void OpenFile(char* filename);
 
     /**
      * Take key input from user and move cursor accordingly 
      * @param key 
      */
-    void editorMoveCursor(int key);
+    void MoveCursor(int key);
 
     /**
      * Take in key input from terminal and determine
      * what function to do
      */
-    void editorProcessKeypress();
+    void ProcessKeypress();
 
     /*---- OUTPUTS ----*/
 
     /**
      * Scroll the mouse/cursor around the editor
      */
-    void editorScroll();
+    void Scroll();
 
     /**
      * Prepare the inputted buffer with the next frame 
      * @param ab 
      */
-	void editorDrawRows(struct AppendBuffer::abuf* ab);
+	void DrawRows(struct AppendBuffer::abuf* ab);
 
     /**
      * Update the screen buffer 
      */
-	void editorRefreshScreen();	
+	void RefreshScreen();	
 }
 
 #endif // __IO_HPP
