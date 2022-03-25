@@ -18,8 +18,6 @@ void Editor::InitFlags(int argc, char** argv){
         switch(opt){
             case 'f':
                 argout.filepath = optarg;
-				OpenFile(argout.filepath);
-                fprintf(stderr, "optarg: %s\n", optarg);
                 argFlags.fileIn = true;
                 break;
             case 's':
@@ -34,7 +32,8 @@ void Editor::InitFlags(int argc, char** argv){
                 break;
         }
     }
-    fprintf(stderr, "INIT FLAGS: %s\n", argout.filepath);
+
+    if(argFlags.fileIn) OpenFile(argout.filepath);
 }
 
 /*---- ROW OPERATIONS ----*/

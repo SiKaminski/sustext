@@ -5,7 +5,6 @@
 #include "data.hpp"
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
-#include "flags.hpp"
 
 namespace Editor{
     static SustextArgOutputs argout;
