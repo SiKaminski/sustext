@@ -14,7 +14,7 @@ void Editor::Init(){
 
 void Editor::InitFlags(int argc, char** argv){
 	int opt;
-    while((opt = getopt(argc, argv, ":f:s")) != EOF){
+    while((opt = getopt(argc, argv, ":f:srw")) != EOF){
         switch(opt){
             case 'f':
                 argout.filepath = optarg;
@@ -24,6 +24,12 @@ void Editor::InitFlags(int argc, char** argv){
                 fprintf(stderr, "SUSSY!!!\n");
                 argFlags.susmode = true;
                 break;
+			case 'r':
+				fprintf(stdout, "Opening in read mode");
+				break;
+			case 'w':
+				fprintf(stdout, "Opening in write mode");
+				break;
             case ':':
                 fprintf(stderr, "Option needs a value\n");
                 break;

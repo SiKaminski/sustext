@@ -52,7 +52,7 @@ More info about different commands in the editor found in [Editor Commands](#edi
   - [ ] Simple Typing
   - [ ] Keybinds (vim like)
 - [ ] Resize the row count if the terminal window is resized (dynaic sizing)
-- [ ] Add command flags when opening the editor in shell
+- [X] Add command flags when opening the editor in shell
 - [ ] different highlighting modes in viewer
 - [ ] different modes of opening (viewer, editor, etc...)
 - [ ] syntax highlighting??

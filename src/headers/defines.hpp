@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v0.6.05-Beta"
+#define SUSTEXT_VERSION "v0.6.1-Alpha"
 
 #define FLAGS_INIT {false, false}
 #define ARGS_INIT {nullptr}
