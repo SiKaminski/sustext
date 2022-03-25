@@ -3,6 +3,7 @@
 #include "headers/terminal.hpp"
 #include "headers/appendbuffer.hpp"
 #include "headers/editor.hpp"
+#include "headers/flags.hpp"
 
 int main(int argc, char** argv){
 	Terminal::enableRawMode();
@@ -10,7 +11,15 @@ int main(int argc, char** argv){
 
 	//Check if parameters
 	if(argc >= 2){
-		Editor::OpenFile(argv[1]);
+		using namespace SustextArgs;
+		SustextArgs::InitFlags(argc, argv);
+		
+		if(flags.fileIn){
+			Editor::OpenFile(argOuts.filepath);
+			exit(1);
+		}
+
+		// Editor::OpenFile(argv[1]);
 	}
 	
 	while(1){

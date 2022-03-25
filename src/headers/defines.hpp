@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v0.6.0-Alpha" // Forgor about version lol
+#define SUSTEXT_VERSION "v0.6.05-Beta" // Forgor about version lol
 
 enum editorKey{
 	ARROW_LEFT = 1000,
