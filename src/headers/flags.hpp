@@ -4,19 +4,12 @@
 #include <iostream>
 #include <unistd.h>
 
+#include "data.hpp"
+
+#define FLAGS_INIT {false, false}
+#define ARGS_INIT {nullptr}
+
 namespace SustextArgs{
-    struct SustextCmdFlags{
-        bool fileIn;
-        bool susmode;
-    };
-
-    struct SustextArgOutputs{
-        char* filepath;
-    };
-
-    static SustextCmdFlags flags;
-    static SustextArgOutputs argOuts;
-
     void InitFlags(int argc, char** argv);
 }
 

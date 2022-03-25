@@ -11,17 +11,16 @@ int main(int argc, char** argv){
 
 	//Check if parameters
 	if(argc >= 2){
-		using namespace SustextArgs;
-		SustextArgs::InitFlags(argc, argv);
-		
-		if(flags.fileIn){
-			Editor::OpenFile(argOuts.filepath);
+		Editor::InitFlags(argc, argv);
+		fprintf(stderr, "Opening: %s\n", Editor::argout.filepath);
+		if(Editor::argFlags.fileIn){
+			Editor::OpenFile(Editor::argout.filepath);
 			exit(1);
 		}
 
 		// Editor::OpenFile(argv[1]);
 	}
-	
+
 	while(1){
 		Editor::RefreshScreen();
 		Editor::ProcessKeypress();

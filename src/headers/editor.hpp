@@ -5,14 +5,24 @@
 #include "data.hpp"
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
+#include "flags.hpp"
 
 namespace Editor{
+    static SustextArgOutputs argout;
+    static SustextCmdFlags argFlags;
+
     /*---- INITIALIZATION ----*/
     
     /**
      * Initialize the editor functions 
      */
     void Init();
+
+    /**
+     * Initialize flags that were given as input from
+     * command line (I dispise the location of this method)) 
+     */
+    void InitFlags(int argc, char** argv);
 
     /*---- ROW OPERATIONS ----*/
     

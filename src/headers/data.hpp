@@ -3,7 +3,7 @@
 
 #ifndef __DEFINES_HPP
 	#include "defines.hpp"
-#endif
+#endif // __DEFINES_HPP
 
 typedef struct erow{
 	int 	size;
@@ -21,6 +21,14 @@ struct editorConfig{
 	struct termios orig_termios;
 };
 
-static editorConfig E;
+struct SustextCmdFlags{
+	bool 	fileIn;
+	bool 	susmode;
+};
 
+struct SustextArgOutputs{
+	char* 	filepath;
+};
+
+static editorConfig E;
 #endif // __DATA_HPP

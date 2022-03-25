@@ -12,12 +12,37 @@ void Editor::Init(){
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
 }
 
+void Editor::InitFlags(int argc, char** argv){
+	int opt;
+    while((opt = getopt(argc, argv, ":f:s")) != EOF){
+        switch(opt){
+            case 'f':
+                argout.filepath = optarg;
+				OpenFile(argout.filepath);
+                fprintf(stderr, "optarg: %s\n", optarg);
+                argFlags.fileIn = true;
+                break;
+            case 's':
+                fprintf(stderr, "SUSSY!!!\n");
+                argFlags.susmode = true;
+                break;
+            case ':':
+                fprintf(stderr, "Option needs a value\n");
+                break;
+            case '?':
+                fprintf(stderr, "Unknown option \'%d\'\n", optopt);
+                break;
+        }
+    }
+    fprintf(stderr, "INIT FLAGS: %s\n", argout.filepath);
+}
+
 /*---- ROW OPERATIONS ----*/
 void Editor::AppendRow(char* s, size_t len){
 	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
 
 	int at = E.numrows;
-	E.row[at].size = len;
+	E.row[at].size = len;::
 	E.row[at].chars = (char*)malloc(len+1);
 
 	memcpy(E.row[at].chars, s, len);
