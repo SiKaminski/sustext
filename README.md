@@ -15,7 +15,8 @@ Text editor made in C++ ran in the linux terminal.
 The escape sequences are based off VT100 Terminals which can be clearly
 seen in the source files of IO and Terminal
 
-## Pre requisites 
+## Pre requisites
+
 g++ compiler
 
 ```bash

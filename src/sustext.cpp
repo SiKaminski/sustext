@@ -14,8 +14,10 @@ int main(int argc, char** argv){
 	if(argc >= 2){
 		sFlags.SetFlags();
 
+		//If the file does not exist the terminal just dies and closes with
+		//the exit code 'fopen'
 		if(sFlags.Enabled(FILEIN))
-			Editor::OpenFile(sFlags.argout.filepath);
+			if(!Editor::OpenFile(sFlags.argout.filepath));
 	}
 
 	while(1){

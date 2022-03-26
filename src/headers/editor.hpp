@@ -15,7 +15,17 @@ namespace Editor{
     void Init();
 
     /*---- ROW OPERATIONS ----*/
-    
+
+    /**
+     * Convert the cursor x position given as an input
+     * int a render index 
+     * 
+     * @param row 
+     * @param cx 
+     * @return int (rx)
+     */
+    int RowCxToRx(erow* row, int cx);
+
     /**
      * fill contents of render stream 
      * 
@@ -38,7 +48,7 @@ namespace Editor{
      * Text that will display when the editor opens a file
      * @param filename
      */
-    void OpenFile(char* filename);
+    int OpenFile(char* filename);
 
     /**
      * Take key input from user and move cursor accordingly 

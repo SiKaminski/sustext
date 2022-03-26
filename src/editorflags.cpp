@@ -14,7 +14,7 @@ SusFlags::~SusFlags(){
 int SusFlags::SetFlags(){
     int status = 1;
 
-	int opt;
+    int opt;
     while((opt = getopt(argc, argv, ":f:srw")) != EOF){
         switch(opt){
             case 'f':
@@ -25,14 +25,14 @@ int SusFlags::SetFlags(){
                 fprintf(stderr, "SUSSY!!!\n");
                 activeFlags |= MODE_SUS;
                 break;
-			case 'r':
-				fprintf(stdout, "Opening in read mode");
+            case 'r':
+                fprintf(stdout, "Opening in read mode");
                 activeFlags |= MODE_READ;
-				break;
-			case 'w':
-				fprintf(stdout, "Opening in write mode");
+                break;
+            case 'w':
+                fprintf(stdout, "Opening in write mode");
                 activeFlags |= MODE_WRITE;
-				break;
+                break;
             case ':':
                 fprintf(stderr, "Option needs a value\n");
                 break;

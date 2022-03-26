@@ -13,7 +13,7 @@ typedef struct erow{
 }erow;
 
 struct editorConfig{
-	int 	cx, cy;
+	int 	cx, cy, rx;
 	int 	rowOff;
 	int 	colOff;
 	int 	screenRows;

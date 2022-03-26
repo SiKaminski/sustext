@@ -3,16 +3,26 @@
 /*---- INITIALIZATION ----*/
 void Editor::Init(){
 	/* Set default values for the global editorConfig struct */
-	E.cx = 0;
-	E.cy = 0;
-	E.rowOff = 0; // Scroll to the top of the file by default
-	E.colOff = 0; // Scroll cursor to the left of the screen by default 
+	E.cx, E.cy, E.rx = 0;
+	E.rowOff, E.colOff, E.numrows = 0; // Scroll to the top left of the screen by default 
 	E.numrows = 0;
 	E.row = new erow{0,NULL};
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
 }
 
 /*---- ROW OPERATIONS ----*/
+int Editor::RowCxToRx(erow* row, int cx){
+	int rx = 0;
+	for(int i = 0; i < cx; i++){
+		// Check to see how many columns to the left of the next tab the cursor is
+		if(row->chars[i] == '\t')
+			rx += (SUSTEXT_TAB_STOP - 1) - (rx % SUSTEXT_TAB_STOP);
+		rx++;
+	}
+
+	return rx;
+}
+
 void Editor::UpdateRow(erow* row){
 	int tabs = 0;
 	for(int j = 0; j < row->size; j++){
@@ -87,9 +97,14 @@ void Editor::MoveCursor(int key){
 	if(E.cx > rowlen){ E.cx = rowlen; }
 }
 
-void Editor::OpenFile(char* filename){
+/* TODO
+
+This method will change with different opening
+modes (sus, read, write, etc...)
+*/
+int Editor::OpenFile(char* filename){
 	//Open a file in read mode
-	FILE* fp = fopen(filename, "r");
+	FILE* fp = fopen(filename, "r"); 		// This line will eventually change
 	if(!fp) Terminal::die("fopen");
 
 	char* line = NULL;
@@ -110,6 +125,8 @@ void Editor::OpenFile(char* filename){
 	//Deallocate memory from line and close file connection
 	free(line);
 	fclose(fp);
+
+	return 1;
 }
 
 void Editor::ProcessKeypress(){
@@ -128,18 +145,20 @@ void Editor::ProcessKeypress(){
 			break;
 
 		case HOME_KEY:
-		case END_KEY:
-			{	
-				int times = E.screenCols;
-				while(times--) MoveCursor(c == HOME_KEY ? ARROW_LEFT : ARROW_RIGHT);
-			}
+			E.cx = 0;
+			break;
+		case END_KEY:	
+			if(E.cx < E.numrows)
+				E.cx = E.row[E.cy].size;
 			break;
 
 	    case PAGE_UP:
 		case PAGE_DOWN:
-			{
-				int times = E.screenRows;
-				while(times--) MoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+			if(c == PAGE_UP){
+				E.cy = E.rowOff;
+			} else if (c == PAGE_DOWN){
+				E.cy = E.rowOff + E.screenRows - 1;
+				if(E.cy > E.numrows) E.cy = E.numrows;
 			}
 			break;
 
@@ -154,17 +173,21 @@ void Editor::ProcessKeypress(){
 
 /*---- OUTPUT ----*/
 void Editor::Scroll(){
+	E.rx = 0;
+	if(E.cy < E.numrows){
+		E.rx = RowCxToRx(&E.row[E.cy], E.cx);
+	}
 	if(E.cy < E.rowOff){
 		E.rowOff = E.cy;
 	}
 	if(E.cy >= E.rowOff + E.screenRows){
 		E.rowOff = E.cy - E.screenRows + 1;
 	}
-	if(E.cx < E.colOff){
-		E.colOff = E.cx;
+	if(E.rx < E.colOff){
+		E.colOff = E.rx;
 	}
-	if(E.cx >= E.colOff + E.screenCols){
-		E.colOff = E.cx - E.screenCols + 1;
+	if(E.rx >= E.colOff + E.screenCols){
+		E.colOff = E.rx - E.screenCols + 1;
 
 	}
 }
@@ -219,7 +242,7 @@ void Editor::RefreshScreen(){
 	DrawRows(&ab);
 
 	char buf[32];
-	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, (E.cx - E.colOff) + 1);
+	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, (E.rx - E.colOff) + 1);
 	abAppend(&ab, buf, strlen(buf));
 
 	abAppend(&ab, "\x1b[?25h", 6);
