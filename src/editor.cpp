@@ -9,6 +9,7 @@ void Editor::Init(){
 	E.filepath = NULL;
 	E.statusmsg[0] = '\0';
 	E.statusmsg_time = 0;
+	E.dirty = 0;
 
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
 	E.screenRows -= 2; //Account for status bar sapce so it won't be drawn over
@@ -49,10 +50,11 @@ void Editor::UpdateRow(erow* row){
 	row->rsize = i;
 }
 
-void Editor::AppendRow(char* s, size_t len){
+void Editor::InsertRow(int at, char* s, size_t len){
+	if(at < 0 || at > E.numrows) return;
 	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
+	memmove(&E.row[at + 1], &E.row[at], sizeof(erow) * (E.numrows - at));
 
-	int at = E.numrows;
 	E.row[at].size = len;
 	E.row[at].chars = (char*)malloc(len+1);
 
@@ -65,6 +67,22 @@ void Editor::AppendRow(char* s, size_t len){
 	UpdateRow(&E.row[at]);
 
 	E.numrows++;
+	E.dirty++;
+}
+
+void Editor::InsertNewLine(){
+	if(E.cx == 0) InsertRow(E.cy, "", 0);
+	else{
+		erow* row = &E.row[E.cy];
+		InsertRow(E.cy + 1, &row->chars[E.cx], row->size - E.cx);
+		row = &E.row[E.cy];
+		row->size = E.cx;
+		row->chars[row->size] = '\0';
+		UpdateRow(row);
+	}
+
+	E.cy++;
+	E.cx = 0;
 }
 
 void Editor::RowInsertChar(erow* row, int at, int c){
@@ -74,15 +92,97 @@ void Editor::RowInsertChar(erow* row, int at, int c){
     row->size++;
     row->chars[at] = c;
     UpdateRow(row);
+	E.dirty++;
+}
+
+void Editor::RowDeleteChar(erow* row, int at){
+	if(at < 0 || at >= row->size) return;
+	memmove(&row->chars[at], &row->chars[at + 1], row->size - at);
+	row->size--;
+	UpdateRow(row);
+	E.dirty;
 }
 
 void Editor::InsertChar(int c){
 	if(E.cy == E.numrows){
-		AppendRow("", 0);
+		InsertRow(E.numrows, "", 0);
 	}
 	RowInsertChar(&E.row[E.cy], E.cx, c);
 	E.cx++;
 }
+
+void Editor::DeleteChar(){
+	if(E.cy == E.numrows) return;
+	if(E.cx == 0 && E.cy == 0) return;
+
+	erow* row = &E.row[E.cy];
+	if(E.cx > 0){
+		RowDeleteChar(row, E.cx - 1);
+		E.cx--;
+	} else {
+		E.cx = E.row[E.cy - 1].size;
+		RowAppendString(&E.row[E.cy - 1], row->chars, row->size);
+		DeleteRow(E.cy);
+		E.cy--;
+	}
+}
+
+void Editor::FreeRow(erow* row){
+	free(row->render);
+	free(row->chars);
+}
+
+void Editor::DeleteRow(int at){
+	if(at < 0 || at >= E.numrows) return;
+	FreeRow(&E.row[at]);
+	memmove(&E.row[at], &E.row[at + 1], sizeof(erow) * (E.numrows - at - 1));
+	E.numrows--;
+	E.dirty++;
+}
+
+void Editor::RowAppendString(erow* row, char* str, size_t len){
+	row->chars = (char*)realloc(row->chars, row->size + len + 1);
+	memcpy(&row->chars[row->size], str, len);
+	row->size += len;
+	row->chars[row->size] = '\0';
+	UpdateRow(row);
+	E.dirty++;
+}
+
+char* Editor::Prompt(char* prompt){
+	size_t bufsize = 128;
+	char* buf = (char*)malloc(bufsize);
+
+	size_t buflen = 0;
+	buf[0] = '\0';
+
+	while(1){
+		SetStatusMessage(prompt, buf);
+		RefreshScreen();
+
+		int c = Terminal::editorReadKey();
+		if(c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE){
+			if(buflen != 0) buf[--buflen] = '\0';
+		} else if(c == '\x1b'){
+			SetStatusMessage("");
+			free(buf);
+			return NULL;
+		} else if(c == '\r'){
+			if(buflen != 0){
+				SetStatusMessage("");
+				return buf;
+			}
+		} else if(!iscntrl(c) && c < 128){
+			if(buflen == bufsize - 1){
+				bufsize *= 2;
+				buf = (char*)realloc(buf, bufsize);
+			}
+			buf[buflen++] = c; 
+			buf[buflen] = '\0';
+		}
+	}
+}
+
 /*---- INPUT ----*/
 void Editor::MoveCursor(int key){
 	//Prevent cursor from going past the size of the screen not the file
@@ -139,24 +239,83 @@ int Editor::OpenFile(char* filename){
 		while(linelen > 0 && (line[linelen - 1] == '\n' ||
 		line[linelen - 1] == '\r'))
 			linelen--;
-		AppendRow(line, linelen);
+		InsertRow(E.numrows, line, linelen);
 	}
 	//Deallocate memory from line and close file connection
 	free(line);
 	fclose(fp);
+	E.dirty = 0;
 
 	return 1;
 }
 
+void Editor::SaveFile(){
+   	if(E.filepath == NULL){
+		E.filepath = Prompt("Save as: %s (ESC to cancel)");
+		if(E.filepath == NULL){
+			SetStatusMessage("Save Aborted");
+			return;
+		}
+	}
+
+	int len;
+    char* buf = RowToString(&len);
+
+    // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
+    // the file will only be able to read it
+	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
+    if(fd != -1){
+		if(ftruncate(fd, len) != -1){
+   			if(write(fd, buf, len) == len){
+ 	  		 	close(fd);
+ 	  		 	free(buf);
+				E.dirty = 0;
+				SetStatusMessage("[%d] bytes written to disk", len);
+				return;
+			}
+		}
+		close(fd);
+	}
+	free(buf);
+	SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
+}
+
+char* Editor::RowToString(int* buflen){
+    int totalLen = 0;
+    for(int i = 0; i < E.numrows; i++)
+        totalLen += E.row[i].size + 1;
+    *buflen = totalLen;
+
+    char* buf = (char*)malloc(totalLen);
+    char* ptr = buf;
+
+    for(int i = 0; i < E.numrows; i++){
+        memcpy(ptr, E.row[i].chars, E.row[i].size);
+        ptr += E.row[i].size;
+        *ptr = '\n';
+        ptr++;
+    }
+
+    fprintf(stderr, "buf out: %s\n", (char*)buf);
+    return buf;
+}
+
 void Editor::ProcessKeypress(){
+	static int quit_times = SUSTEXT_QUIT_TIMES;
 	int c = Terminal::editorReadKey();
 
 	// Bane of my existance
 	switch(c){
 		case '\r':
-			//
+			InsertNewLine();
 			break;
 		case CTRL_KEY('q'):
+			if(E.dirty && quit_times > 0){
+				SetStatusMessage("File has unsaved changes. "
+				"Press Ctrl-Q %d more time(s) to confirm.", quit_times);
+				quit_times--;
+				return;
+			}
 
 			//[2J will erase all of the diaply without moving the cursor position
 			write(STDOUT_FILENO, "\x1b[2J", 4);
@@ -165,6 +324,10 @@ void Editor::ProcessKeypress(){
 			write(STDOUT_FILENO, "\x1b[H", 3);
 			exit(0);
 			break;
+
+		case CTRL_KEY('s'):
+			SaveFile();
+			return;
 
 		case HOME_KEY:
 			E.cx = 0;
@@ -177,7 +340,8 @@ void Editor::ProcessKeypress(){
 		case BACKSPACE:
 		case CTRL_KEY('h'):
 		case DEL_KEY:
-			//
+			if(c == DEL_KEY) MoveCursor(ARROW_RIGHT);
+			DeleteChar();
 			break;
 
 	    case PAGE_UP:
@@ -205,6 +369,7 @@ void Editor::ProcessKeypress(){
 			InsertChar(c);
 			break;
 	}
+	quit_times = SUSTEXT_QUIT_TIMES;
 }
 
 /*---- OUTPUT ----*/
@@ -270,8 +435,9 @@ void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 void Editor::DrawStatusBar(struct AppendBuffer::abuf* ab){
 	AppendBuffer::abAppend(ab, "\x1b[7m", 4);
 	char status[80], rstatus[80];
-	int len = snprintf(status, sizeof(status), "%.20s - %d lines",
-		E.filepath ? E.filepath : "[No Name]", E.numrows);
+	int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
+		E.filepath ? E.filepath : "[No Name]", E.numrows,
+		E.dirty ? "(modified)" : "");
 	int rlen = snprintf(rstatus, sizeof(rstatus), "%d:%d,%d",
 		E.cy + 1, E.rx + 1, E.numrows);
 	if(len > E.screenCols) len = E.screenCols;

@@ -20,6 +20,7 @@ struct editorConfig{
 	int 	screenCols;
 	int 	numrows;
 	erow* 	row;
+	int 	dirty;
 	char* 	filepath;
 	char	statusmsg[80];
 	time_t 	statusmsg_time;
@@ -27,4 +28,5 @@ struct editorConfig{
 };
 
 static editorConfig E;
+
 #endif // __DATA_HPP

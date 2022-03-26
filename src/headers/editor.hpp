@@ -39,12 +39,25 @@ namespace Editor{
      * @param s (char*) characters in the row
      * @param len (size_t) size of the row
      */
-    void AppendRow(char* s, size_t len);
+    void InsertRow(int at, char* s, size_t len);
+
+    void InsertNewLine();
 
     void RowInsertChar(erow* row, int at, int c);
 
+    void RowDeleteChar(erow* row, int at);
+    
     void InsertChar(int c);
 
+    void DeleteChar();
+
+    void FreeRow(erow* row);
+
+    void DeleteRow(int at);
+
+    void RowAppendString(erow* row, char* str, size_t len);
+
+    char* Prompt(char* prompt);
 
     /*---- INPUTS ----*/
 
@@ -53,6 +66,10 @@ namespace Editor{
      * @param filename
      */
     int OpenFile(char* filename);
+
+    void SaveFile();
+
+    char* RowToString(int* buflen);
 
     /**
      * Take key input from user and move cursor accordingly 
