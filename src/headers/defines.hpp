@@ -27,13 +27,14 @@
 #include <stdarg.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v0.9.0-Alpha"
+#define SUSTEXT_VERSION "v1.0.0"
 #define SUSTEXT_TAB_STOP 8
 
 #define FLAGS_INIT {false, false}
 #define ARGS_INIT {nullptr}
 
 enum editorKey{
+	BACKSPACE = 127,
 	ARROW_LEFT = 1000,
 	ARROW_RIGHT,
 	ARROW_UP,

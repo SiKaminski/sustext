@@ -15,7 +15,7 @@ int SusFlags::SetFlags(){
     int status = 1;
 
     int opt;
-    while((opt = getopt(argc, argv, ":f:srw")) != EOF){
+    while((opt = getopt(argc, argv, ":f:srwj")) != EOF){
         switch(opt){
             case 'f':
                 argout.filepath = optarg;

@@ -67,6 +67,22 @@ void Editor::AppendRow(char* s, size_t len){
 	E.numrows++;
 }
 
+void Editor::RowInsertChar(erow* row, int at, int c){
+    if(at < 0 || at > row->size) at = row->size;
+	row->chars = (char*)realloc(row->chars, row->size + 2);
+    memmove(&row->chars[at + 1], &row->chars[at], row->size - at + 1);
+    row->size++;
+    row->chars[at] = c;
+    UpdateRow(row);
+}
+
+void Editor::InsertChar(int c){
+	if(E.cy == E.numrows){
+		AppendRow("", 0);
+	}
+	RowInsertChar(&E.row[E.cy], E.cx, c);
+	E.cx++;
+}
 /*---- INPUT ----*/
 void Editor::MoveCursor(int key){
 	//Prevent cursor from going past the size of the screen not the file
@@ -117,9 +133,6 @@ int Editor::OpenFile(char* filename){
 	size_t linecap = 0;
 	ssize_t linelen;
 
-	//Get the line at index 0 of the file
-	linelen = getline(&line, &linecap, fp);
-
 	//Get the length of the line from the file
 	while((linelen = getline(&line, &linecap, fp)) != -1){
 		//stop if the escape sequence for new line or return carriage is next
@@ -140,6 +153,9 @@ void Editor::ProcessKeypress(){
 
 	// Bane of my existance
 	switch(c){
+		case '\r':
+			//
+			break;
 		case CTRL_KEY('q'):
 
 			//[2J will erase all of the diaply without moving the cursor position
@@ -158,6 +174,12 @@ void Editor::ProcessKeypress(){
 				E.cx = E.row[E.cy].size;
 			break;
 
+		case BACKSPACE:
+		case CTRL_KEY('h'):
+		case DEL_KEY:
+			//
+			break;
+
 	    case PAGE_UP:
 		case PAGE_DOWN:
 			if(c == PAGE_UP){
@@ -173,6 +195,14 @@ void Editor::ProcessKeypress(){
 		case ARROW_LEFT:
 		case ARROW_RIGHT:
 			MoveCursor(c);
+			break;
+		
+		case CTRL_KEY('l'):
+		case '\x1b':
+			break;
+
+		default:
+			InsertChar(c);
 			break;
 	}
 }
@@ -242,8 +272,8 @@ void Editor::DrawStatusBar(struct AppendBuffer::abuf* ab){
 	char status[80], rstatus[80];
 	int len = snprintf(status, sizeof(status), "%.20s - %d lines",
 		E.filepath ? E.filepath : "[No Name]", E.numrows);
-	int rlen = snprintf(rstatus, sizeof(rstatus), "%d,%d",
-		E.cy + 1, E.numrows);
+	int rlen = snprintf(rstatus, sizeof(rstatus), "%d:%d,%d",
+		E.cy + 1, E.rx + 1, E.numrows);
 	if(len > E.screenCols) len = E.screenCols;
 	
 	AppendBuffer::abAppend(ab, status, len);

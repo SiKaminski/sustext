@@ -49,7 +49,7 @@ More info about different commands in the editor found in [Editor Commands](#edi
 ## TODO
 
 - [ ] Add input from the user
-  - [ ] Simple Typing
+  - [X] Simple Typing
   - [ ] Keybinds (vim like)
 - [ ] Resize the row count if the terminal window is resized (dynmaic sizing)
 - [ ] different highlighting modes in viewer

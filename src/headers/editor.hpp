@@ -41,6 +41,10 @@ namespace Editor{
      */
     void AppendRow(char* s, size_t len);
 
+    void RowInsertChar(erow* row, int at, int c);
+
+    void InsertChar(int c);
+
 
     /*---- INPUTS ----*/
 
