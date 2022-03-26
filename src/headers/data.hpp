@@ -21,14 +21,5 @@ struct editorConfig{
 	struct termios orig_termios;
 };
 
-struct SustextCmdFlags{
-	bool 	fileIn;
-	bool 	susmode;
-};
-
-struct SustextArgOutputs{
-	char* 	filepath;
-};
-
 static editorConfig E;
 #endif // __DATA_HPP
