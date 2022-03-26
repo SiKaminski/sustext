@@ -76,9 +76,20 @@ namespace Editor{
 	void DrawRows(struct AppendBuffer::abuf* ab);
 
     /**
+     * Display status bar at the bottom of the screen 
+     * @param ab 
+     */
+    void DrawStatusBar(struct AppendBuffer::abuf* ab);
+
+
+    void DrawMessageBar(struct AppendBuffer::abuf* ab);
+
+    /**
      * Update the screen buffer 
      */
-	void RefreshScreen();	
+	void RefreshScreen();
+
+    void SetStatusMessage(const char* fmt...);	
 }
 
 #endif // __IO_HPP

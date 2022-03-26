@@ -20,6 +20,8 @@ int main(int argc, char** argv){
 			if(!Editor::OpenFile(sFlags.argout.filepath));
 	}
 
+	Editor::SetStatusMessage("HELP: Ctrl-q = quit");
+
 	while(1){
 		Editor::RefreshScreen();
 		Editor::ProcessKeypress();

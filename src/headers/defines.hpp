@@ -23,9 +23,11 @@
 #include <unistd.h>
 #include <termios.h>
 #include <sys/types.h>
+#include <time.h>
+#include <stdarg.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v0.7.0-Alpha"
+#define SUSTEXT_VERSION "v0.9.0-Alpha"
 #define SUSTEXT_TAB_STOP 8
 
 #define FLAGS_INIT {false, false}

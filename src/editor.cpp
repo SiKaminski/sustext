@@ -5,9 +5,13 @@ void Editor::Init(){
 	/* Set default values for the global editorConfig struct */
 	E.cx, E.cy, E.rx = 0;
 	E.rowOff, E.colOff, E.numrows = 0; // Scroll to the top left of the screen by default 
-	E.numrows = 0;
 	E.row = new erow{0,NULL};
+	E.filepath = NULL;
+	E.statusmsg[0] = '\0';
+	E.statusmsg_time = 0;
+
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
+	E.screenRows -= 2; //Account for status bar sapce so it won't be drawn over
 }
 
 /*---- ROW OPERATIONS ----*/
@@ -104,6 +108,8 @@ modes (sus, read, write, etc...)
 */
 int Editor::OpenFile(char* filename){
 	//Open a file in read mode
+	free(E.filepath);
+	E.filepath = strdup(filename);
 	FILE* fp = fopen(filename, "r"); 		// This line will eventually change
 	if(!fp) Terminal::die("fopen");
 
@@ -227,8 +233,39 @@ void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 		abAppend(ab, "\x1b[K", 3);
 
 		// Account for the last row
-		if (y < E.screenRows - 1) { abAppend(ab, "\r\n", 2); }
+		abAppend(ab, "\r\n", 2);
 	}
+}
+
+void Editor::DrawStatusBar(struct AppendBuffer::abuf* ab){
+	AppendBuffer::abAppend(ab, "\x1b[7m", 4);
+	char status[80], rstatus[80];
+	int len = snprintf(status, sizeof(status), "%.20s - %d lines",
+		E.filepath ? E.filepath : "[No Name]", E.numrows);
+	int rlen = snprintf(rstatus, sizeof(rstatus), "%d,%d",
+		E.cy + 1, E.numrows);
+	if(len > E.screenCols) len = E.screenCols;
+	
+	AppendBuffer::abAppend(ab, status, len);
+	while(len < E.screenCols){
+		if(E.screenCols - len == rlen){
+			AppendBuffer::abAppend(ab, rstatus, rlen);
+			break;
+		} else {
+			AppendBuffer::abAppend(ab, " ", 1);
+			len++;
+		}
+	}
+	AppendBuffer::abAppend(ab, "\x1b[m", 3);
+	AppendBuffer::abAppend(ab, "\r\n", 2);
+}
+
+void Editor::DrawMessageBar(AppendBuffer::abuf* ab){
+	AppendBuffer::abAppend(ab, "\x1b[K", 3);
+	int msglen = strlen(E.statusmsg);
+	if(msglen > E.screenCols) msglen = E.screenCols;
+	if(msglen && time(NULL) - E.statusmsg_time < 5)
+		AppendBuffer::abAppend(ab, E.statusmsg, msglen);
 }
 
 void Editor::RefreshScreen(){
@@ -240,6 +277,8 @@ void Editor::RefreshScreen(){
 	abAppend(&ab, "\x1b[H", 3);
 
 	DrawRows(&ab);
+	DrawStatusBar(&ab);
+	DrawMessageBar(&ab);
 
 	char buf[32];
 	snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E.cy - E.rowOff) + 1, (E.rx - E.colOff) + 1);
@@ -250,3 +289,11 @@ void Editor::RefreshScreen(){
 	write(STDOUT_FILENO, ab.b, ab.len);
 	abFree(&ab);
 }
+    
+void Editor::SetStatusMessage(const char* fmt...){
+	va_list ap;
+	va_start(ap, fmt);
+	vsnprintf(E.statusmsg, sizeof(E.statusmsg), fmt, ap);
+	va_end(ap);
+	E.statusmsg_time = time(NULL);
+}	

@@ -20,6 +20,9 @@ struct editorConfig{
 	int 	screenCols;
 	int 	numrows;
 	erow* 	row;
+	char* 	filepath;
+	char	statusmsg[80];
+	time_t 	statusmsg_time;
 	struct termios orig_termios;
 };
 
