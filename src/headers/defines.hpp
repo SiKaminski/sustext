@@ -25,7 +25,8 @@
 #include <sys/types.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v0.6.1-Alpha"
+#define SUSTEXT_VERSION "v0.7.0-Alpha"
+#define SUSTEXT_TAB_STOP 8
 
 #define FLAGS_INIT {false, false}
 #define ARGS_INIT {nullptr}

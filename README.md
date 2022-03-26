@@ -15,8 +15,6 @@ Text editor made in C++ ran in the linux terminal.
 The escape sequences are based off VT100 Terminals which can be clearly
 seen in the source files of IO and Terminal
 
-
-
 ## Pre requisites 
 g++ compiler
 
@@ -48,11 +46,11 @@ More info about different commands in the editor found in [Editor Commands](#edi
 - Basic key bindings for control
 
 ## TODO
+
 - [ ] Add input from the user
   - [ ] Simple Typing
   - [ ] Keybinds (vim like)
-- [ ] Resize the row count if the terminal window is resized (dynaic sizing)
-- [X] Add command flags when opening the editor in shell
+- [ ] Resize the row count if the terminal window is resized (dynmaic sizing)
 - [ ] different highlighting modes in viewer
 - [ ] different modes of opening (viewer, editor, etc...)
 - [ ] syntax highlighting??

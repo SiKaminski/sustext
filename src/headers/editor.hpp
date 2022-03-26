@@ -17,6 +17,13 @@ namespace Editor{
     /*---- ROW OPERATIONS ----*/
     
     /**
+     * fill contents of render stream 
+     * 
+     * @param erow 
+     */
+    void UpdateRow(erow* row);
+
+    /**
      * Append a new row onto the editor screen 
      * 
      * @param s (char*) characters in the row

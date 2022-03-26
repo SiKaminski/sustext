@@ -13,6 +13,28 @@ void Editor::Init(){
 }
 
 /*---- ROW OPERATIONS ----*/
+void Editor::UpdateRow(erow* row){
+	int tabs = 0;
+	for(int j = 0; j < row->size; j++){
+		if(row->chars[j] == '\t') tabs++;
+	}
+
+	free(row->render);
+	row->render = (char*)malloc(row->size + tabs*(SUSTEXT_TAB_STOP - 1) + 1);
+
+	int i = 0;
+	for(int j = 0; j < row->size; j++){
+		if(row->chars[j] == '\t'){
+			row->render[i++] = ' ';
+			while(i % SUSTEXT_TAB_STOP != 0) row->render[i++] = ' ';
+		} else {
+			row->render[i++] = row->chars[j];
+		}
+	}
+	row->render[i] = '\0';
+	row->rsize = i;
+}
+
 void Editor::AppendRow(char* s, size_t len){
 	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
 
@@ -22,6 +44,12 @@ void Editor::AppendRow(char* s, size_t len){
 
 	memcpy(E.row[at].chars, s, len);
 	E.row[at].chars[len] = '\0';
+
+	// Initialize render for buffer
+	E.row[at].rsize = 0;
+	E.row[at].render = NULL;
+	UpdateRow(&E.row[at]);
+
 	E.numrows++;
 }
 
@@ -33,9 +61,17 @@ void Editor::MoveCursor(int key){
 	switch(key){
 		case ARROW_LEFT:
 			if(E.cx != 0) E.cx--;
+			else if(E.cy > 0){
+				E.cy--;
+				E.cx = E.row[E.cy].size;
+			}
 			break;
 		case ARROW_RIGHT:
 			if(row && E.cx < row->size) E.cx++;
+			else if(row && E.cx == row->size){
+				E.cy++;
+				E.cx = 0;
+			}
 			break;
 		case ARROW_UP:
 			if(E.cy != 0) E.cy--;
@@ -44,6 +80,11 @@ void Editor::MoveCursor(int key){
 			if(E.cy < E.numrows) E.cy++;
 			break;
 	}
+
+	// Cursor snap to end of line
+	row = (E.cy >= E.numrows) ? NULL : &E.row[E.cy];
+	int rowlen = row ? row->size : 0;
+	if(E.cx > rowlen){ E.cx = rowlen; }
 }
 
 void Editor::OpenFile(char* filename){
@@ -89,8 +130,6 @@ void Editor::ProcessKeypress(){
 		case HOME_KEY:
 		case END_KEY:
 			{	
-				//Once horizontal scrolling is enabled, this will be relative to the columns
-				//visible on the screen
 				int times = E.screenCols;
 				while(times--) MoveCursor(c == HOME_KEY ? ARROW_LEFT : ARROW_RIGHT);
 			}
@@ -99,8 +138,6 @@ void Editor::ProcessKeypress(){
 	    case PAGE_UP:
 		case PAGE_DOWN:
 			{
-				//Once Scrolling is enabled, This will have to be relative to the amount of
-				//Rows visible on the screen
 				int times = E.screenRows;
 				while(times--) MoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
 			}
@@ -155,11 +192,11 @@ void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 			  abAppend(ab, welcome, welcomelen);
 			} else { abAppend(ab, "~", 1); }
 		} else {
-			int len = E.row[filerow].size - E.colOff;
+			int len = E.row[filerow].rsize - E.colOff;
 			// Prevent the length for being a negative number
 			if(len < 0) len = 0;
 			if(len > E.screenCols) len = E.screenCols;
-			AppendBuffer::abAppend(ab, E.row[filerow].chars, len);
+			AppendBuffer::abAppend(ab, &E.row[filerow].render[E.colOff], len);
 		}
 
 		// Since everything for the row is appended to the buffer everything 
