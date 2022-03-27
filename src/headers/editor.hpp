@@ -25,6 +25,15 @@ namespace Editor{
      * @return int (rx)
      */
     int RowCxToRx(erow* row, int cx);
+    
+    /**
+     * Display a prompt to the user on the bottom portion
+     * of the status bar 
+     * 
+     * @param prompt 
+     * @return char* 
+     */
+    char* Prompt(char* prompt);
 
     /**
      * fill contents of render stream 
@@ -41,35 +50,76 @@ namespace Editor{
      */
     void InsertRow(int at, char* s, size_t len);
 
-    void InsertNewLine();
-
+    /**
+     * Update the current row with an inputted char value 
+     * 
+     * @param row (erow*)
+     * @param at position of row to insert char into
+     * @param c char to input to row
+     */
     void RowInsertChar(erow* row, int at, int c);
 
-    void RowDeleteChar(erow* row, int at);
-    
+    /**
+     * Similar to RowInsertChar but instead there is only the
+     * input of the char to add to the current row the cursor
+     * is on 
+     * 
+     * @param c char to insert
+     */
     void InsertChar(int c);
-
-    void DeleteChar();
-
-    void FreeRow(erow* row);
-
-    void DeleteRow(int at);
-
-    void RowAppendString(erow* row, char* str, size_t len);
-
-    char* Prompt(char* prompt);
-
-    /*---- INPUTS ----*/
+    
+    /**
+     * Depending on where the cursor is when the enter key
+     * is pressed, handle created a new line preserving
+     * the row above or splitting it to a new line depending
+     * where the cursor was placed 
+     */
+    void InsertNewLine();
 
     /**
-     * Text that will display when the editor opens a file
-     * @param filename
+     * Similar to RowInsertChar but instead you can feed a 
+     * string value to be inserted into the row as a char* 
+     * 
+     * @param row
+     * @param str 
+     * @param len  
      */
-    int OpenFile(char* filename);
+    void RowAppendString(erow* row, char* str, size_t len);
+    
 
-    void SaveFile();
+    /**
+     * Delete a row from the file while preserving the row
+     * contents above and below 
+     * 
+     * @param at row position to remove
+     */
+    void DeleteRow(int at);
+    
+    /**
+     * Remove single character from row 
+     * 
+     * @param row 
+     * @param at where in the row to remove char
+     */
+    void RowDeleteChar(erow* row, int at);
+    
+    /**
+     * remove the char from the end of a row
+     * (handy for backspace) 
+     */
+    void DeleteChar();
+    
 
-    char* RowToString(int* buflen);
+    /**
+     * clear row from memory 
+     * 
+     * @param row 
+     */
+    void FreeRow(erow* row);
+
+
+
+    /*---- INPUTS ----*/
 
     /**
      * Take key input from user and move cursor accordingly 
@@ -82,6 +132,28 @@ namespace Editor{
      * what function to do
      */
     void ProcessKeypress();
+
+    /*---- FILE I/O ----*/
+
+    /**
+     * Text that will display when the editor opens a file
+     * @param filename
+     */
+    int OpenFile(char* filename);
+
+    /**
+     * save the currently opened file to disk 
+     */
+    void SaveFile();
+
+    /**
+     * Convert the contents stored in a row to a string 
+     * 
+     * @param buflen 
+     * @return char* 
+     */
+    char* RowToString(int* buflen);
+
 
     /*---- OUTPUTS ----*/
 
@@ -102,7 +174,13 @@ namespace Editor{
      */
     void DrawStatusBar(struct AppendBuffer::abuf* ab);
 
-
+    /**
+     * Display for information the user may need to see
+     * if there is further information of an action
+     * (close unsaved file, exit program, etc...) 
+     * 
+     * @param ab 
+     */
     void DrawMessageBar(struct AppendBuffer::abuf* ab);
 
     /**
@@ -110,6 +188,11 @@ namespace Editor{
      */
 	void RefreshScreen();
 
+    /**
+     * Set the Status Message with a formatted string
+     * 
+     * @param fmt 
+     */
     void SetStatusMessage(const char* fmt...);	
 }
 

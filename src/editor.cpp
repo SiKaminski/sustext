@@ -3,9 +3,13 @@
 /*---- INITIALIZATION ----*/
 void Editor::Init(){
 	/* Set default values for the global editorConfig struct */
-	E.cx, E.cy, E.rx = 0;
-	E.rowOff, E.colOff, E.numrows = 0; // Scroll to the top left of the screen by default 
-	E.row = new erow{0,NULL};
+	E.cx = 0;
+	E.cy = 0;
+	E.rx = 0;
+	E.rowOff = 0;
+	E.colOff = 0;
+	E.numrows = 0;
+	E.row = new erow{0, 0, NULL, NULL};
 	E.filepath = NULL;
 	E.statusmsg[0] = '\0';
 	E.statusmsg_time = 0;
@@ -24,8 +28,44 @@ int Editor::RowCxToRx(erow* row, int cx){
 			rx += (SUSTEXT_TAB_STOP - 1) - (rx % SUSTEXT_TAB_STOP);
 		rx++;
 	}
-
+	
 	return rx;
+}
+
+char* Editor::Prompt(char* prompt){
+	size_t bufsize = 128;
+	char* buf = (char*)malloc(bufsize);
+
+	size_t buflen = 0;
+	buf[0] = '\0';
+
+	while(1){
+		SetStatusMessage(prompt, buf);
+		RefreshScreen();
+
+		int c = Terminal::editorReadKey();
+
+		//Check if user is removing a character
+		if(c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE){
+			if(buflen != 0) buf[--buflen] = '\0';
+		} else if(c == '\x1b') {
+			SetStatusMessage("");
+			free(buf);
+			return NULL;
+		} else if(c == '\r') {
+			if(buflen != 0){
+				SetStatusMessage("");
+				return buf;
+			}
+		} else if(!iscntrl(c) && c < 128) {
+			if(buflen == bufsize - 1){
+				bufsize *= 2;
+				buf = (char*)realloc(buf, bufsize);
+			}
+			buf[buflen++] = c; 
+			buf[buflen] = '\0';
+		}
+	}
 }
 
 void Editor::UpdateRow(erow* row){
@@ -42,9 +82,8 @@ void Editor::UpdateRow(erow* row){
 		if(row->chars[j] == '\t'){
 			row->render[i++] = ' ';
 			while(i % SUSTEXT_TAB_STOP != 0) row->render[i++] = ' ';
-		} else {
-			row->render[i++] = row->chars[j];
-		}
+		} 
+		else row->render[i++] = row->chars[j];
 	}
 	row->render[i] = '\0';
 	row->rsize = i;
@@ -70,9 +109,25 @@ void Editor::InsertRow(int at, char* s, size_t len){
 	E.dirty++;
 }
 
+void Editor::RowInsertChar(erow* row, int at, int c){
+    if(at < 0 || at > row->size) at = row->size;
+	row->chars = (char*)realloc(row->chars, row->size + 2);
+    memmove(&row->chars[at + 1], &row->chars[at], row->size - at + 1);
+    row->size++;
+    row->chars[at] = c;
+    UpdateRow(row);
+	E.dirty++;
+}
+
+void Editor::InsertChar(int c){
+	if(E.cy == E.numrows) InsertRow(E.numrows, (char*)"", 0);
+	RowInsertChar(&E.row[E.cy], E.cx, c);
+	E.cx++;
+}
+
 void Editor::InsertNewLine(){
-	if(E.cx == 0) InsertRow(E.cy, "", 0);
-	else{
+	if(E.cx == 0) InsertRow(E.cy, (char*)"", 0);
+	else {
 		erow* row = &E.row[E.cy];
 		InsertRow(E.cy + 1, &row->chars[E.cx], row->size - E.cx);
 		row = &E.row[E.cy];
@@ -85,13 +140,21 @@ void Editor::InsertNewLine(){
 	E.cx = 0;
 }
 
-void Editor::RowInsertChar(erow* row, int at, int c){
-    if(at < 0 || at > row->size) at = row->size;
-	row->chars = (char*)realloc(row->chars, row->size + 2);
-    memmove(&row->chars[at + 1], &row->chars[at], row->size - at + 1);
-    row->size++;
-    row->chars[at] = c;
-    UpdateRow(row);
+void Editor::RowAppendString(erow* row, char* str, size_t len){
+	row->chars = (char*)realloc(row->chars, row->size + len + 1);
+	memcpy(&row->chars[row->size], str, len);
+	row->size += len;
+	row->chars[row->size] = '\0';
+	UpdateRow(row);
+	E.dirty++;
+}
+
+
+void Editor::DeleteRow(int at){
+	if(at < 0 || at >= E.numrows) return;
+	FreeRow(&E.row[at]);
+	memmove(&E.row[at], &E.row[at + 1], sizeof(erow) * (E.numrows - at - 1));
+	E.numrows--;
 	E.dirty++;
 }
 
@@ -100,15 +163,7 @@ void Editor::RowDeleteChar(erow* row, int at){
 	memmove(&row->chars[at], &row->chars[at + 1], row->size - at);
 	row->size--;
 	UpdateRow(row);
-	E.dirty;
-}
-
-void Editor::InsertChar(int c){
-	if(E.cy == E.numrows){
-		InsertRow(E.numrows, "", 0);
-	}
-	RowInsertChar(&E.row[E.cy], E.cx, c);
-	E.cx++;
+	E.dirty++;
 }
 
 void Editor::DeleteChar(){
@@ -130,57 +185,6 @@ void Editor::DeleteChar(){
 void Editor::FreeRow(erow* row){
 	free(row->render);
 	free(row->chars);
-}
-
-void Editor::DeleteRow(int at){
-	if(at < 0 || at >= E.numrows) return;
-	FreeRow(&E.row[at]);
-	memmove(&E.row[at], &E.row[at + 1], sizeof(erow) * (E.numrows - at - 1));
-	E.numrows--;
-	E.dirty++;
-}
-
-void Editor::RowAppendString(erow* row, char* str, size_t len){
-	row->chars = (char*)realloc(row->chars, row->size + len + 1);
-	memcpy(&row->chars[row->size], str, len);
-	row->size += len;
-	row->chars[row->size] = '\0';
-	UpdateRow(row);
-	E.dirty++;
-}
-
-char* Editor::Prompt(char* prompt){
-	size_t bufsize = 128;
-	char* buf = (char*)malloc(bufsize);
-
-	size_t buflen = 0;
-	buf[0] = '\0';
-
-	while(1){
-		SetStatusMessage(prompt, buf);
-		RefreshScreen();
-
-		int c = Terminal::editorReadKey();
-		if(c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE){
-			if(buflen != 0) buf[--buflen] = '\0';
-		} else if(c == '\x1b'){
-			SetStatusMessage("");
-			free(buf);
-			return NULL;
-		} else if(c == '\r'){
-			if(buflen != 0){
-				SetStatusMessage("");
-				return buf;
-			}
-		} else if(!iscntrl(c) && c < 128){
-			if(buflen == bufsize - 1){
-				bufsize *= 2;
-				buf = (char*)realloc(buf, bufsize);
-			}
-			buf[buflen++] = c; 
-			buf[buflen] = '\0';
-		}
-	}
 }
 
 /*---- INPUT ----*/
@@ -215,89 +219,6 @@ void Editor::MoveCursor(int key){
 	row = (E.cy >= E.numrows) ? NULL : &E.row[E.cy];
 	int rowlen = row ? row->size : 0;
 	if(E.cx > rowlen){ E.cx = rowlen; }
-}
-
-/* TODO
-
-This method will change with different opening
-modes (sus, read, write, etc...)
-*/
-int Editor::OpenFile(char* filename){
-	//Open a file in read mode
-	free(E.filepath);
-	E.filepath = strdup(filename);
-	FILE* fp = fopen(filename, "r"); 		// This line will eventually change
-	if(!fp) Terminal::die("fopen");
-
-	char* line = NULL;
-	size_t linecap = 0;
-	ssize_t linelen;
-
-	//Get the length of the line from the file
-	while((linelen = getline(&line, &linecap, fp)) != -1){
-		//stop if the escape sequence for new line or return carriage is next
-		while(linelen > 0 && (line[linelen - 1] == '\n' ||
-		line[linelen - 1] == '\r'))
-			linelen--;
-		InsertRow(E.numrows, line, linelen);
-	}
-	//Deallocate memory from line and close file connection
-	free(line);
-	fclose(fp);
-	E.dirty = 0;
-
-	return 1;
-}
-
-void Editor::SaveFile(){
-   	if(E.filepath == NULL){
-		E.filepath = Prompt("Save as: %s (ESC to cancel)");
-		if(E.filepath == NULL){
-			SetStatusMessage("Save Aborted");
-			return;
-		}
-	}
-
-	int len;
-    char* buf = RowToString(&len);
-
-    // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
-    // the file will only be able to read it
-	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
-    if(fd != -1){
-		if(ftruncate(fd, len) != -1){
-   			if(write(fd, buf, len) == len){
- 	  		 	close(fd);
- 	  		 	free(buf);
-				E.dirty = 0;
-				SetStatusMessage("[%d] bytes written to disk", len);
-				return;
-			}
-		}
-		close(fd);
-	}
-	free(buf);
-	SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
-}
-
-char* Editor::RowToString(int* buflen){
-    int totalLen = 0;
-    for(int i = 0; i < E.numrows; i++)
-        totalLen += E.row[i].size + 1;
-    *buflen = totalLen;
-
-    char* buf = (char*)malloc(totalLen);
-    char* ptr = buf;
-
-    for(int i = 0; i < E.numrows; i++){
-        memcpy(ptr, E.row[i].chars, E.row[i].size);
-        ptr += E.row[i].size;
-        *ptr = '\n';
-        ptr++;
-    }
-
-    fprintf(stderr, "buf out: %s\n", (char*)buf);
-    return buf;
 }
 
 void Editor::ProcessKeypress(){
@@ -370,6 +291,85 @@ void Editor::ProcessKeypress(){
 			break;
 	}
 	quit_times = SUSTEXT_QUIT_TIMES;
+}
+
+/*---- FILE I/O ----*/
+int Editor::OpenFile(char* filename){
+	//Open a file in read mode
+	free(E.filepath);
+	E.filepath = strdup(filename);
+	FILE* fp = fopen(filename, "r"); 		// This line will eventually change
+	if(!fp) Terminal::die("fopen");
+
+	char* line = NULL;
+	size_t linecap = 0;
+	ssize_t linelen;
+
+	//Get the length of the line from the file
+	while((linelen = getline(&line, &linecap, fp)) != -1){
+		//stop if the escape sequence for new line or return carriage is next
+		while(linelen > 0 && (line[linelen - 1] == '\n' ||
+		line[linelen - 1] == '\r'))
+			linelen--;
+		InsertRow(E.numrows, line, linelen);
+	}
+	//Deallocate memory from line and close file connection
+	free(line);
+	fclose(fp);
+	E.dirty = 0;
+
+	return 1;
+}
+
+void Editor::SaveFile(){
+   	if(E.filepath == NULL){
+		E.filepath = Prompt((char*)"Save as: %s (ESC to cancel)");
+		if(E.filepath == NULL){
+			SetStatusMessage("Save Aborted");
+			return;
+		}
+	}
+
+	int len;
+    char* buf = RowToString(&len);
+
+    // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
+    // the file will only be able to read it
+	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
+    if(fd != -1){
+		if(ftruncate(fd, len) != -1){
+   			if(write(fd, buf, len) == len){
+ 	  		 	close(fd);
+ 	  		 	free(buf);
+				E.dirty = 0;
+				SetStatusMessage("[%d] bytes written to disk", len);
+				return;
+			}
+		}
+		close(fd);
+	}
+	free(buf);
+	SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
+}
+
+char* Editor::RowToString(int* buflen){
+    int totalLen = 0;
+    for(int i = 0; i < E.numrows; i++)
+        totalLen += E.row[i].size + 1;
+    *buflen = totalLen;
+
+    char* buf = (char*)malloc(totalLen);
+    char* ptr = buf;
+
+    for(int i = 0; i < E.numrows; i++){
+        memcpy(ptr, E.row[i].chars, E.row[i].size);
+        ptr += E.row[i].size;
+        *ptr = '\n';
+        ptr++;
+    }
+
+    fprintf(stderr, "buf out: %s\n", (char*)buf);
+    return buf;
 }
 
 /*---- OUTPUT ----*/
@@ -492,4 +492,4 @@ void Editor::SetStatusMessage(const char* fmt...){
 	vsnprintf(E.statusmsg, sizeof(E.statusmsg), fmt, ap);
 	va_end(ap);
 	E.statusmsg_time = time(NULL);
-}	
+}

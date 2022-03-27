@@ -17,7 +17,7 @@ int main(int argc, char** argv){
 		//If the file does not exist the terminal just dies and closes with
 		//the exit code 'fopen'
 		if(sFlags.Enabled(FILEIN))
-			if(!Editor::OpenFile(sFlags.argout.filepath));
+			if(!Editor::OpenFile(sFlags.argout.filepath)) Terminal::die("fopen");
 	}
 
 	Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit");

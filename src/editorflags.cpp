@@ -12,8 +12,6 @@ SusFlags::~SusFlags(){
 }
 
 int SusFlags::SetFlags(){
-    int status = 1;
-
     int opt;
     while((opt = getopt(argc, argv, ":f:srwj")) != EOF){
         switch(opt){
@@ -38,11 +36,11 @@ int SusFlags::SetFlags(){
                 break;
             case '?':
                 fprintf(stderr, "Unknown option \'%d\'\n", optopt);
-                status = 0;
+                return 0;
                 break;
         }
     }
-    return status;
+    return 1;
 }
 
 bool SusFlags::Enabled(int flag){

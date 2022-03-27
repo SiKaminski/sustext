@@ -12,21 +12,19 @@ typedef struct erow{
 	char* 	render;
 }erow;
 
-struct editorConfig{
-	int 	cx, cy, rx;
+static struct editorConfig{
+	int 	cx, cy, rx;	
 	int 	rowOff;
 	int 	colOff;
 	int 	screenRows;
 	int 	screenCols;
 	int 	numrows;
 	erow* 	row;
-	int 	dirty;
+	int 	dirty;		// Track amount of changes made to file
 	char* 	filepath;
 	char	statusmsg[80];
-	time_t 	statusmsg_time;
+	time_t 	statusmsg_time;	// time out limit for status message
 	struct termios orig_termios;
-};
-
-static editorConfig E;
+} E;
 
 #endif // __DATA_HPP
