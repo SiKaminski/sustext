@@ -7,7 +7,7 @@ int FileHandler::OpenFile(char* filepath, Editor* editor){
     //Open a file in read mode
 	free(editor->E.filepath);
 	editor->E.filepath = strdup(filepath);
-	FILE* fp = fopen(filepath, "r"); 		// This line will eventually change
+	FILE* fp = fopen(editor->E.filepath, "r"); 		// This line will eventually change
 	if(!fp) Terminal::die("fopen");
 
 	char* line = NULL;
@@ -48,7 +48,7 @@ int FileHandler::SaveFile(Editor* editor){
 
     // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
     // the file will only be able to read it
-	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
+	int fd = open(editor->E.filepath, O_RDWR | O_CREAT, 0644);
     if(fd != -1){
 		if(ftruncate(fd, len) != -1){
    			if(write(fd, buf, len) == len){

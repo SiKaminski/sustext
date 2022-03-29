@@ -17,6 +17,13 @@ int main(int argc, char** argv){
             }
         }
     }
+
+    sustext.editor.SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit");
+
+    while(true){
+        sustext.editor.RefreshScreen();
+        sustext.editor.ProcessKeypress();
+    }
     
     /*
         Terminal::enableRawmode();

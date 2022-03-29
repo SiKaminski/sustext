@@ -8,6 +8,9 @@
 
 class Editor{
     public:
+        EditorConfig E;
+
+    public:
         Editor();
         ~Editor();
         
