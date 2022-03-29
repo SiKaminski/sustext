@@ -16,6 +16,7 @@ class Sustext{
 
     SusFlags flags;
     FileHandler filehandler;
+    Editor editor;
 
     static EditorConfig E;
     /*

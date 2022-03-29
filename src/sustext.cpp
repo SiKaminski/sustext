@@ -1,20 +1,22 @@
 #include "sustext.hpp"
 
 Sustext::Sustext(int _argc, char** _argv){
+	/* this looking dummy gross */
 	argc = _argc;
 	argv = _argv;
-	flags = SusFlags(argc, argv);
 
-	/*
-	Editor Initialization
-	*/
+	editor.Init();
 }
 
-Sustext::~Sustext(){
+Sustext::~Sustext(){}
 
+int Sustext::Initialize(){
+	int status = 1;
+
+	/* TODO */
+
+	return status;
 }
-
-
 
 /*
 int main(int argc, char** argv){

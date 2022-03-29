@@ -29,7 +29,6 @@ class SusFlags{
 
     public:
         SusFlags();
-        SusFlags(int _argc, char** _argv);
         ~SusFlags();
 
         /**
@@ -39,7 +38,7 @@ class SusFlags{
          * 
          * @return (int) status code
          */
-        int SetFlags();
+        int SetFlags(int argc, char** argv);
 
         /**
          * Check if a flag is enabled 
@@ -47,10 +46,6 @@ class SusFlags{
          * @param flag 
          */
         bool Enabled(int flag);
-
-    private:
-        int argc;
-        char** argv;
 };
 
 #endif // __EDITOR_FLAGS_HPP

@@ -7,14 +7,14 @@ int main(int argc, char** argv){
     Terminal::enableRawMode();
 
     if(argc >= 2){
-        sustext.flags.SetFlags();
+        sustext.flags.SetFlags(argc, argv);
 
         //If the file does not exits the terminal just dies and closeses with
         //the exit status 'fopen'
         if(sustext.flags.Enabled(FILEIN)){
-            // if(!sustext.filemanager.OpenFile(sustext.currentFile)){
-            //     Terminal::die("fopen");
-            // }
+            if(!sustext.filehandler.OpenFile(sustext.flags.argout.filepath, &sustext.editor)){
+                 Terminal::die("fopen");
+            }
         }
     }
     

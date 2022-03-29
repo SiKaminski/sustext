@@ -1,7 +1,7 @@
 #include "editorflags.hpp"
 
 
-SusFlags::SusFlags(int _argc, char** _argv){
+SusFlags::SusFlags(){
     activeFlags = DEFAULT_FLAGS;
 }
 
@@ -9,7 +9,7 @@ SusFlags::~SusFlags(){
 
 }
 
-int SusFlags::SetFlags(){
+int SusFlags::SetFlags(int argc, char** argv){
     int opt;
     while((opt = getopt(argc, argv, ":f:srwj")) != EOF){
         switch(opt){
