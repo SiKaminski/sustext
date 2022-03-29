@@ -28,6 +28,7 @@ class SusFlags{
         ArgumentOutput argout;
 
     public:
+        SusFlags();
         SusFlags(int _argc, char** _argv);
         ~SusFlags();
 

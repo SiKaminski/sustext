@@ -358,7 +358,7 @@ char* Editor::RowToString(int* buflen){
         totalLen += E.row[i].size + 1;
     *buflen = totalLen;
 
-    char* buf = (char*)malloc(totalLen);
+    char buf = (char*)malloc(totalLen);
     char* ptr = buf;
 
     for(int i = 0; i < E.numrows; i++){

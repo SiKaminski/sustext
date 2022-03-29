@@ -1,10 +1,22 @@
-#include "headers/defines.hpp"
-#include "headers/data.hpp"
-#include "headers/terminal.hpp"
-#include "headers/appendbuffer.hpp"
-#include "headers/editor.hpp"
-#include "headers/editorflags.hpp"
+#include "sustext.hpp"
 
+Sustext::Sustext(int _argc, char** _argv){
+	argc = _argc;
+	argv = _argv;
+	flags = SusFlags(argc, argv);
+
+	/*
+	Editor Initialization
+	*/
+}
+
+Sustext::~Sustext(){
+
+}
+
+
+
+/*
 int main(int argc, char** argv){
 	SusFlags sFlags = SusFlags(argc, argv);
 	Terminal::enableRawMode();
@@ -28,3 +40,4 @@ int main(int argc, char** argv){
 	}
 	return 0;
 }
+*/

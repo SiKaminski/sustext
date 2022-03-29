@@ -12,7 +12,7 @@ typedef struct erow{
 	char* 	render;
 }erow;
 
-static struct editorConfig{
+static struct EditorConfig{
 	int 	cx, cy, rx;	
 	int 	rowOff;
 	int 	colOff;

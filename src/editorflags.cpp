@@ -1,9 +1,7 @@
 #include "editorflags.hpp"
 
+
 SusFlags::SusFlags(int _argc, char** _argv){
-    argc = _argc;
-    argv = _argv;
-    
     activeFlags = DEFAULT_FLAGS;
 }
 
