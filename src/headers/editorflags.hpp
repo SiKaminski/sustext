@@ -24,7 +24,7 @@ class SusFlags{
         struct ArgumentOutput{
             char* filepath;
         };
-        int activeFlags;
+        uint64_t activeFlags;
 
         ArgumentOutput argout;
 
@@ -41,8 +41,7 @@ class SusFlags{
          */
         int InitFlags(int argc, char** argv);
 
-        void EnableFlags(int flags);
-        void DisableFlags(int flags);
+        void SetFlags(int flags, bool on);
 
         /**
          * Check if a flag is enabled 

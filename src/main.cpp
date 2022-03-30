@@ -5,6 +5,9 @@ int main(int argc, char** argv){
     sustext.Initialize();
 
     while(true){
+        if(sustext.editor.flags.Enabled(FILESAVE)){
+            sustext.filehandler.SaveFile(&sustext.editor);
+        }
         sustext.editor.RefreshScreen();
         sustext.editor.ProcessKeypress();
     } 

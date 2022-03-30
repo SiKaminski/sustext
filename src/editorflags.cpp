@@ -1,13 +1,10 @@
 #include "editorflags.hpp"
 
-
 SusFlags::SusFlags(){
     activeFlags = DEFAULT_FLAGS;
 }
 
-SusFlags::~SusFlags(){
-
-}
+SusFlags::~SusFlags() {}
 
 int SusFlags::InitFlags(int argc, char** argv){
     int opt;
@@ -41,12 +38,8 @@ int SusFlags::InitFlags(int argc, char** argv){
     return 1;
 }
 
-void SusFlags::EnableFlags(int flags){
+void SusFlags::SetFlags(int flags, bool on){
     activeFlags ^= flags;
-}
-
-void SusFlags::DisableFlags(int flags){
-
 }
 
 bool SusFlags::Enabled(int flag){

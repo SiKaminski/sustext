@@ -142,21 +142,8 @@ class Editor{
         */
         void ProcessKeypress();
     
-        /*---- FILE I/O ----*/
-    
         /**
-         * Text that will display when the editor opens a file
-        * @param filename
-        */
-        int OpenFile(char* filename);
-    
-        /**
-         * save the currently opened file to disk 
-        */
-        void SaveFile();
-    
-        /**
-         * Convert the contents stored in a row to a string 
+        * Convert the contents stored in a row to a string 
         * 
         * @param buflen 
         * @return char* 

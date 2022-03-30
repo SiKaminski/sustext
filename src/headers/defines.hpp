@@ -35,6 +35,8 @@
 #define FLAGS_INIT {false, false}
 #define ARGS_INIT {nullptr}
 
+typedef u_int64_t uint64_t;
+
 enum editorKey{
 	BACKSPACE = 127,
 	ARROW_LEFT = 1000,
