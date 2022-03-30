@@ -1,30 +1,25 @@
-#include "headers/defines.hpp"
-#include "headers/data.hpp"
-#include "headers/terminal.hpp"
-#include "headers/appendbuffer.hpp"
-#include "headers/editor.hpp"
-#include "headers/editorflags.hpp"
+#include "sustext.hpp"
 
-int main(int argc, char** argv){
-	SusFlags sFlags = SusFlags(argc, argv);
+Sustext::Sustext(int _argc, char** _argv){
+	argc = _argc;
+	argv = _argv;
+}
+
+Sustext::~Sustext(){}
+
+int Sustext::Initialize(){
+	editor.Init(argc, argv);
 	Terminal::enableRawMode();
-	Editor::Init();
 
-	//Check if parameters
 	if(argc >= 2){
-		sFlags.SetFlags();
-
-		//If the file does not exist the terminal just dies and closes with
-		//the exit code 'fopen'
-		if(sFlags.Enabled(FILEIN))
-			if(!Editor::OpenFile(sFlags.argout.filepath)) Terminal::die("fopen");
+		if(editor.flags.Enabled(FILEIN)){
+			if(!filehandler.OpenFile(editor.flags.argout.filepath, &editor)){
+				Terminal::die("fopen");
+			}
+		}
 	}
 
-	Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit");
+	editor.SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit");
 
-	while(1){
-		Editor::RefreshScreen();
-		Editor::ProcessKeypress();
-	}
-	return 0;
+	return 1;
 }

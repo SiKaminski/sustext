@@ -5,6 +5,8 @@
 #include "data.hpp"
 
 namespace Terminal{
+    static EditorConfig E;
+
     /**
      * Initialize the editor functions 
      */

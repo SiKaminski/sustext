@@ -1,17 +1,12 @@
 #include "editorflags.hpp"
 
-SusFlags::SusFlags(int _argc, char** _argv){
-    argc = _argc;
-    argv = _argv;
-    
+SusFlags::SusFlags(){
     activeFlags = DEFAULT_FLAGS;
 }
 
-SusFlags::~SusFlags(){
+SusFlags::~SusFlags() {}
 
-}
-
-int SusFlags::SetFlags(){
+int SusFlags::InitFlags(int argc, char** argv){
     int opt;
     while((opt = getopt(argc, argv, ":f:srwj")) != EOF){
         switch(opt){
@@ -41,6 +36,10 @@ int SusFlags::SetFlags(){
         }
     }
     return 1;
+}
+
+void SusFlags::SetFlags(int flags, bool on){
+    activeFlags ^= flags;
 }
 
 bool SusFlags::Enabled(int flag){

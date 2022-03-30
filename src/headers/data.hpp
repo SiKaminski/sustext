@@ -12,7 +12,7 @@ typedef struct erow{
 	char* 	render;
 }erow;
 
-static struct editorConfig{
+struct EditorConfig{
 	int 	cx, cy, rx;	
 	int 	rowOff;
 	int 	colOff;
@@ -25,6 +25,6 @@ static struct editorConfig{
 	char	statusmsg[80];
 	time_t 	statusmsg_time;	// time out limit for status message
 	struct termios orig_termios;
-} E;
+};
 
 #endif // __DATA_HPP

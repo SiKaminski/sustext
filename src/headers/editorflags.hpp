@@ -12,6 +12,7 @@ enum EditorFlags{
     MODE_WRITE  = 0x0002,
     MODE_SUS    = 0x0004,
     FILEIN      = 0x0008,
+    FILESAVE    = 0x0010,
     
     DEFAULT_FLAGS = MODE_READ
 };
@@ -23,12 +24,12 @@ class SusFlags{
         struct ArgumentOutput{
             char* filepath;
         };
-        int activeFlags;
+        uint64_t activeFlags;
 
         ArgumentOutput argout;
 
     public:
-        SusFlags(int _argc, char** _argv);
+        SusFlags();
         ~SusFlags();
 
         /**
@@ -38,7 +39,9 @@ class SusFlags{
          * 
          * @return (int) status code
          */
-        int SetFlags();
+        int InitFlags(int argc, char** argv);
+
+        void SetFlags(int flags, bool on);
 
         /**
          * Check if a flag is enabled 
@@ -46,10 +49,6 @@ class SusFlags{
          * @param flag 
          */
         bool Enabled(int flag);
-
-    private:
-        int argc;
-        char** argv;
 };
 
 #endif // __EDITOR_FLAGS_HPP

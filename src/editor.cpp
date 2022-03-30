@@ -1,7 +1,11 @@
 #include "headers/editor.hpp"
 
+Editor::Editor() {}
+Editor::~Editor() {}
+
 /*---- INITIALIZATION ----*/
-void Editor::Init(){
+void Editor::Init(int argc, char** argv){
+	flags.InitFlags(argc, argv);
 	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
 	E.cy = 0;
@@ -247,7 +251,7 @@ void Editor::ProcessKeypress(){
 			break;
 
 		case CTRL_KEY('s'):
-			SaveFile();
+			flags.SetFlags(FILESAVE, true);
 			return;
 
 		case HOME_KEY:
@@ -291,65 +295,6 @@ void Editor::ProcessKeypress(){
 			break;
 	}
 	quit_times = SUSTEXT_QUIT_TIMES;
-}
-
-/*---- FILE I/O ----*/
-int Editor::OpenFile(char* filename){
-	//Open a file in read mode
-	free(E.filepath);
-	E.filepath = strdup(filename);
-	FILE* fp = fopen(filename, "r"); 		// This line will eventually change
-	if(!fp) Terminal::die("fopen");
-
-	char* line = NULL;
-	size_t linecap = 0;
-	ssize_t linelen;
-
-	//Get the length of the line from the file
-	while((linelen = getline(&line, &linecap, fp)) != -1){
-		//stop if the escape sequence for new line or return carriage is next
-		while(linelen > 0 && (line[linelen - 1] == '\n' ||
-		line[linelen - 1] == '\r'))
-			linelen--;
-		InsertRow(E.numrows, line, linelen);
-	}
-	//Deallocate memory from line and close file connection
-	free(line);
-	fclose(fp);
-	E.dirty = 0;
-
-	return 1;
-}
-
-void Editor::SaveFile(){
-   	if(E.filepath == NULL){
-		E.filepath = Prompt((char*)"Save as: %s (ESC to cancel)");
-		if(E.filepath == NULL){
-			SetStatusMessage("Save Aborted");
-			return;
-		}
-	}
-
-	int len;
-    char* buf = RowToString(&len);
-
-    // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
-    // the file will only be able to read it
-	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
-    if(fd != -1){
-		if(ftruncate(fd, len) != -1){
-   			if(write(fd, buf, len) == len){
- 	  		 	close(fd);
- 	  		 	free(buf);
-				E.dirty = 0;
-				SetStatusMessage("[%d] bytes written to disk", len);
-				return;
-			}
-		}
-		close(fd);
-	}
-	free(buf);
-	SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
 }
 
 char* Editor::RowToString(int* buflen){
