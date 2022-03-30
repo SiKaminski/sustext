@@ -7,6 +7,8 @@
 #include "terminal.hpp"
 #include "editorflags.hpp"
 
+#include <functional>
+
 class Editor{
     public:
         EditorConfig E;
@@ -34,6 +36,8 @@ class Editor{
         * @return int (rx)
         */
         int RowCxToRx(erow* row, int cx);
+
+        static int RowRxToCX(erow* row, int rx, EditorConfig E);
         
         /**
          * Display a prompt to the user on the bottom portion
@@ -42,7 +46,9 @@ class Editor{
         * @param prompt 
         * @return char* 
         */
-        char* Prompt(char* prompt);
+        char* Prompt(char* prompt, void (*callback)(char*, int, EditorConfig));
+        
+        static void FindCallback(char* query, int key, EditorConfig E);
     
         /**
          * fill contents of render stream 
@@ -126,7 +132,8 @@ class Editor{
         */
         void FreeRow(erow* row);
     
-    
+        /*---- SEARCHING ----*/
+        void Find();
     
         /*---- INPUTS ----*/
     

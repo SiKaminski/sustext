@@ -32,7 +32,7 @@ int FileHandler::OpenFile(char* filepath, Editor* editor){
 
 int FileHandler::SaveFile(Editor* editor){
    	if(editor->E.filepath == NULL){
-		editor->E.filepath = editor->Prompt((char*)"Save as: %s (ESC to cancel)");
+		editor->E.filepath = editor->Prompt((char*)"Save as: %s (ESC to cancel)", NULL);
 		if(editor->E.filepath == NULL){
 			editor->SetStatusMessage("Save Aborted");
 			return 0;

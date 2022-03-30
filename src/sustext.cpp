@@ -19,7 +19,7 @@ int Sustext::Initialize(){
 		}
 	}
 
-	editor.SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit");
+	editor.SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find");
 
 	return 1;
 }

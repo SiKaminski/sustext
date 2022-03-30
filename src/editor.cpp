@@ -36,7 +36,20 @@ int Editor::RowCxToRx(erow* row, int cx){
 	return rx;
 }
 
-char* Editor::Prompt(char* prompt){
+int Editor::RowRxToCX(erow* row, int rx, EditorConfig E){
+	int curRx = 0;
+	for(int cx  = 0; cx < row->size; cx++){
+		if(row->chars[cx] == '\t'){
+			curRx += (SUSTEXT_TAB_STOP - 1) - (curRx % SUSTEXT_TAB_STOP);
+			curRx++;
+
+			if(curRx > rx) return cx;
+		}
+		return cx;
+	}
+}
+
+char* Editor::Prompt(char* prompt, void (*callback)(char*, int, EditorConfig)){
 	size_t bufsize = 128;
 	char* buf = (char*)malloc(bufsize);
 
@@ -54,11 +67,12 @@ char* Editor::Prompt(char* prompt){
 			if(buflen != 0) buf[--buflen] = '\0';
 		} else if(c == '\x1b') {
 			SetStatusMessage("");
-			free(buf);
+			if(callback) callback(buf, c, E);
 			return NULL;
 		} else if(c == '\r') {
 			if(buflen != 0){
 				SetStatusMessage("");
+				if(callback) callback(buf, c, E);
 				return buf;
 			}
 		} else if(!iscntrl(c) && c < 128) {
@@ -69,6 +83,7 @@ char* Editor::Prompt(char* prompt){
 			buf[buflen++] = c; 
 			buf[buflen] = '\0';
 		}
+		if(callback) callback(buf, c, E);
 	}
 }
 
@@ -191,6 +206,30 @@ void Editor::FreeRow(erow* row){
 	free(row->chars);
 }
 
+/*---- SEARCHING ----*/
+void Editor::Find(){
+	int savedCx = E.cx;
+	int savedCy = E.cy;
+	int savedColOff = E.colOff;
+	int savedRowOff = E.rowOff;
+
+	char* query = Prompt("Search -> %s (ESC/Arrows/Enter)", FindCallback);
+	if(query == NULL) return;
+	
+	if(query){
+		free(query);
+	} else {
+		E.cx = savedCx;
+		E.cy = savedCy;
+		E.colOff = savedColOff;
+		E.rowOff = savedRowOff;
+	}
+}
+
+void Editor::FindCallback(char* query, int key, EditorConfig E){
+
+}
+
 /*---- INPUT ----*/
 void Editor::MoveCursor(int key){
 	//Prevent cursor from going past the size of the screen not the file
@@ -252,6 +291,10 @@ void Editor::ProcessKeypress(){
 
 		case CTRL_KEY('s'):
 			flags.SetFlags(FILESAVE, true);
+			return;
+		
+		case CTRL_KEY('f'):
+			Find();
 			return;
 
 		case HOME_KEY:
