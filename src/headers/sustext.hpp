@@ -19,17 +19,12 @@ class Sustext{
     Editor editor;
 
     static EditorConfig E;
-    /*
-    Terminal terminal;
-    Editor editor;
-    */
     
     public:
         Sustext(int _argc, char** _argv);
         ~Sustext();
 
         int Initialize();
-        
 };
 
 #endif // __SUSTEXT_HPP

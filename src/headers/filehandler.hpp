@@ -11,7 +11,6 @@ class FileHandler{
         ~FileHandler();
 
         int OpenFile(char* filename, Editor* editor);
-        int SaveFile(char* filename);
         int SaveFile(Editor* editor);
 };
 

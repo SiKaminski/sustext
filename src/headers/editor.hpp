@@ -5,10 +5,12 @@
 #include "data.hpp"
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
+#include "editorflags.hpp"
 
 class Editor{
     public:
         EditorConfig E;
+        SusFlags flags;
 
     public:
         Editor();
@@ -19,7 +21,7 @@ class Editor{
         /**
          * Initialize the editor functions 
         */
-        void Init();
+        void Init(int argc, char** argv);
     
         /*---- ROW OPERATIONS ----*/
     

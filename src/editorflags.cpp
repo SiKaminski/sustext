@@ -9,7 +9,7 @@ SusFlags::~SusFlags(){
 
 }
 
-int SusFlags::SetFlags(int argc, char** argv){
+int SusFlags::InitFlags(int argc, char** argv){
     int opt;
     while((opt = getopt(argc, argv, ":f:srwj")) != EOF){
         switch(opt){
@@ -39,6 +39,14 @@ int SusFlags::SetFlags(int argc, char** argv){
         }
     }
     return 1;
+}
+
+void SusFlags::EnableFlags(int flags){
+    activeFlags ^= flags;
+}
+
+void SusFlags::DisableFlags(int flags){
+
 }
 
 bool SusFlags::Enabled(int flag){

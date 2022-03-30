@@ -30,10 +30,6 @@ int FileHandler::OpenFile(char* filepath, Editor* editor){
 	return 1;
 }
 
-int FileHandler::SaveFile(char* filepath){
-    return 1;
-}
-
 int FileHandler::SaveFile(Editor* editor){
    	if(editor->E.filepath == NULL){
 		editor->E.filepath = editor->Prompt((char*)"Save as: %s (ESC to cancel)");

@@ -4,7 +4,8 @@ Editor::Editor(){}
 Editor::~Editor(){}
 
 /*---- INITIALIZATION ----*/
-void Editor::Init(){
+void Editor::Init(int argc, char** argv){
+	flags.InitFlags(argc, argv);
 	/* Set default values for the global editorConfig struct */
 	E.cx = 0;
 	E.cy = 0;
