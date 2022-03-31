@@ -23,26 +23,16 @@ class Editor{
         */
         void Init(int argc, char** argv);
     
-        /*---- ROW OPERATIONS ----*/
-    
         /**
-         * Convert the cursor x position given as an input
-        * int a render index 
-        * 
-        * @param row 
-        * @param cx 
-        * @return int (rx)
-        */
-        int RowCxToRx(erow* row, int cx);
-        
-        /**
-         * Display a prompt to the user on the bottom portion
+        * Display a prompt to the user on the bottom portion
         * of the status bar 
         * 
         * @param prompt 
         * @return char* 
         */
-        char* Prompt(char* prompt);
+        char* Prompt(char* prompt, void(*callback)(char*, int, EditorConfig*));
+
+        void Find();
     
         /**
          * fill contents of render stream 

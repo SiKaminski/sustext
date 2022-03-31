@@ -28,7 +28,7 @@
 #include <fcntl.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v1.2.0"
+#define SUSTEXT_VERSION "v1.2.5"
 #define SUSTEXT_TAB_STOP 4
 #define SUSTEXT_QUIT_TIMES 1
 

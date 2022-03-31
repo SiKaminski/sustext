@@ -27,4 +27,7 @@ struct EditorConfig{
 	struct termios orig_termios;
 };
 
+//This kinda works
+void FindCallBack(char* query, int key, EditorConfig* E);
+
 #endif // __DATA_HPP
