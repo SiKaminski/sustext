@@ -1,4 +1,5 @@
 #include "headers/editor.hpp"
+#include "global.hpp"
 
 Editor::Editor() {}
 Editor::~Editor() {}

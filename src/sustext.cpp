@@ -13,7 +13,7 @@ int Sustext::Initialize(){
 
 	if(argc >= 2){
 		if(editor.flags.Enabled(FILEIN)){
-			if(!filehandler.OpenFile(editor.flags.argout.filepath, &editor)){
+			if(!filehandler.OpenFile(&editor)){
 				Terminal::die("fopen");
 			}
 		}

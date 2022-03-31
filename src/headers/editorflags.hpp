@@ -1,10 +1,7 @@
 #ifndef __EDITOR_FLAGS_HPP
 #define __EDITOR_FLAGS_HPP
 
-#ifndef __DEFINES_HPP
-    #include "defines.hpp"
-#endif // __DEFINES_HPP
-
+#include "defines.hpp"
 #include <unistd.h>
 
 enum EditorFlags{

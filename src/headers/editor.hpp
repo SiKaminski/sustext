@@ -2,14 +2,13 @@
 #define __EDITOR_HPP
 
 #include "defines.hpp"
-#include "data.hpp"
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
 #include "editorflags.hpp"
+#include "data.hpp"
 
 class Editor{
     public:
-        EditorConfig E;
         SusFlags flags;
 
     public:
@@ -126,8 +125,8 @@ class Editor{
         */
         void FreeRow(erow* row);
     
-    
-    
+        void Find();
+
         /*---- INPUTS ----*/
     
         /**

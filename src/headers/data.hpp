@@ -1,9 +1,6 @@
 #ifndef __DATA_HPP
 #define __DATA_HPP
-
-#ifndef __DEFINES_HPP
-	#include "defines.hpp"
-#endif // __DEFINES_HPP
+#include "defines.hpp"
 
 typedef struct erow{
 	int 	size;

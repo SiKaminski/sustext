@@ -2,7 +2,6 @@
 #define __SUSTEXT_HPP
 
 #include "defines.hpp"
-#include "data.hpp"
 #include "terminal.hpp"
 #include "appendbuffer.hpp"
 #include "editor.hpp"
@@ -18,8 +17,6 @@ class Sustext{
     FileHandler filehandler;
     Editor editor;
 
-    static EditorConfig E;
-    
     public:
         Sustext(int _argc, char** _argv);
         ~Sustext();

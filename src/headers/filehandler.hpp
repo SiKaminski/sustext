@@ -1,8 +1,6 @@
 #ifndef __FILEHANDLER_HPP
 #define __FILEHANDLER_HPP
 
-#include "defines.hpp"
-#include "data.hpp"
 #include "editor.hpp"
 
 class FileHandler{
@@ -10,7 +8,7 @@ class FileHandler{
         FileHandler();
         ~FileHandler();
 
-        int OpenFile(char* filename, Editor* editor);
+        int OpenFile(Editor* editor);
         int SaveFile(Editor* editor);
 };
 

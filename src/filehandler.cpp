@@ -1,13 +1,14 @@
 #include "filehandler.hpp"
+#include "global.hpp"
 
 FileHandler::FileHandler(){}
 FileHandler::~FileHandler(){}
 
-int FileHandler::OpenFile(char* filepath, Editor* editor){
+int FileHandler::OpenFile(Editor* editor){
     //Open a file in read mode
-	free(editor->E.filepath);
-	editor->E.filepath = strdup(filepath);
-	FILE* fp = fopen(editor->E.filepath, "r"); 		// This line will eventually change
+	free(E.filepath);
+	E.filepath = strdup(E.filepath);
+	FILE* fp = fopen(E.filepath, "r"); 		// This line will eventually change
 	if(!fp) Terminal::die("fopen");
 
 	char* line = NULL;
@@ -20,20 +21,20 @@ int FileHandler::OpenFile(char* filepath, Editor* editor){
 		while(linelen > 0 && (line[linelen - 1] == '\n' ||
 		line[linelen - 1] == '\r'))
 			linelen--;
-		editor->InsertRow(editor->E.numrows, line, linelen);
+		editor->InsertRow(E.numrows, line, linelen);
 	}
 	//Deallocate memory from line and close file connection
 	free(line);
 	fclose(fp);
-	editor->E.dirty = 0;
+	E.dirty = 0;
 
 	return 1;
 }
 
 int FileHandler::SaveFile(Editor* editor){
-   	if(editor->E.filepath == NULL){
-		editor->E.filepath = editor->Prompt((char*)"Save as: %s (ESC to cancel)");
-		if(editor->E.filepath == NULL){
+   	if(E.filepath == NULL){
+		E.filepath = editor->Prompt((char*)"Save as: %s (ESC to cancel)");
+		if(E.filepath == NULL){
 			editor->SetStatusMessage("Save Aborted");
 			return 0;
 		}
@@ -44,13 +45,13 @@ int FileHandler::SaveFile(Editor* editor){
 
     // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
     // the file will only be able to read it
-	int fd = open(editor->E.filepath, O_RDWR | O_CREAT, 0644);
+	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
     if(fd != -1){
 		if(ftruncate(fd, len) != -1){
    			if(write(fd, buf, len) == len){
  	  		 	close(fd);
  	  		 	free(buf);
-				editor->E.dirty = 0;
+				E.dirty = 0;
 				editor->SetStatusMessage("[%d] bytes written to disk", len);
 				return 0;
 			}

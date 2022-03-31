@@ -1,4 +1,5 @@
 #include "headers/terminal.hpp"
+#include "global.hpp"
 
 void Terminal::die(const char* s){
 	//Clear screen on exit
