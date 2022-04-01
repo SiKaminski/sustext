@@ -1,5 +1,4 @@
-#ifndef __DEFINES_HPP
-#define __DEFINES_HPP
+#pragma once
 
 /* Compatability check for different platforms */
 #ifndef _DEFAULT_SOURCE
@@ -49,5 +48,3 @@ enum editorKey{
 	PAGE_UP,
 	PAGE_DOWN
 };
-
-#endif // __DEFINES_HPP

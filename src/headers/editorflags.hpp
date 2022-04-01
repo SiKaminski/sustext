@@ -1,10 +1,6 @@
-#ifndef __EDITOR_FLAGS_HPP
-#define __EDITOR_FLAGS_HPP
+#pragma once
 
-#ifndef __DEFINES_HPP
-    #include "defines.hpp"
-#endif // __DEFINES_HPP
-
+#include "defines.hpp"
 #include <unistd.h>
 
 enum EditorFlags{
@@ -50,5 +46,3 @@ class SusFlags{
          */
         bool Enabled(int flag);
 };
-
-#endif // __EDITOR_FLAGS_HPP

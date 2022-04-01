@@ -1,5 +1,4 @@
-#ifndef __SUSTEXT_HPP
-#define __SUSTEXT_HPP
+#pragma once
 
 #include "defines.hpp"
 #include "data.hpp"
@@ -8,6 +7,7 @@
 #include "editor.hpp"
 #include "editorflags.hpp"
 #include "filehandler.hpp"
+#include "configs.hpp"
 
 class Sustext{
     public:
@@ -26,5 +26,3 @@ class Sustext{
 
         int Initialize();
 };
-
-#endif // __SUSTEXT_HPP

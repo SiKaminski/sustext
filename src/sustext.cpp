@@ -5,7 +5,7 @@ Sustext::Sustext(int _argc, char** _argv){
 	argv = _argv;
 }
 
-Sustext::~Sustext(){}
+Sustext::~Sustext() {}
 
 int Sustext::Initialize(){
 	editor.Init(argc, argv);

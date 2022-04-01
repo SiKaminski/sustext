@@ -1,11 +1,12 @@
-#ifndef __EDITOR_HPP
-#define __EDITOR_HPP
+#pragma once
 
 #include "defines.hpp"
 #include "data.hpp"
 #include "appendbuffer.hpp"
 #include "terminal.hpp"
 #include "editorflags.hpp"
+#include "prototypes.hpp"
+#include "configs.hpp"
 
 class Editor{
     public:
@@ -181,5 +182,3 @@ class Editor{
         */
         void SetStatusMessage(const char* fmt...);	
 };
-
-#endif // __EDITOR_HPP

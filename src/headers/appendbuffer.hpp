@@ -1,6 +1,4 @@
-#ifndef __APPEND_BUFFER_HPP
-#define __APPEND_BUFFER_HPP
-
+#pragma once
 #include "defines.hpp"
 
 namespace AppendBuffer{
@@ -27,5 +25,3 @@ namespace AppendBuffer{
      */
     void abFree(struct abuf *ab);
 }
-
-#endif // __APPEND_BUFFER_HPP
