@@ -17,5 +17,6 @@ typedef struct SUSTEXT_EDITOR_CONFIG{
 	char* 	filepath;
 	char	statusmsg[80];
 	time_t 	statusmsg_time;	// time out limit for status message
+	struct EditorSyntax* syntax;
 	struct termios orig_termios;
 }EditorConfig;

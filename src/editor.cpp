@@ -21,6 +21,7 @@ void Editor::Init(int argc, char** argv){
 	E.statusmsg[0] = '\0';
 	E.statusmsg_time = 0;
 	E.dirty = 0;
+	E.syntax = NULL;
 
 	if(Terminal::getWindowSize(&E.screenRows, &E.screenCols) == -1) Terminal::die("getWindowSize");
 	E.screenRows -= 2; //Account for status bar sapce so it won't be drawn over
@@ -496,11 +497,13 @@ void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 void Editor::DrawStatusBar(struct AppendBuffer::abuf* ab){
 	AppendBuffer::abAppend(ab, "\x1b[7m", 4);
 	char status[80], rstatus[80];
+	
 	int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
 		E.filepath ? E.filepath : "[No Name]", E.numrows,
 		E.dirty ? "(modified)" : "");
-	int rlen = snprintf(rstatus, sizeof(rstatus), "%d:%d,%d",
-		E.cy + 1, E.rx + 1, E.numrows);
+	
+	int rlen = snprintf(rstatus, sizeof(rstatus), "%s | %d/%d",
+		E.syntax ? E.syntax->filetype : "no ft", E.cy + 1, E.numrows);
 	if(len > E.screenCols) len = E.screenCols;
 	
 	AppendBuffer::abAppend(ab, status, len);
@@ -559,13 +562,97 @@ void Editor::UpdateSyntax(erow* row){
 	row->highlight = (unsigned char*)realloc(row->highlight, row->rsize);
 	memset(row->highlight, HL_NORMAL, row->rsize);
 	
-	
+	if(E.syntax == NULL) return;
+
+	char* scs = E.syntax->singleline_comment_start;
+	int scs_len = scs ? strlen(scs) : 0;
+
+	int prevSep = 1;
+	int inString = 0;
+
+	int i = 0;
+	while(i < row->size){
+		char c = row->render[i];
+		unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : HL_NORMAL;
+
+		if(scs_len && inString){
+			if(!strncmp(&row->render[i], scs, scs_len)){
+				memset(&row->highlight[i], HL_COMMENT, row->size - i);
+				break;
+			}
+		}
+
+		if(E.syntax->flags & HL_HIGHLIGHT_STRINGS){
+			if(inString){
+				row->highlight[i] = HL_STRING;
+				if(c == '\\' && i + 1 < row->rsize){
+					row->highlight[i + 1] = HL_STRING;
+					i += 2;
+					continue;
+				}
+				i++;
+				prevSep = 0;
+				continue;
+			} else {
+				if(c == '"' || c == '\''){
+					inString = c;
+					row->highlight[i] = HL_STRING;
+					i++;
+					continue;
+				}
+			}
+		}
+
+		if(E.syntax->flags & HL_HIGHLIGHT_NUMBERS){
+			if ((isdigit(c) && prevSep || (prevHL == HL_NUMBER)) ||
+				(c == '.' && prevHL == HL_NUMBER)){
+				row->highlight[i] = HL_NUMBER;
+				i++;
+				prevSep = 0;
+				continue;
+			}
+		}
+
+		prevSep = isSeperator(c);
+		i++;
+	}
 }
 
 int Editor::SyntaxToColor(int highlight){
 	switch(highlight){
+		case HL_COMMENT: return 36;
+		case HL_STRING: return 35;
 		case HL_NUMBER: return 31;
 		case HL_MATCH: return 34;
-		default: 37;
+		default: return 37;
+	}
+}
+
+int isSeperator(int c){
+	return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
+}
+
+void Editor::SelectSyntaxHighlight(){
+	E.syntax = NULL;
+	if(E.filepath == NULL) return;
+
+	char* ext = strrchr(E.filepath, '.');
+
+	for(unsigned int j = 0; j < HLDB_ENTRIES; j++){
+		struct EditorSyntax* s = &HLDB[j];
+		unsigned int i = 0;
+		while(s->filematch[i]){
+		int is_ext = (s->filematch[i][0] == '.');
+		if ((is_ext && ext && !strcmp(ext, s->filematch[i])) ||
+			(!is_ext && strstr(E.filepath, s->filematch[i]))){
+				E.syntax = s;
+
+				for(int filerow = 0; filerow < E.numrows; filerow++){
+					UpdateSyntax(&E.row[filerow]);
+				}
+				return;
+			}
+			i++;
+		}
 	}
 }

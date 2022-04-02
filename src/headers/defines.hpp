@@ -34,6 +34,9 @@
 #define FLAGS_INIT {false, false}
 #define ARGS_INIT {nullptr}
 
+#define HL_HIGHLIGHT_NUMBERS (1<<0)
+#define HL_HIGHLIGHT_STRINGS (1<<1)
+
 typedef u_int64_t uint64_t;
 
 enum editorKey{
@@ -51,6 +54,8 @@ enum editorKey{
 
 enum editorHighlight{
 	HL_NORMAL = 0,
+	HL_COMMENT,
+	HL_STRING,
 	HL_NUMBER,
 	HL_MATCH
 };

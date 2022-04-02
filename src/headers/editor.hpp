@@ -185,4 +185,6 @@ class Editor{
         void UpdateSyntax(erow* row);
 
         int SyntaxToColor(int highlight);
+
+        void SelectSyntaxHighlight();
 };

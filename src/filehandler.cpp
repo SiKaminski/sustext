@@ -7,6 +7,7 @@ int FileHandler::OpenFile(char* filepath, Editor* editor){
     //Open a file in read mode
 	free(editor->E.filepath);
 	editor->E.filepath = strdup(filepath);
+	editor->SelectSyntaxHighlight();
 	FILE* fp = fopen(editor->E.filepath, "r"); 		// This line will eventually change
 	if(!fp) Terminal::die("fopen");
 
@@ -37,6 +38,7 @@ int FileHandler::SaveFile(Editor* editor){
 			editor->SetStatusMessage("Save Aborted");
 			return 0;
 		}
+		editor->SelectSyntaxHighlight();
 	}
 
 	int len;
