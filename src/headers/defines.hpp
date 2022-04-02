@@ -28,7 +28,7 @@
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define SUSTEXT_VERSION "v1.2.5"
-#define SUSTEXT_TAB_STOP 4
+#define SUSTEXT_TAB_STOP 8
 #define SUSTEXT_QUIT_TIMES 1
 
 #define FLAGS_INIT {false, false}
@@ -47,4 +47,10 @@ enum editorKey{
 	END_KEY,
 	PAGE_UP,
 	PAGE_DOWN
+};
+
+enum editorHighlight{
+	HL_NORMAL = 0,
+	HL_NUMBER,
+	HL_MATCH
 };

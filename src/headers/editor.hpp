@@ -181,4 +181,8 @@ class Editor{
         * @param fmt 
         */
         void SetStatusMessage(const char* fmt...);	
+        
+        void UpdateSyntax(erow* row);
+
+        int SyntaxToColor(int highlight);
 };

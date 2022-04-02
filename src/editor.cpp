@@ -94,6 +94,15 @@ char* Editor::Prompt(char* prompt, void(*callback)(char* query, int key, EditorC
 void FindCallBack(char* query, int key, EditorConfig* E){
 	static int lastMatch = -1;
 	static int direction = 1;
+
+	static int savedHighlightLine;
+	static char* savedHighlight = NULL;
+
+	if(savedHighlight){
+		memcpy(E->row[savedHighlightLine].highlight, savedHighlight, E->row[savedHighlightLine].rsize);
+		free(savedHighlight);
+		savedHighlight = NULL;
+	}
 	
 	if(key == '\r' || key == '\x1b'){
 		lastMatch = -1;
@@ -121,6 +130,11 @@ void FindCallBack(char* query, int key, EditorConfig* E){
 			E->cy = current;
 			E->cx = RowRxToCx(row, match - row->render);
 			E->rowOff = E->numrows;
+
+			savedHighlightLine = current;
+			savedHighlight = (char*)malloc(row->rsize);
+			memcpy(savedHighlight, row->highlight, row->rsize);
+			memset(&row->highlight[match - row->render], HL_MATCH, strlen(query));
 			break;
 		}
 	}
@@ -164,6 +178,8 @@ void Editor::UpdateRow(erow* row){
 	}
 	row->render[i] = '\0';
 	row->rsize = i;
+
+	UpdateSyntax(row);
 }
 
 void Editor::InsertRow(int at, char* s, size_t len){
@@ -180,6 +196,7 @@ void Editor::InsertRow(int at, char* s, size_t len){
 	// Initialize render for buffer
 	E.row[at].rsize = 0;
 	E.row[at].render = NULL;
+	E.row[at].highlight = NULL;
 	UpdateRow(&E.row[at]);
 
 	E.numrows++;
@@ -262,6 +279,7 @@ void Editor::DeleteChar(){
 void Editor::FreeRow(erow* row){
 	free(row->render);
 	free(row->chars);
+	free(row->highlight);
 }
 
 /*---- INPUT ----*/
@@ -442,7 +460,28 @@ void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 			// Prevent the length for being a negative number
 			if(len < 0) len = 0;
 			if(len > E.screenCols) len = E.screenCols;
-			AppendBuffer::abAppend(ab, &E.row[filerow].render[E.colOff], len);
+			char* c = &E.row[filerow].render[E.colOff];
+			unsigned char* highlight = &E.row[filerow].highlight[E.colOff];
+			int currentColor = -1;
+			for(int j = 0; j < len; j++){
+				if(highlight[j] == HL_NORMAL){
+					if(currentColor == -1){
+						AppendBuffer::abAppend(ab, "\x1b[39m", 5);
+						currentColor = -1;
+					}
+					AppendBuffer::abAppend(ab, &c[j], 1);
+				} else {
+					int color = SyntaxToColor(highlight[j]);
+					if(color != currentColor){
+						currentColor = color;
+						char buf[16];
+						int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", color);
+						AppendBuffer::abAppend(ab, buf, clen);
+					}
+					AppendBuffer::abAppend(ab, &c[j], 1);
+				}
+			}
+			AppendBuffer::abAppend(ab, "\x1b[39m", 5);
 		}
 
 		// Since everything for the row is appended to the buffer everything 
@@ -514,4 +553,19 @@ void Editor::SetStatusMessage(const char* fmt...){
 	vsnprintf(E.statusmsg, sizeof(E.statusmsg), fmt, ap);
 	va_end(ap);
 	E.statusmsg_time = time(NULL);
+}
+
+void Editor::UpdateSyntax(erow* row){
+	row->highlight = (unsigned char*)realloc(row->highlight, row->rsize);
+	memset(row->highlight, HL_NORMAL, row->rsize);
+	
+	
+}
+
+int Editor::SyntaxToColor(int highlight){
+	switch(highlight){
+		case HL_NUMBER: return 31;
+		case HL_MATCH: return 34;
+		default: 37;
+	}
 }
