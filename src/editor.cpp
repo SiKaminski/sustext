@@ -1,8 +1,5 @@
 #include "headers/editor.hpp"
 
-int RowCxToRx(erow* row, int rx);
-int RowRxToCx(erow* row, int rx);
-
 Editor::Editor() {}
 Editor::~Editor() {}
 
@@ -51,6 +48,10 @@ int RowRxToCx(erow* row, int rx){
 	}
 	
 	return cx;
+}
+
+int isSeperator(int c){
+	return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
 }
 
 char* Editor::Prompt(char* prompt, void(*callback)(char* query, int key, EditorConfig*)){
@@ -141,8 +142,7 @@ void FindCallBack(char* query, int key, EditorConfig* E){
 	}
 }
 
-void Editor::Find(){
-	
+void Editor::Find(){	
 	int savedCx = E.cx;
 	int savedCy = E.cy;
 	int savedColOff = E.colOff;
@@ -187,6 +187,9 @@ void Editor::InsertRow(int at, char* s, size_t len){
 	if(at < 0 || at > E.numrows) return;
 	E.row = (erow*)realloc(E.row, sizeof(erow) * (E.numrows + 1));
 	memmove(&E.row[at + 1], &E.row[at], sizeof(erow) * (E.numrows - at));
+	for(int i = at + 1; i <= E.numrows; i++) E.row[i].idx++;
+
+	E.row[at].idx = at;
 
 	E.row[at].size = len;
 	E.row[at].chars = (char*)malloc(len+1);
@@ -198,6 +201,7 @@ void Editor::InsertRow(int at, char* s, size_t len){
 	E.row[at].rsize = 0;
 	E.row[at].render = NULL;
 	E.row[at].highlight = NULL;
+	E.row[at].hl_open_comment = 0;
 	UpdateRow(&E.row[at]);
 
 	E.numrows++;
@@ -249,6 +253,7 @@ void Editor::DeleteRow(int at){
 	if(at < 0 || at >= E.numrows) return;
 	FreeRow(&E.row[at]);
 	memmove(&E.row[at], &E.row[at + 1], sizeof(erow) * (E.numrows - at - 1));
+	for(int i = at; E.numrows - 1; i++) E.row[i].idx--;
 	E.numrows--;
 	E.dirty++;
 }
@@ -465,7 +470,18 @@ void Editor::DrawRows(struct AppendBuffer::abuf *ab) {
 			unsigned char* highlight = &E.row[filerow].highlight[E.colOff];
 			int currentColor = -1;
 			for(int j = 0; j < len; j++){
-				if(highlight[j] == HL_NORMAL){
+				if(iscntrl(c[j])){
+					// NULL character check
+					char sym = (c[j] <= 26) ? '@' + c[j] : '?';
+					AppendBuffer::abAppend(ab, "\x1b[7m", 4);
+					AppendBuffer::abAppend(ab, &sym, 1);
+					AppendBuffer::abAppend(ab, "\x1b[m", 3);
+					if(currentColor != -1){
+						char buf[16];
+						int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", currentColor);
+						AppendBuffer::abAppend(ab, buf, clen);
+					}
+				} else if(highlight[j] == HL_NORMAL){
 					if(currentColor == -1){
 						AppendBuffer::abAppend(ab, "\x1b[39m", 5);
 						currentColor = -1;
@@ -564,21 +580,50 @@ void Editor::UpdateSyntax(erow* row){
 	
 	if(E.syntax == NULL) return;
 
+	char** keywords = E.syntax->keywords;
+
 	char* scs = E.syntax->singleline_comment_start;
-	int scs_len = scs ? strlen(scs) : 0;
+	char* mcs = E.syntax->multiline_comment_start;
+	char* mce = E.syntax->multiline_comment_end;
+
+	int scsLen = scs ? strlen(scs) : 0;
+	int mcsLen = mcs ? strlen(mcs) : 0;
+	int mceLen = mce ? strlen(mce) : 0;
 
 	int prevSep = 1;
 	int inString = 0;
+	int inComment = (row->idx > 0 && E.row[row->idx - 1].hl_open_comment);
 
 	int i = 0;
 	while(i < row->size){
 		char c = row->render[i];
 		unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : HL_NORMAL;
 
-		if(scs_len && inString){
-			if(!strncmp(&row->render[i], scs, scs_len)){
-				memset(&row->highlight[i], HL_COMMENT, row->size - i);
+		if(scsLen && !inString && !inComment){
+			if(!strncmp(&row->render[i], scs, scsLen)){
+				memset(&row->highlight[i], HL_COMMENT, row->rsize - i);
 				break;
+			}
+		}
+
+		if(mcsLen && mceLen && !inString){
+			if(inComment){
+				row->highlight[i] = HL_MLCOMMENT;
+				if(!strncmp(&row->render[i], mce, mceLen)){
+					memset(&row->highlight[i], HL_MLCOMMENT, mceLen);
+					i += mceLen;
+					inComment = 0;
+					prevSep = 1;
+					continue;;
+				} else {
+					i++;
+					continue;
+				}
+			} else if (!strncmp(&row->render[i], mcs, mcsLen)){
+				memset(&row->highlight[i], HL_MLCOMMENT, mcsLen);
+				i += mcsLen;
+				inComment = 1;
+				continue;
 			}
 		}
 
@@ -590,8 +635,9 @@ void Editor::UpdateSyntax(erow* row){
 					i += 2;
 					continue;
 				}
+				if(c == inString) inString = 0;
 				i++;
-				prevSep = 0;
+				prevSep = 1;
 				continue;
 			} else {
 				if(c == '"' || c == '\''){
@@ -613,23 +659,49 @@ void Editor::UpdateSyntax(erow* row){
 			}
 		}
 
+		if(prevSep){
+			int j;
+			for(j = 0; keywords[j]; j++){
+				int kLen = strlen(keywords[j]);
+				int kw2 = keywords[j][kLen - 1] == '|';
+				if(kw2) kLen--;
+
+				if(!strncmp(&row->render[i], keywords[j], kLen) &&
+					isSeperator(row->render[i + kLen])){
+					
+					memset(&row->highlight[i], kw2 ? HL_KEYWORD_2 : HL_KEYWORD_1, kLen);
+					i += kLen;
+					break;
+				}
+			}
+			if(keywords[j] != NULL){
+				prevSep = 0;
+				continue;
+			}
+		}
+
 		prevSep = isSeperator(c);
 		i++;
+	}
+
+	int changed = (row->hl_open_comment != inComment);
+	row->hl_open_comment = inComment;
+	if(changed && row->idx + 1 < E.numrows){
+		UpdateSyntax(&E.row[row->idx + 1]);
 	}
 }
 
 int Editor::SyntaxToColor(int highlight){
 	switch(highlight){
-		case HL_COMMENT: return 36;
-		case HL_STRING: return 35;
-		case HL_NUMBER: return 31;
-		case HL_MATCH: return 34;
-		default: return 37;
+		case HL_COMMENT: 
+		case HL_MLCOMMENT: return FG_CYAN;
+		case HL_KEYWORD_1: return FG_YELLOW;
+		case HL_KEYWORD_2: return FG_GREEN;
+		case HL_STRING: return FG_MAGENTA;
+		case HL_NUMBER: return FG_RED;
+		case HL_MATCH: return FG_BLUE;
+		default: return FG_WHITE;
 	}
-}
-
-int isSeperator(int c){
-	return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
 }
 
 void Editor::SelectSyntaxHighlight(){

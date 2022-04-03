@@ -7,6 +7,7 @@
 #include "editorflags.hpp"
 #include "prototypes.hpp"
 #include "configs.hpp"
+#include "colors.hpp"
 
 class Editor{
     public:

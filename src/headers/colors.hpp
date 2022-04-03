@@ -2,45 +2,49 @@
 
 /* These colors are based off ubuntu terminal colors */
 
-/* 3-4 bit colors
-Foreground
-    Black   30
-    Red     31
-    Green   32
-    Yellow  33
-    Blue    34
-    Magenta 35
-    Cyan    36
-    White   37
-    Gray    90
-    Bright Red      91
-    Bright Green    92
-    Bright Yellow   93
-    Bright Blue     94
-    Bright Magenta  95
-    Bright Cyan     96
-    Bright White    97
+enum SustextHighlights{
+    HL_NORMAL = 0,
+	HL_COMMENT,
+    HL_MLCOMMENT,
+    HL_KEYWORD_1,
+    HL_KEYWORD_2,
+	HL_STRING,
+	HL_NUMBER,
+	HL_MATCH
+};
 
-Background
-    Black   40
-    Red     41
-    Green   42
-    Yellow  43
-    Blue    44
-    Magenta 45
-    Cyan    46
-    White   47
-    Gray    100
-    Bright Red      101
-    Bright Green    102
-    Bright Yellow   103
-    Bright Blue     104
-    Bright Magenta  105
-    Bright Cyan     106
-    Bright White    107
+enum SustextConsoleColors{
+    FG_BLACK = 30,
+    FG_RED,
+    FG_GREEN,
+    FG_YELLOW,
+    FG_BLUE,
+    FG_MAGENTA,
+    FG_CYAN,
+    FG_WHITE,
+    FG_GRAY = 90,
+    FG_BRIGHT_RED,
+    FG_BRIGHT_GREEN,
+    FG_BRIGHT_YELLOW,
+    FG_BRIGHT_BLUE,
+    FG_BRIGHT_MAGENTA,
+    FG_BRIGHT_CYAN,
+    FG_BRIGHT_WHITE,
 
-*/
-
-/* TODO
-Add support for 256 Colors
-*/
+    BG_BLACK = 40,
+    BG_RED,
+    BG_GREEN,
+    BG_YELLOW,
+    BG_BLUE,
+    BG_MAGENTA,
+    BG_CYAN,
+    BG_WHITE,
+    BG_GRAY = 100,
+    BG_BRIGHT_RED,
+    BG_BRIGHT_GREEN,
+    BG_BRIGHT_YELLOW,
+    BG_BRIGHT_BLUE,
+    BG_BRIGHT_MAGENTA,
+    BG_BRIGHT_CYAN,
+    BG_BRIGHT_WHITE,
+};
