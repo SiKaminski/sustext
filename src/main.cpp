@@ -1,4 +1,8 @@
 #include "sustext.hpp"
+#include "globals.hpp"
+
+EditorConfig E;
+TerminalConfig gTerminalConfig;
 
 int main(int argc, char** argv){
     Sustext sustext = Sustext(argc, argv);

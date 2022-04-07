@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __FILEHANDLER_HPP
+#define __FILEHANDLER_HPP
 
 #include "defines.hpp"
 #include "data.hpp"
@@ -13,3 +15,5 @@ class FileHandler{
         int OpenFile(char* filename, Editor* editor);
         int SaveFile(Editor* editor);
 };
+
+#endif // __FILEHANDLER_HPP

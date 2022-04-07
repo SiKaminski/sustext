@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __DATA_HPP
+#define __DATA_HPP
 
 #include "defines.hpp"
 
@@ -41,3 +43,5 @@ static struct EditorSyntax HLDB[] = {
 };
 
 #define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
+
+#endif // _DATA_HPP

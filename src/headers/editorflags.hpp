@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __EDITORFLAGS_HPP
+#define __EDITORFLAGS_HPP
 
 #include "defines.hpp"
 #include <unistd.h>
@@ -46,3 +48,5 @@ class SusFlags{
          */
         bool Enabled(int flag);
 };
+
+#endif // __EDITORFLAGS_HPP

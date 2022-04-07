@@ -1,11 +1,13 @@
 #pragma once
+#ifndef __TERMINAL_HPP
+#define __TERMINAL_HPP
 
+#include "globals.hpp"
 #include "defines.hpp"
 #include "data.hpp"
 #include "configs.hpp"
 
 namespace Terminal{
-    static EditorConfig E;
 
     /**
      * Initialize the editor functions 
@@ -56,3 +58,5 @@ namespace Terminal{
      */
     int getWindowSize(int *rows, int *cols);
 }
+
+#endif // __TERMINAL_HPP

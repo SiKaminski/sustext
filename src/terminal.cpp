@@ -12,17 +12,17 @@ void Terminal::die(const char* s){
 
 void Terminal::disableRawMode(){
 	//Set the attributes of the terminal back to its origional state
-	if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1) die("tcsetattr");
+	if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &gTerminalConfig.orig_termios) == -1) die("tcsetattr");
 	system("clear");
 }
 
 void Terminal::enableRawMode(){
 	//Store origional termios attribs, if there is an error disable raw mode and exit
-	if(tcgetattr(STDIN_FILENO, &E.orig_termios) == -1) die("tcgetattr");
+	if(tcgetattr(STDIN_FILENO, &gTerminalConfig.orig_termios) == -1) die("tcgetattr");
 	atexit(disableRawMode);
 
 	//Define a new terminal
-	struct termios raw = E.orig_termios;
+	struct termios raw = gTerminalConfig.orig_termios;
 
 	//Disable flags to leave canonical mode
 	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);

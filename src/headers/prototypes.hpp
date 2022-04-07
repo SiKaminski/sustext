@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __PROTOTYPES_HPP
+#define __PROTOTYPES_HPP
 
 #include "data.hpp"
 #include "configs.hpp"
@@ -13,3 +15,5 @@ void FindCallBack(char* query, int key, EditorConfig* E);
 //Syntax Highlighting
 int isSeperator(int c);
 void SelectSyntaxHighlight();
+
+#endif // __PROTOTYPES_HPP

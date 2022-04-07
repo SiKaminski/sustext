@@ -1,5 +1,8 @@
 #pragma once
+#ifndef __EDITOR_HPP
+#define __EDITOR_HPP
 
+#include "globals.hpp"
 #include "defines.hpp"
 #include "data.hpp"
 #include "appendbuffer.hpp"
@@ -11,7 +14,6 @@
 
 class Editor{
     public:
-        EditorConfig E;
         SusFlags flags;
 
     public:
@@ -189,3 +191,5 @@ class Editor{
 
         void SelectSyntaxHighlight();
 };
+
+#endif // __EDITOR_HPP

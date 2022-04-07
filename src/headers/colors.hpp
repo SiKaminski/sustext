@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __COLORS_HPP
+#define __COLORS_HPP
 
 /* These colors are based off ubuntu terminal colors */
 
@@ -48,3 +50,5 @@ enum SustextConsoleColors{
     BG_BRIGHT_CYAN,
     BG_BRIGHT_WHITE,
 };
+
+#endif // __COLORS_HPP
