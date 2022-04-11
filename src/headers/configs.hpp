@@ -5,7 +5,7 @@
 #include "defines.hpp"
 #include "data.hpp"
 
-typedef struct SUSTEXT_EDITOR_CONFIG{
+typedef struct SUSTEXT_EDITOR_CONFIG {
 	int 	cx;
 	int 	cy;  
 	int 	rx;	
@@ -22,7 +22,7 @@ typedef struct SUSTEXT_EDITOR_CONFIG{
 	struct EditorSyntax* syntax;
 }EditorConfig;
 
-typedef struct SUSTEXT_TERMINAL_CONFIG{
+typedef struct SUSTEXT_TERMINAL_CONFIG {
 	struct termios orig_termios;
 }TerminalConfig;
 

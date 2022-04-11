@@ -41,7 +41,7 @@
 
 typedef u_int64_t uint64_t;
 
-enum editorKey{
+enum editorKey {
 	BACKSPACE = 127,
 	ARROW_LEFT = 1000,
 	ARROW_RIGHT,

@@ -19,6 +19,7 @@ SRCS = $(call rwildcard, $(SRC_DIR), *.cpp)
 OBJ = $(addprefix $(BUILD_DIR)/, $(OBJNAME))
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
+sussy: all
 all: $(OBJ)
 	@mkdir -p $(@D)
 	@echo ---- Generating $^ ---
@@ -37,6 +38,7 @@ setup:
 	@mkdir $(OBJ_DIR)
 	@mkdir $(BUILD_DIR)
 
+lean: clean
 clean:
 	rm -rf $(BUILD_DIR)/
 	rm -rf $(OBJ_DIR)/

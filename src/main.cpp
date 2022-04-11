@@ -4,14 +4,14 @@
 EditorConfig E;
 TerminalConfig gTerminalConfig;
 
-int main(int argc, char** argv){
+int main(int argc, char **argv)
+{
     Sustext sustext = Sustext(argc, argv);
     sustext.Initialize();
 
-    while(true){
-        if(sustext.editor.flags.Enabled(FILESAVE)){
+    while (true) {
+        if (sustext.editor.flags.Enabled(FILESAVE))
             sustext.filehandler.SaveFile(&sustext.editor);
-        }
         sustext.editor.RefreshScreen();
         sustext.editor.ProcessKeypress();
     } 

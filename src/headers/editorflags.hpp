@@ -5,7 +5,7 @@
 #include "defines.hpp"
 #include <unistd.h>
 
-enum EditorFlags{
+enum EditorFlags {
     MODE_READ   = 0x0001,
     MODE_WRITE  = 0x0002,
     MODE_SUS    = 0x0004,
@@ -16,14 +16,14 @@ enum EditorFlags{
 };
 
 // funny name ඞ
-class SusFlags{
-    
+class SusFlags
+{    
     public:
-        struct ArgumentOutput{
+        struct ArgumentOutput {
             char* filepath;
         };
-        uint64_t activeFlags;
 
+        uint64_t activeFlags;
         ArgumentOutput argout;
 
     public:

@@ -4,7 +4,7 @@
 
 #include "defines.hpp"
 
-typedef struct erow{
+typedef struct erow {
 	int 	idx;
 	int 	size;
 	int		rsize;
@@ -14,7 +14,7 @@ typedef struct erow{
 	int 	hl_open_comment;
 }erow;
 
-struct EditorSyntax{
+struct EditorSyntax {
 	char* filetype;
 	char** filematch;
 	char** keywords;

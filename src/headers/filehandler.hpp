@@ -7,7 +7,8 @@
 #include "editor.hpp"
 #include "configs.hpp"
 
-class FileHandler{
+class FileHandler
+{
     public:
         FileHandler();
         ~FileHandler();

@@ -11,14 +11,15 @@
 #include "filehandler.hpp"
 #include "configs.hpp"
 
-class Sustext{
+class Sustext
+{
     public:
-    int argc;
-    char** argv;
+        int argc;
+        char** argv;
 
-    SusFlags flags;
-    FileHandler filehandler;
-    Editor editor;
+        SusFlags flags;
+        FileHandler filehandler;
+        Editor editor;
 
     public:
         Sustext(int _argc, char** _argv);

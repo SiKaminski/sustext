@@ -12,7 +12,8 @@
 #include "configs.hpp"
 #include "colors.hpp"
 
-class Editor{
+class Editor
+{
     public:
         SusFlags flags;
 

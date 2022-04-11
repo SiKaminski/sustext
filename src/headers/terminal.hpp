@@ -7,7 +7,8 @@
 #include "data.hpp"
 #include "configs.hpp"
 
-namespace Terminal{
+namespace Terminal
+{
 
     /**
      * Initialize the editor functions 
