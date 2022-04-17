@@ -2,8 +2,9 @@
 #ifndef __EDITORFLAGS_HPP
 #define __EDITORFLAGS_HPP
 
-#include "defines.hpp"
+#include <stdio.h>
 #include <unistd.h>
+#include "defines.hpp"
 
 enum EditorFlags {
     MODE_READ   = 0x0001,
@@ -38,7 +39,6 @@ class SusFlags
          * @return (int) status code
          */
         int InitFlags(int argc, char** argv);
-
         void SetFlags(int flags, bool on);
 
         /**

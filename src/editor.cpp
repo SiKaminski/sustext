@@ -824,7 +824,7 @@ void Editor::SelectSyntaxHighlight()
 	char* ext = strrchr(E.filepath, '.');
 
 	for (unsigned int j = 0; j < HLDB_ENTRIES; j++) {
-		struct EditorSyntax* s = &HLDB[j];
+		EditorSyntax* s = &HLDB[j];
 		unsigned int i = 0;
 
 		while (s->filematch[i]) {

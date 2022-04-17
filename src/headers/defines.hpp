@@ -15,18 +15,23 @@
 #define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <termios.h>
-#include <sys/types.h>
-#include <time.h>
-#include <stdarg.h>
-#include <fcntl.h>
+/* TODO
+Move includes into their own respective files rather
+than forcing them into every single file even though they
+don't need to be there
+*/
+// #include <ctype.h>
+// #include <errno.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <sys/ioctl.h>
+// #include <unistd.h>
+// #include <termios.h>
+// #include <sys/types.h>
+// #include <time.h>
+// #include <stdarg.h>
+// #include <fcntl.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define SUSTEXT_VERSION "v1.2.6"

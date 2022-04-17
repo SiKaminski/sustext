@@ -8,6 +8,7 @@ OBJ_DIR = obj
 #Compiler and linker things
 CC = g++
 CCFLAGS = -g -Wall -Wextra
+CCFLAGS += -Wno-write-strings # figure out how to make a make recipe for suppressed warnings rather than forcing it
 LD = ld
 LDFLAGS = 
 

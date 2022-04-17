@@ -2,7 +2,8 @@
 #ifndef __APPENDBUFFER_HPP
 #define __APPENDBUFFER_HPP
 
-#include "defines.hpp"
+#include <stdlib.h>
+#include <string.h>
 
 namespace AppendBuffer
 {

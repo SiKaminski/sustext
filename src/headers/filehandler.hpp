@@ -2,6 +2,9 @@
 #ifndef __FILEHANDLER_HPP
 #define __FILEHANDLER_HPP
 
+#include <fcntl.h>
+#include <errno.h>
+
 #include "defines.hpp"
 #include "data.hpp"
 #include "editor.hpp"

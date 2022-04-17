@@ -2,6 +2,10 @@
 #ifndef __EDITOR_HPP
 #define __EDITOR_HPP
 
+#include <ctype.h>
+#include <stdio.h>
+#include <time.h>
+
 #include "globals.hpp"
 #include "defines.hpp"
 #include "data.hpp"
@@ -36,7 +40,6 @@ class Editor
         * @return char* 
         */
         char* Prompt(char* prompt, void(*callback)(char*, int, EditorConfig*));
-
         void Find();
     
         /**
@@ -185,12 +188,11 @@ class Editor
         * @param fmt 
         */
         void SetStatusMessage(const char* fmt...);	
-        
         void UpdateSyntax(erow* row);
-
         int SyntaxToColor(int highlight);
-
         void SelectSyntaxHighlight();
 };
+
+// extern Editor editor;
 
 #endif // __EDITOR_HPP
