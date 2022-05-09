@@ -24,8 +24,9 @@ int main(int argc, char** argv)
 
 void Sustext::Initialize(int argc, char** argv)
 {
-	// Initialize editor
-	// Enable raw mode (terminal)
+	// Initialize editor and terminal
+	Editor::Initialize(argc, argv);
+	Terminal::enableRawMode();
 
 	if (argc >= 2) {
 		// Check for file in
