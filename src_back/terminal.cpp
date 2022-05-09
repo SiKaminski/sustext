@@ -1,4 +1,4 @@
-#include "terminal.h"
+#include "headers/terminal.h"
 
 #include <ctype.h>
 #include <errno.h>
@@ -12,9 +12,6 @@
 #include <time.h>
 #include <stdarg.h>
 #include <fcntl.h>
-
-#include "editor.h"
-#include "globals.h"
 
 void Terminal::die(const char* s)
 {
@@ -30,7 +27,7 @@ void Terminal::die(const char* s)
 void Terminal::disableRawMode()
 {
 	//Set the attributes of the terminal back to its origional state
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tConfig.OriginalTermios) == -1)
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1)
 		die("tcsetattr");
 
 	system("clear");
@@ -39,13 +36,13 @@ void Terminal::disableRawMode()
 void Terminal::enableRawMode()
 {
 	//Store origional termios attribs, if there is an error disable raw mode and exit
-	if (tcgetattr(STDIN_FILENO, &tConfig.OriginalTermios) == -1)
+	if (tcgetattr(STDIN_FILENO, &E.orig_termios) == -1)
 		die("tcgetattr");
 
 	atexit(disableRawMode);
 
 	//Define a new terminal
-	struct termios raw = tConfig.OriginalTermios;
+	struct termios raw = E.orig_termios;
 
 	//Disable flags to leave canonical mode
 	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -63,7 +60,6 @@ void Terminal::enableRawMode()
 
 int Terminal::editorReadKey()
 {
-	using namespace Editor;
 	int nread;
 	char c;
 	while ((nread = read(STDIN_FILENO , &c, 1)) != 1) {

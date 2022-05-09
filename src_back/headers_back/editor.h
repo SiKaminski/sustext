@@ -1,14 +1,15 @@
-#ifndef __EDITOR_HPP
-#define __EDITOR_HPP
+#pragma once
+#ifndef __EDITOR_H
+#define __EDITOR_H
 
-#include "defines.hpp"
-#include "appendbuffer.hpp"
-#include "terminal.hpp"
-#include "editorflags.hpp"
-#include "data.hpp"
+#include "appendbuffer.h"
+#include "editorflags.h"
+#include "configs.h"
 
-class Editor{
+class Editor
+{
     public:
+        EditorConfig E;
         SusFlags flags;
 
     public:
@@ -22,26 +23,16 @@ class Editor{
         */
         void Init(int argc, char** argv);
     
-        /*---- ROW OPERATIONS ----*/
-    
         /**
-         * Convert the cursor x position given as an input
-        * int a render index 
-        * 
-        * @param row 
-        * @param cx 
-        * @return int (rx)
-        */
-        int RowCxToRx(erow* row, int cx);
-        
-        /**
-         * Display a prompt to the user on the bottom portion
+        * Display a prompt to the user on the bottom portion
         * of the status bar 
         * 
         * @param prompt 
         * @return char* 
         */
-        char* Prompt(char* prompt);
+        char* Prompt(char* prompt, void(*callback)(char*, int, EditorConfig*));
+
+        void Find();
     
         /**
          * fill contents of render stream 
@@ -125,8 +116,8 @@ class Editor{
         */
         void FreeRow(erow* row);
     
-        void Find();
-
+    
+    
         /*---- INPUTS ----*/
     
         /**
@@ -189,6 +180,12 @@ class Editor{
         * @param fmt 
         */
         void SetStatusMessage(const char* fmt...);	
+        
+        void UpdateSyntax(erow* row);
+
+        int SyntaxToColor(int highlight);
+
+        void SelectSyntaxHighlight();
 };
 
-#endif // __EDITOR_HPP
+#endif // __EDITOR_H

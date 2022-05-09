@@ -1,16 +1,14 @@
-#ifndef __DATA_HPP
-#define __DATA_HPP
-#include "defines.hpp"
+#pragma once
+#ifndef __CONFIGS_H
+#define __CONFIGS_H
 
-typedef struct erow{
-	int 	size;
-	int		rsize;
-	char* 	chars;
-	char* 	render;
-}erow;
+#include "defines.h"
+#include "data.h"
 
-struct EditorConfig{
-	int 	cx, cy, rx;	
+typedef struct SUSTEXT_EDITOR_CONFIG{
+	int 	cx;
+	int 	cy;  
+	int 	rx;	
 	int 	rowOff;
 	int 	colOff;
 	int 	screenRows;
@@ -21,7 +19,8 @@ struct EditorConfig{
 	char* 	filepath;
 	char	statusmsg[80];
 	time_t 	statusmsg_time;	// time out limit for status message
+	struct EditorSyntax* syntax;
 	struct termios orig_termios;
-};
+}EditorConfig;
 
-#endif // __DATA_HPP
+#endif // __CONFIGS_H

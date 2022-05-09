@@ -1,10 +1,19 @@
-#ifndef __TERMINAL_HPP
-#define __TERMINAL_HPP
+#pragma once
+#ifndef __TERMINAL_H
+#define __TERMINAL_H
 
-#include "defines.hpp"
-#include "data.hpp"
+// #include "defines.h"
+// #include "data.h"
+// #include "configs.h"
+#include <termios.h>
 
-namespace Terminal{
+namespace Terminal
+{
+    typedef struct {
+        struct termios OriginalTermios;
+    } ConfigData;
+    // static EditorConfig E;
+
     /**
      * Initialize the editor functions 
      */
@@ -55,4 +64,4 @@ namespace Terminal{
     int getWindowSize(int *rows, int *cols);
 }
 
-#endif // __TERMINAL_HPP
+#endif // __TERMINAL_H

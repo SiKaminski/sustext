@@ -1,5 +1,6 @@
-#ifndef __DEFINES_HPP
-#define __DEFINES_HPP
+#pragma once
+#ifndef __DEFINES_H
+#define __DEFINES_H
 
 /* Compatability check for different platforms */
 #ifndef _DEFAULT_SOURCE
@@ -14,28 +15,29 @@
 #define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <termios.h>
-#include <sys/types.h>
-#include <time.h>
-#include <stdarg.h>
-#include <fcntl.h>
+// #include <ctype.h>
+// #include <errno.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <sys/ioctl.h>
+// #include <unistd.h>
+// #include <termios.h>
+// #include <sys/types.h>
+// #include <time.h>
+// #include <stdarg.h>
+// #include <fcntl.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
-#define SUSTEXT_VERSION "v1.2.0"
-#define SUSTEXT_TAB_STOP 4
+#define SUSTEXT_VERSION "v1.2.6"
+#define SUSTEXT_TAB_STOP 8
 #define SUSTEXT_QUIT_TIMES 1
 
 #define FLAGS_INIT {false, false}
 #define ARGS_INIT {nullptr}
 
-typedef u_int64_t uint64_t;
+#define HL_HIGHLIGHT_NUMBERS (1<<0)
+#define HL_HIGHLIGHT_STRINGS (1<<1)
 
 enum editorKey{
 	BACKSPACE = 127,
@@ -50,4 +52,4 @@ enum editorKey{
 	PAGE_DOWN
 };
 
-#endif // __DEFINES_HPP
+#endif // __DEFINES_H

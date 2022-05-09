@@ -1,12 +1,9 @@
-#ifndef __SUSTEXT_HPP
-#define __SUSTEXT_HPP
+#pragma once
+#ifndef __SUSTEXT_H
+#define __SUSTEXT_H
 
-#include "defines.hpp"
-#include "terminal.hpp"
-#include "appendbuffer.hpp"
-#include "editor.hpp"
-#include "editorflags.hpp"
-#include "filehandler.hpp"
+#include "editor.h"
+#include "filehandler.h"
 
 class Sustext{
     public:
@@ -17,6 +14,8 @@ class Sustext{
     FileHandler filehandler;
     Editor editor;
 
+    static EditorConfig E;
+    
     public:
         Sustext(int _argc, char** _argv);
         ~Sustext();
@@ -24,4 +23,4 @@ class Sustext{
         int Initialize();
 };
 
-#endif // __SUSTEXT_HPP
+#endif // __SUSTEXT_H

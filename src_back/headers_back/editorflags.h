@@ -1,10 +1,10 @@
-#ifndef __EDITOR_FLAGS_HPP
-#define __EDITOR_FLAGS_HPP
+#pragma once
+#ifndef __EDITORFLAGS_H
+#define __EDITORFLAGS_H
 
-#include "defines.hpp"
-#include <unistd.h>
+#include <stdint.h>
 
-enum EditorFlags{
+enum EditorFlags {
     MODE_READ   = 0x0001,
     MODE_WRITE  = 0x0002,
     MODE_SUS    = 0x0004,
@@ -15,10 +15,10 @@ enum EditorFlags{
 };
 
 // funny name ඞ
-class SusFlags{
-    
+class SusFlags
+{    
     public:
-        struct ArgumentOutput{
+        struct ArgumentOutput {
             char* filepath;
         };
         uint64_t activeFlags;
@@ -48,4 +48,4 @@ class SusFlags{
         bool Enabled(int flag);
 };
 
-#endif // __EDITOR_FLAGS_HPP
+#endif // __EDITORFLAGS_H

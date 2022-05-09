@@ -1,4 +1,4 @@
-#include "sustext.hpp"
+#include "sustext.h"
 
 int main(int argc, char** argv){
     Sustext sustext = Sustext(argc, argv);
