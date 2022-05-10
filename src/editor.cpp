@@ -2,19 +2,15 @@
 #include "editor.h"
 #include "prototypes.h"
 #include "syntaxinfo.h"
+#include "filehandler.h"
 
 #include <ctype.h>
-// #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <sys/ioctl.h>
 #include <unistd.h>
-// #include <termios.h>
-// #include <sys/types.h>
 #include <time.h>
 #include <stdarg.h>
-// #include <fcntl.h>
 
 namespace Editor
 {
@@ -340,7 +336,7 @@ namespace Editor
 		    exit(0);
 		    break;
 	    case CTRL_KEY('s'):
-	    	// flags.SetFlags(FILESAVE, true);
+            FileHandler::SaveFile();
 	    	return;
 	    case HOME_KEY:
 	    	eConfig.cx = 0;
@@ -359,7 +355,7 @@ namespace Editor
 	    	DeleteChar();
 	    	break;
 	    case CTRL_KEY('f'):
-		    // Find();
+		    Find();
 		    break;
 	    case PAGE_UP:
 	    case PAGE_DOWN:

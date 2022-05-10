@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __TERMINAL_H
-#define __TERMINAL_H
+#ifndef _SUSTEXT_TERMINAL_H
+#define _SUSTEXT_TERMINAL_H
 
 #include <termios.h>
 
@@ -60,4 +60,4 @@ namespace Terminal
     int getWindowSize(int *rows, int *cols);
 }
 
-#endif // __TERMINAL_H
+#endif // _SUSTEXT_TERMINAL_H

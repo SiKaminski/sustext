@@ -1,6 +1,6 @@
-// #pragma once
-// #ifndef __FILEHANDLER_H
-// #define __FILEHANDLER_H
+#pragma once
+#ifndef _SUSTEXT_FILEHANDLER_H
+#define _SUSTEXT_FILEHANDLER_H
 
 // #include "editor.h"
 
@@ -14,4 +14,10 @@
 //         int SaveFile(Editor* editor);
 // };
 
-// #endif // __FILEHANDLER_H
+namespace FileHandler
+{
+    int OpenFile(char* filename);
+    int SaveFile();
+}
+
+#endif // _SUSTEXT_FILEHANDLER_H

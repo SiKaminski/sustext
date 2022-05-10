@@ -66,6 +66,7 @@ namespace Editor
 	    Syntax*     syntax;
 	    struct      termios orig_termios;
     } ConfigData;
+    
     /*---- INITIALIZATION ----*/
     
     /**
