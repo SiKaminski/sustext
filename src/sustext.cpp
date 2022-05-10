@@ -15,8 +15,8 @@ int main(int argc, char** argv)
 			check for flags
 		*/
 
-		// Editor refresh screen
-		// editor process key
+		Editor::RefreshScreen();
+		Editor::ProcessKeypress();
 	}
 
 	return 0;

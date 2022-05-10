@@ -24,7 +24,7 @@ namespace Editor
     	eConfig.rowOff = 0;
     	eConfig.colOff = 0;
     	eConfig.numrows = 0;
-    	eConfig.row = new RowData{0, 0, NULL, NULL};
+    	eConfig.row = new RowData(ROWDATA_NULL);
     	eConfig.filepath = NULL;
     	eConfig.statusmsg[0] = '\0';
     	// eConfig.statusmsg_time = 0;
@@ -400,7 +400,7 @@ namespace Editor
     {
     	static int quit_times = SUSTEXT_QUIT_TIMES;
     	int c = Terminal::editorReadKey();
-
+        
     	// Bane of my existance
     	switch (c) {
     	case '\r':
@@ -442,7 +442,7 @@ namespace Editor
 	    	DeleteChar();
 	    	break;
 	    case CTRL_KEY('f'):
-		    Find();
+		    // Find();
 		    break;
 	    case PAGE_UP:
 	    case PAGE_DOWN:
@@ -816,6 +816,10 @@ namespace Editor
         // default:
         //     return FG_WHITE;
         // }
+        switch (highlight) {
+            default:
+                return 0; // This will be replace with an actual color later
+        }
     }
 
     void SelectSyntaxHighlight()

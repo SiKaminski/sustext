@@ -9,6 +9,8 @@
 #define SUSTEXT_TAB_STOP 8
 #define SUSTEXT_QUIT_TIMES 1
 
+#define ROWDATA_NULL {0, 0, 0, NULL, NULL, NULL, 0}
+
 namespace Editor 
 {
 	enum Keys {
@@ -151,7 +153,7 @@ namespace Editor
     * 
     * @param row 
     */
-    void FreRowData(RowData* row);
+    void FreeRow(RowData* row);
     
     
     

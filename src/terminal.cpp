@@ -66,6 +66,7 @@ int Terminal::editorReadKey()
 	using namespace Editor;
 	int nread;
 	char c;
+
 	while ((nread = read(STDIN_FILENO , &c, 1)) != 1) {
 		if (nread == -1 && errno != EAGAIN) 
 			die("read");
@@ -133,7 +134,7 @@ int Terminal::editorReadKey()
 		}
 
 		return '\x1b';
-	} else {
+	} else {	
 		return c;
 	}
 }
