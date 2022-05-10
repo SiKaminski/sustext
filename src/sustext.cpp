@@ -3,7 +3,12 @@
 #include "terminal.h"
 #include "editor.h"
 #include "prototypes.h"
+#include "flaghandler.h"
+#include "filehandler.h"
 
+#include <stdint.h>
+
+uint64_t Flags;
 Editor::ConfigData eConfig;
 Terminal::ConfigData tConfig;
 
@@ -12,10 +17,6 @@ int main(int argc, char** argv)
 	Sustext::Initialize(argc, argv);
 
 	while (true) {
-		/*
-			check for flags
-		*/
-
 		Editor::RefreshScreen();
 		Editor::ProcessKeypress();
 	}
@@ -28,8 +29,14 @@ void Sustext::Initialize(int argc, char** argv)
 	// Initialize editor and terminal
 	Editor::Initialize(argc, argv);
 	Terminal::enableRawMode();
+	FlagHandler::InitFlags(argc, argv);
 
 	if (argc >= 2) {
+		if (FlagHandler::Enabled(FILEIN)) {
+			if (!FileHandler::OpenFile(eConfig.filepath)) {
+				Terminal::die("fopen");
+			}
+		}
 		// Check for file in
 
 		// Check for other terminal flags
