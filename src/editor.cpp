@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "editor.h"
-#include "appendbuffer.h"
+#include "prototypes.h"
+#include "syntaxinfo.h"
 
 #include <ctype.h>
 // #include <errno.h>
@@ -28,9 +29,9 @@ namespace Editor
     	eConfig.row = new RowData(ROWDATA_NULL);
     	eConfig.filepath = NULL;
     	eConfig.statusmsg[0] = '\0';
-    	// eConfig.statusmsg_time = 0;
+    	eConfig.statusmsg_time = 0;
     	eConfig.dirty = 0;
-    	// eConfig.syntax = NULL;
+    	eConfig.syntax = NULL;
 
     	if (Terminal::getWindowSize(&eConfig.screenRows, &eConfig.screenCols) == -1) 
     		Terminal::die("getWindowSize");
@@ -39,161 +40,76 @@ namespace Editor
     }
 
     /*---- ROW OPERATIONS ----*/
-    int RowCxToRx(RowData* row, int cx)
-    {
-        int rx = 0;
-        for (int i = 0; i < cx; i++) {
-            // Check to see how many columns to the left of the next tab the cursor is
-            if (row->chars[i] == '\t')
-                rx += (SUSTEXT_TAB_STOP - 1) - (rx % SUSTEXT_TAB_STOP);
+    
 
-            rx++;
+    char *Prompt(char *prompt, void (*callback)(char *query, int key, Editor::ConfigData*))
+    {
+        size_t bufsize = 128;
+        char *buf = (char *)malloc(bufsize);
+
+        size_t buflen = 0;
+        buf[0] = '\0';
+
+        while (1) {
+            SetStatusMessage(prompt, buf);
+            RefreshScreen();
+
+            int c = Terminal::editorReadKey();
+
+            // Check if user is removing a character
+            if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE) {
+                if (buflen != 0)
+                    buf[--buflen] = '\0';
+            } else if (c == '\x1b') {
+                SetStatusMessage("");
+                if (callback)
+                    callback(buf, c, &eConfig);
+
+                free(buf);
+                return NULL;
+            } else if (c == '\r') {
+                if (buflen != 0) {
+                    SetStatusMessage("");
+                    if (callback)
+                        callback(buf, c, &eConfig);
+
+                    return buf;
+                }
+            } else if (!iscntrl(c) && c < 128) {
+                if (buflen == bufsize - 1) {
+                    bufsize *= 2;
+                    buf = (char *)realloc(buf, bufsize);
+                }
+
+                buf[buflen++] = c;
+                buf[buflen] = '\0';
+            }
+
+            if (callback)
+                callback(buf, c, &eConfig);
         }
-
-        return rx;
     }
 
-    int RowRxToCx(RowData* row, int rx)
-    {
-        int curRx = 0;
-        int cx;
-        for (cx = 0; cx < row->size; cx++) {
-            if (row->chars[cx] == '\t')
-                curRx += (SUSTEXT_TAB_STOP - 1) - (curRx % SUSTEXT_TAB_STOP);
+    
 
-            curRx++;
-            if (curRx > rx)
-                return cx;
+    void Find()
+    {
+        int savedCx = eConfig.cx;
+        int savedCy = eConfig.cy;
+        int savedColOff = eConfig.colOff;
+        int savedRowOff = eConfig.rowOff;
+
+        char *query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
+
+        if (query) {
+            free(query);
+        } else {
+            eConfig.cx = savedCx;
+            eConfig.cy = savedCy;
+            eConfig.colOff = savedColOff;
+            eConfig.rowOff = savedRowOff;
         }
-
-        return cx;
     }
-
-    int isSeperator(int c)
-    {
-        return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
-    }
-
-    // char *Prompt(char *prompt, void (*callback)(char *query, int key, EditorConfig *))
-    // {
-    //     size_t bufsize = 128;
-    //     char *buf = (char *)malloc(bufsize);
-
-    //     size_t buflen = 0;
-    //     buf[0] = '\0';
-
-    //     while (1) {
-    //         SetStatusMessage(prompt, buf);
-    //         RefreshScreen();
-
-    //         int c = Terminal::editorReadKey();
-
-    //         // Check if user is removing a character
-    //         if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE) {
-    //             if (buflen != 0)
-    //                 buf[--buflen] = '\0';
-    //         } else if (c == '\x1b') {
-    //             SetStatusMessage("");
-    //             if (callback)
-    //                 callback(buf, c, &E);
-
-    //             free(buf);
-    //             return NULL;
-    //         } else if (c == '\r') {
-    //             if (buflen != 0) {
-    //                 SetStatusMessage("");
-    //                 if (callback)
-    //                     callback(buf, c, &E);
-
-    //                 return buf;
-    //             }
-    //         } else if (!iscntrl(c) && c < 128) {
-    //             if (buflen == bufsize - 1) {
-    //                 bufsize *= 2;
-    //                 buf = (char *)realloc(buf, bufsize);
-    //             }
-
-    //             buf[buflen++] = c;
-    //             buf[buflen] = '\0';
-    //         }
-
-    //         if (callback)
-    //             callback(buf, c, &E);
-    //     }
-    // }
-
-    // void FindCallBack(char *query, int key, EditorConfig *E)
-    // {
-    //     static int lastMatch = -1;
-    //     static int direction = 1;
-    //     static int savedHighlightLine;
-    //     static char *savedHighlight = NULL;
-
-    //     if (savedHighlight) {
-    //         memcpy(E->row[savedHighlightLine].highlight, savedHighlight, E->row[savedHighlightLine].rsize);
-    //         free(savedHighlight);
-    //         savedHighlight = NULL;
-    //     }
-
-    //     if (key == '\r' || key == '\x1b') {
-    //         lastMatch = -1;
-    //         direction = 1;
-    //     } else if (key == ARROW_RIGHT || key == ARROW_DOWN) {
-    //         direction = 1;
-    //     } else if (key == ARROW_LEFT || key == ARROW_UP) {
-    //         direction = 1;
-    //     } else {
-    //         lastMatch = -1;
-    //         direction = 1;
-    //     }
-
-    //     if (lastMatch == -1)
-    //         direction = 1;
-
-    //     int current = lastMatch;
-    //     for (int i = 0; i < E->numrows; i++) {
-    //         current += direction;
-
-    //         if (current == -1)
-    //             current = E->numrows - 1;
-    //         else if (current == E->numrows)
-    //             current = 0;
-
-    //         RowData *row = &E->row[current];
-    //         char *match = strstr(row->render, query);
-    //         if (match) {
-    //             lastMatch = current;
-    //             E->cy = current;
-    //             E->cx = RowRxToCx(row, match - row->render);
-    //             E->rowOff = E->numrows;
-
-    //             savedHighlightLine = current;
-    //             savedHighlight = (char *)malloc(row->rsize);
-    //             memcpy(savedHighlight, row->highlight, row->rsize);
-    //             memset(&row->highlight[match - row->render], HL_MATCH, strlen(query));
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // void Find()
-    // {
-    //     int savedCx = eConfig.cx;
-    //     int savedCy = eConfig.cy;
-    //     int savedColOff = eConfig.colOff;
-    //     int savedRowOff = eConfig.rowOff;
-
-    //     char *query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
-
-    //     if (query) {
-    //         free(query);
-    //     } else {
-    //         eConfig.cx = savedCx;
-    //         eConfig.cy = savedCy;
-    //         eConfig.colOff = savedColOff;
-    //         eConfig.rowOff = savedRowOff;
-    //     }
-    // }
 
     void UpdateRow(RowData* row) 
     {
@@ -608,42 +524,42 @@ namespace Editor
 
     void DrawStatusBar(struct AppendBuffer::abuf* ab)
     {
-    //     AppendBuffer::abAppend(ab, "\x1b[7m", 4);
-    //     char status[80], rstatus[80];
+        AppendBuffer::abAppend(ab, "\x1b[7m", 4);
+        char status[80], rstatus[80];
 
-    //     int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
-    //                        eConfig.filepath ? eConfig.filepath : "[No Name]", eConfig.numrows,
-    //                        eConfig.dirty ? "(modified)" : "");
+        int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
+                           eConfig.filepath ? eConfig.filepath : "[No Name]", eConfig.numrows,
+                           eConfig.dirty ? "(modified)" : "");
 
-    //     int rlen = snprintf(rstatus, sizeof(rstatus), "%s | %d/%d",
-    //                         eConfig.syntax ? eConfig.syntax->filetype : "no ft", eConfig.cy + 1, eConfig.numrows);
-    //     if (len > eConfig.screenCols)
-    //         len = eConfig.screenCols;
+        int rlen = snprintf(rstatus, sizeof(rstatus), "%s | %d/%d",
+                            eConfig.syntax ? eConfig.syntax->filetype : "no ft", eConfig.cy + 1, eConfig.numrows);
+        if (len > eConfig.screenCols)
+            len = eConfig.screenCols;
 
-    //     AppendBuffer::abAppend(ab, status, len);
-    //     while (len < eConfig.screenCols) {
-    //         if (eConfig.screenCols - len == rlen) {
-    //             AppendBuffer::abAppend(ab, rstatus, rlen);
-    //             break;
-    //         } else {
-    //             AppendBuffer::abAppend(ab, " ", 1);
-    //             len++;
-    //         }
-    //     }
+        AppendBuffer::abAppend(ab, status, len);
+        while (len < eConfig.screenCols) {
+            if (eConfig.screenCols - len == rlen) {
+                AppendBuffer::abAppend(ab, rstatus, rlen);
+                break;
+            } else {
+                AppendBuffer::abAppend(ab, " ", 1);
+                len++;
+            }
+        }
 
-    //     AppendBuffer::abAppend(ab, "\x1b[m", 3);
-    //     AppendBuffer::abAppend(ab, "\r\n", 2);
+        AppendBuffer::abAppend(ab, "\x1b[m", 3);
+        AppendBuffer::abAppend(ab, "\r\n", 2);
     }
 
     void DrawMessageBar(AppendBuffer::abuf* ab)
     {
-    //     AppendBuffer::abAppend(ab, "\x1b[K", 3);
-    //     int msglen = strlen(eConfig.statusmsg);
-    //     if (msglen > eConfig.screenCols)
-    //         msglen = eConfig.screenCols;
+        AppendBuffer::abAppend(ab, "\x1b[K", 3);
+        int msglen = strlen(eConfig.statusmsg);
+        if (msglen > eConfig.screenCols)
+            msglen = eConfig.screenCols;
 
-    //     if (msglen && time(NULL) - eConfig.statusmsg_time < 5)
-    //         AppendBuffer::abAppend(ab, eConfig.statusmsg, msglen);
+        if (msglen && time(NULL) - eConfig.statusmsg_time < 5)
+            AppendBuffer::abAppend(ab, eConfig.statusmsg, msglen);
     }
 
     void RefreshScreen()
@@ -671,184 +587,269 @@ namespace Editor
 
     void SetStatusMessage(const char* fmt...)
     {
-        // va_list ap;
-        // va_start(ap, fmt);
-        // vsnprintf(eConfig.statusmsg, sizeof(eConfig.statusmsg), fmt, ap);
-        // va_end(ap);
-        // eConfig.statusmsg_time = time(NULL);
+        va_list ap;
+        va_start(ap, fmt);
+        vsnprintf(eConfig.statusmsg, sizeof(eConfig.statusmsg), fmt, ap);
+        va_end(ap);
+        eConfig.statusmsg_time = time(NULL);
     }
 
     void UpdateSyntax(RowData* row)
     {
-        // row->highlight = (unsigned char*)realloc(row->highlight, row->rsize);
-        // memset(row->highlight, HL_NORMAL, row->rsize);
+        row->highlight = (unsigned char*)realloc(row->highlight, row->rsize);
+        memset(row->highlight, HL_NORMAL, row->rsize);
 
-        // if (eConfig.syntax == NULL)
-        //     return;
+        if (eConfig.syntax == NULL)
+            return;
 
-        // char** keywords = eConfig.syntax->keywords;
+        char** keywords = eConfig.syntax->keywords;
 
-        // char* scs = eConfig.syntax->singleline_comment_start;
-        // char* mcs = eConfig.syntax->multiline_comment_start;
-        // char* mce = eConfig.syntax->multiline_comment_end;
+        char* scs = eConfig.syntax->singleline_comment_start;
+        char* mcs = eConfig.syntax->multiline_comment_start;
+        char* mce = eConfig.syntax->multiline_comment_end;
 
-        // int scsLen = scs ? strlen(scs) : 0;
-        // int mcsLen = mcs ? strlen(mcs) : 0;
-        // int mceLen = mce ? strlen(mce) : 0;
+        int scsLen = scs ? strlen(scs) : 0;
+        int mcsLen = mcs ? strlen(mcs) : 0;
+        int mceLen = mce ? strlen(mce) : 0;
 
-        // int prevSep = 1;
-        // int inString = 0;
-        // int inComment = (row->idx > 0 && eConfig.row[row->idx - 1].hl_open_comment);
+        int prevSep = 1;
+        int inString = 0;
+        int inComment = (row->idx > 0 && eConfig.row[row->idx - 1].hl_open_comment);
 
-        // int i = 0;
-        // while (i < row->size) {
-        //     char c = row->render[i];
-        //     unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : HL_NORMAL;
+        int i = 0;
+        while (i < row->size) {
+            char c = row->render[i];
+            unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : HL_NORMAL;
 
-        //     if (scsLen && !inString && !inComment) {
-        //         if (!strncmp(&row->render[i], scs, scsLen)) {
-        //             memset(&row->highlight[i], HL_COMMENT, row->rsize - i);
-        //             break;
-        //         }
-        //     }
+            if (scsLen && !inString && !inComment) {
+                if (!strncmp(&row->render[i], scs, scsLen)) {
+                    memset(&row->highlight[i], HL_COMMENT, row->rsize - i);
+                    break;
+                }
+            }
 
-        //     if (mcsLen && mceLen && !inString) {
-        //         if (inComment) {
-        //             row->highlight[i] = HL_MLCOMMENT;
-        //             if (!strncmp(&row->render[i], mce, mceLen)) {
-        //                 memset(&row->highlight[i], HL_MLCOMMENT, mceLen);
-        //                 i += mceLen;
-        //                 inComment = 0;
-        //                 prevSep = 1;
-        //                 continue;
-        //             } else {
-        //                 i++;
-        //                 continue;
-        //             }
-        //         } else if (!strncmp(&row->render[i], mcs, mcsLen)) {
-        //             memset(&row->highlight[i], HL_MLCOMMENT, mcsLen);
-        //             i += mcsLen;
-        //             inComment = 1;
-        //             continue;
-        //         }
-        //     }
+            if (mcsLen && mceLen && !inString) {
+                if (inComment) {
+                    row->highlight[i] = HL_MLCOMMENT;
+                    if (!strncmp(&row->render[i], mce, mceLen)) {
+                        memset(&row->highlight[i], HL_MLCOMMENT, mceLen);
+                        i += mceLen;
+                        inComment = 0;
+                        prevSep = 1;
+                        continue;
+                    } else {
+                        i++;
+                        continue;
+                    }
+                } else if (!strncmp(&row->render[i], mcs, mcsLen)) {
+                    memset(&row->highlight[i], HL_MLCOMMENT, mcsLen);
+                    i += mcsLen;
+                    inComment = 1;
+                    continue;
+                }
+            }
 
-        //     if (eConfig.syntax->flags & HL_HIGHLIGHT_STRINGS) {
-        //         if (inString) {
-        //             row->highlight[i] = HL_STRING;
-        //             if (c == '\\' && i + 1 < row->rsize) {
-        //                 row->highlight[i + 1] = HL_STRING;
-        //                 i += 2;
-        //                 continue;
-        //             }
+            if (eConfig.syntax->flags & HL_HIGHLIGHT_STRINGS) {
+                if (inString) {
+                    row->highlight[i] = HL_STRING;
+                    if (c == '\\' && i + 1 < row->rsize) {
+                        row->highlight[i + 1] = HL_STRING;
+                        i += 2;
+                        continue;
+                    }
 
-        //             if (c == inString)
-        //                 inString = 0;
+                    if (c == inString)
+                        inString = 0;
 
-        //             i++;
-        //             prevSep = 1;
-        //             continue;
-        //         } else {
-        //             if (c == '"' || c == '\'') {
-        //                 inString = c;
-        //                 row->highlight[i] = HL_STRING;
-        //                 i++;
-        //                 continue;
-        //             }
-        //         }
-        //     }
+                    i++;
+                    prevSep = 1;
+                    continue;
+                } else {
+                    if (c == '"' || c == '\'') {
+                        inString = c;
+                        row->highlight[i] = HL_STRING;
+                        i++;
+                        continue;
+                    }
+                }
+            }
 
-        //     if (eConfig.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
-        //         if ((isdigit(c) && prevSep || (prevHL == HL_NUMBER)) || (c == '.' && prevHL == HL_NUMBER)) {
-        //             row->highlight[i] = HL_NUMBER;
-        //             i++;
-        //             prevSep = 0;
-        //             continue;
-        //         }
-        //     }
+            if (eConfig.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
+                if ((isdigit(c) && prevSep || (prevHL == HL_NUMBER)) || (c == '.' && prevHL == HL_NUMBER)) {
+                    row->highlight[i] = HL_NUMBER;
+                    i++;
+                    prevSep = 0;
+                    continue;
+                }
+            }
 
-        //     if (prevSep) {
-        //         int j;
-        //         for (j = 0; keywords[j]; j++) {
-        //             int kLen = strlen(keywords[j]);
-        //             int kw2 = keywords[j][kLen - 1] == '|';
-        //             if (kw2)
-        //                 kLen--;
+            if (prevSep) {
+                int j;
+                for (j = 0; keywords[j]; j++) {
+                    int kLen = strlen(keywords[j]);
+                    int kw2 = keywords[j][kLen - 1] == '|';
+                    if (kw2)
+                        kLen--;
 
-        //             if (!strncmp(&row->render[i], keywords[j], kLen) && isSeperator(row->render[i + kLen])) {
-        //                 memset(&row->highlight[i], kw2 ? HL_KEYWORD_2 : HL_KEYWORD_1, kLen);
-        //                 i += kLen;
-        //                 break;
-        //             }
-        //         }
+                    if (!strncmp(&row->render[i], keywords[j], kLen) && isSeperator(row->render[i + kLen])) {
+                        memset(&row->highlight[i], kw2 ? HL_KEYWORD_2 : HL_KEYWORD_1, kLen);
+                        i += kLen;
+                        break;
+                    }
+                }
 
-        //         if (keywords[j] != NULL) {
-        //             prevSep = 0;
-        //             continue;
-        //         }
-        //     }
+                if (keywords[j] != NULL) {
+                    prevSep = 0;
+                    continue;
+                }
+            }
 
-        //     prevSep = isSeperator(c);
-        //     i++;
-        // }
+            prevSep = isSeperator(c);
+            i++;
+        }
 
-        // int changed = (row->hl_open_comment != inComment);
-        // row->hl_open_comment = inComment;
+        int changed = (row->hl_open_comment != inComment);
+        row->hl_open_comment = inComment;
 
-        // if (changed && row->idx + 1 < eConfig.numrows)
-        //     UpdateSyntax(&eConfig.row[row->idx + 1]);
+        if (changed && row->idx + 1 < eConfig.numrows)
+            UpdateSyntax(&eConfig.row[row->idx + 1]);
     }
 
     int SyntaxToColor(int highlight)
     {
-        // switch (highlight) {
-        // case HL_COMMENT:
-        // case HL_MLCOMMENT:
-        //     return FG_CYAN;
-        // case HL_KEYWORD_1:
-        //     return FG_YELLOW;
-        // case HL_KEYWORD_2:
-        //     return FG_GREEN;
-        // case HL_STRING:
-        //     return FG_MAGENTA;
-        // case HL_NUMBER:
-        //     return FG_RED;
-        // case HL_MATCH:
-        //     return FG_BLUE;
-        // default:
-        //     return FG_WHITE;
-        // }
         switch (highlight) {
-            default:
-                return 0; // This will be replace with an actual color later
+        case HL_COMMENT:
+        case HL_MLCOMMENT:
+            return FG_CYAN;
+        case HL_KEYWORD_1:
+            return FG_YELLOW;
+        case HL_KEYWORD_2:
+            return FG_GREEN;
+        case HL_STRING:
+            return FG_MAGENTA;
+        case HL_NUMBER:
+            return FG_RED;
+        case HL_MATCH:
+            return FG_BLUE;
+        default:
+            return FG_WHITE;
         }
     }
 
     void SelectSyntaxHighlight()
     {
-        // eConfig.syntax = NULL;
-        // if (eConfig.filepath == NULL)
-        //     return;
+        eConfig.syntax = NULL;
+        if (eConfig.filepath == NULL)
+            return;
 
-        // char* ext = strrchr(eConfig.filepath, '.');
+        char* ext = strrchr(eConfig.filepath, '.');
 
-        // for (unsigned int j = 0; j < HLDB_ENTRIES; j++) {
-        //     struct EditorSyntax *s = &HLDB[j];
-        //     unsigned int i = 0;
-        //     while (s->filematch[i]) {
-        //         int is_ext = (s->filematch[i][0] == '.');
-        //         if ((is_ext && ext && !strcmp(ext, s->filematch[i])) || (!is_ext && strstr(eConfig.filepath, s->filematch[i]))) {
-        //             eConfig.syntax = s;
+        for (unsigned int j = 0; j < HLDB_ENTRIES; j++) {
+            Syntax *s = &HLDB[j];
+            unsigned int i = 0;
+            while (s->filematch[i]) {
+                int is_ext = (s->filematch[i][0] == '.');
+                if ((is_ext && ext && !strcmp(ext, s->filematch[i])) || (!is_ext && strstr(eConfig.filepath, s->filematch[i]))) {
+                    eConfig.syntax = s;
 
-        //             for (int filerow = 0; filerow < eConfig.numrows; filerow++) {
-        //                 UpdateSyntax(&eConfig.row[filerow]);
-        //             }
+                    for (int filerow = 0; filerow < eConfig.numrows; filerow++) {
+                        UpdateSyntax(&eConfig.row[filerow]);
+                    }
 
-        //             return;
-        //         }
+                    return;
+                }
 
-        //         i++;
-        //     }
-        // }
+                i++;
+            }
+        }
     }
 }
+
+int RowCxToRx(Editor::RowData* row, int cx)
+{
+    int rx = 0;
+    for (int i = 0; i < cx; i++) {
+        // Check to see how many columns to the left of the next tab the cursor is
+        if (row->chars[i] == '\t')
+            rx += (SUSTEXT_TAB_STOP - 1) - (rx % SUSTEXT_TAB_STOP);
+
+        rx++;
+    }
+
+    return rx;
+}
+
+int RowRxToCx(Editor::RowData* row, int rx)
+{
+    int curRx = 0;
+    int cx;
+    for (cx = 0; cx < row->size; cx++) {
+        if (row->chars[cx] == '\t')
+            curRx += (SUSTEXT_TAB_STOP - 1) - (curRx % SUSTEXT_TAB_STOP);
+
+        curRx++;
+        if (curRx > rx)
+            return cx;
+    }
+
+    return cx;
+}
+
+int isSeperator(int c)
+{
+    return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
+}
+
+void FindCallBack(char *query, int key, Editor::ConfigData* E)
+    {
+        static int lastMatch = -1;
+        static int direction = 1;
+        static int savedHighlightLine;
+        static char *savedHighlight = NULL;
+
+        if (savedHighlight) {
+            memcpy(E->row[savedHighlightLine].highlight, savedHighlight, E->row[savedHighlightLine].rsize);
+            free(savedHighlight);
+            savedHighlight = NULL;
+        }
+
+        if (key == '\r' || key == '\x1b') {
+            lastMatch = -1;
+            direction = 1;
+        } else if (key == Editor::ARROW_RIGHT || key == Editor::ARROW_DOWN) {
+            direction = 1;
+        } else if (key == Editor::ARROW_LEFT || key == Editor::ARROW_UP) {
+            direction = 1;
+        } else {
+            lastMatch = -1;
+            direction = 1;
+        }
+
+        if (lastMatch == -1)
+            direction = 1;
+
+        int current = lastMatch;
+        for (int i = 0; i < E->numrows; i++) {
+            current += direction;
+
+            if (current == -1)
+                current = E->numrows - 1;
+            else if (current == E->numrows)
+                current = 0;
+
+            Editor::RowData* row = &E->row[current];
+            char *match = strstr(row->render, query);
+            if (match) {
+                lastMatch = current;
+                E->cy = current;
+                E->cx = RowRxToCx(row, match - row->render);
+                E->rowOff = E->numrows;
+
+                savedHighlightLine = current;
+                savedHighlight = (char *)malloc(row->rsize);
+                memcpy(savedHighlight, row->highlight, row->rsize);
+                memset(&row->highlight[match - row->render], HL_MATCH, strlen(query));
+                break;
+            }
+        }
+    }

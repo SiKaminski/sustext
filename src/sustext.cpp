@@ -2,6 +2,7 @@
 #include "sustext.h"
 #include "terminal.h"
 #include "editor.h"
+#include "prototypes.h"
 
 Editor::ConfigData eConfig;
 Terminal::ConfigData tConfig;
@@ -35,6 +36,7 @@ void Sustext::Initialize(int argc, char** argv)
 	}
 
 	// set editor status message
+	Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
 }
 
 

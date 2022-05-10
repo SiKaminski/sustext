@@ -2,9 +2,6 @@
 #ifndef __TERMINAL_H
 #define __TERMINAL_H
 
-// #include "defines.h"
-// #include "data.h"
-// #include "configs.h"
 #include <termios.h>
 
 namespace Terminal
@@ -12,7 +9,6 @@ namespace Terminal
     typedef struct {
         struct termios OriginalTermios;
     } ConfigData;
-    // static EditorConfig E;
 
     /**
      * Initialize the editor functions 

@@ -1,19 +1,20 @@
-// #pragma once
-// #ifndef __PROTOTYPES_H
-// #define __PROTOTYPES_H
+#pragma once
+#ifndef _PROTOTYPES_H
+#define _PROTOTYPES_H
 
 // #include "data.h"
 // #include "configs.h"
+#include "editor.h"
 
-// // Editor Prototypes
-// int RowCxToRx(erow* row, int rx);
-// int RowRxToCx(erow* row, int rx);
-// void FindCallBack(char* query, int key, EditorConfig* E);
+// Editor Prototypes
+int RowCxToRx(Editor::RowData* row, int rx);
+int RowRxToCx(Editor::RowData* row, int rx);
+void FindCallBack(char* query, int key, Editor::ConfigData* E);
 
-// // Terminal Protopytes
+// Terminal Protopytes
 
-// //Syntax Highlighting
-// int isSeperator(int c);
-// void SelectSyntaxHighlight();
+//Syntax Highlighting
+int isSeperator(int c);
+void SelectSyntaxHighlight();
 
-// #endif // __PROTOTYPES_H
+#endif // __PROTOTYPES_H

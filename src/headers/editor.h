@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <time.h>
 #include "colors.h"
+#include "appendbuffer.h"
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define SUSTEXT_TAB_STOP 8
@@ -39,6 +40,16 @@ namespace Editor
     } RowData;
 
     typedef struct {
+    	char* filetype;
+    	char** filematch;
+    	char** keywords;
+    	char* singleline_comment_start;
+    	char* multiline_comment_start;
+    	char* multiline_comment_end;
+    	int flags;
+    } Syntax;
+
+    typedef struct {
 	    int 	    cx;
 	    int 	    cy;  
 	    int 	    rx;	
@@ -52,20 +63,9 @@ namespace Editor
 	    char* 	    filepath;
 	    char	    statusmsg[80];
 	    time_t 	    statusmsg_time;	// time out limit for status message
-	    struct      EditorSyntax* syntax;
+	    Syntax*     syntax;
 	    struct      termios orig_termios;
     } ConfigData;
-
-    typedef struct {
-    	char* filetype;
-    	char** filematch;
-    	char** keywords;
-    	char* singleline_comment_start;
-    	char* multiline_comment_start;
-    	char* multiline_comment_end;
-    	int flags;
-    } Syntax;
-
     /*---- INITIALIZATION ----*/
     
     /**
@@ -80,7 +80,7 @@ namespace Editor
     * @param prompt 
     * @return char* 
     */
-    // char* Prompt(char* prompt, void(*callback)(char*, int, EditorConfig*));
+    char* Prompt(char* prompt, void(*callback)(char*, int, Editor::ConfigData*));
 
     void Find();
     
@@ -202,13 +202,13 @@ namespace Editor
      * Prepare the inputted buffer with the next frame 
     * @param ab 
     */
-    // void DrawRows(struct AppendBuffer::abuf* ab);
+    void DrawRows(struct AppendBuffer::abuf* ab);
     
     /**
      * Display status bar at the bottom of the screen 
     * @param ab 
     */
-    // void DrawStatusBar(struct AppendBuffer::abuf* ab);
+    void DrawStatusBar(struct AppendBuffer::abuf* ab);
     
     /**
      * Display for information the user may need to see
@@ -217,7 +217,7 @@ namespace Editor
     * 
     * @param ab 
     */
-    // void DrawMessageBar(struct AppendBuffer::abuf* ab);
+    void DrawMessageBar(struct AppendBuffer::abuf* ab);
     
     /**
      * Update the screen buffer 
