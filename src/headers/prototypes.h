@@ -2,8 +2,6 @@
 #ifndef _PROTOTYPES_H
 #define _PROTOTYPES_H
 
-// #include "data.h"
-// #include "configs.h"
 #include "editor.h"
 
 // Editor Prototypes

@@ -4,13 +4,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-// SusFlags::SusFlags()
-// {
-//     Flags = DEFAULT_FLAGS;
-// }
-
-// SusFlags::~SusFlags() {}
-
 namespace FlagHandler
 {
     int Initialize(int argc, char** argv)

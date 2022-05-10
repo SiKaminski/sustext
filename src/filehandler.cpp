@@ -1,16 +1,12 @@
 #include "globals.h"
 #include "filehandler.h"
 #include "editor.h"
-// #include "terminal.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-
-// FileHandler::FileHandler() {}
-// FileHandler::~FileHandler() {}
 
 int FileHandler::OpenFile(char *filepath)
 {
@@ -21,7 +17,7 @@ int FileHandler::OpenFile(char *filepath)
 	// free(eConfig.filepath);
 	eConfig.filepath = strdup(filepath);
 	Editor::SelectSyntaxHighlight();
-	FILE* fp = fopen(eConfig.filepath, "r"); 		// This line will eventually change
+	FILE* fp = fopen(eConfig.filepath, "r");	// This line will eventually change
 	if (!fp)
 		Terminal::die("fopen");
 

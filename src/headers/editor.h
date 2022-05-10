@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __EDITOR_H
-#define __EDITOR_H
+#ifndef _SUSTEXT_EDITOR_H
+#define _SUSTEXT_EDITOR_H
 
 #include <termios.h>
 #include <stddef.h>
@@ -239,4 +239,4 @@ namespace Editor
     void SelectSyntaxHighlight();
 }
 
-#endif // __EDITOR_H
+#endif // _SUSTEXT_EDITOR_H

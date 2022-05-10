@@ -35,38 +35,5 @@ namespace FlagHandler
      */
     bool Enabled(int flag);
 }
-// // funny name ඞ
-// class SusFlags
-// {    
-//     public:
-//         struct ArgumentOutput {
-//             char* filepath;
-//         };
-//         uint64_t activeFlags;
-
-//         ArgumentOutput argout;
-
-//     public:
-//         SusFlags();
-//         ~SusFlags();
-
-//         /**
-//          * Set the flags for the given arguments
-//          * if none are provided then by default the editor
-//          * will just open in read mode for now
-//          * 
-//          * @return (int) status code
-//          */
-//         int InitFlags(int argc, char** argv);
-
-//         void SetFlags(int flags, bool on);
-
-//         /**
-//          * Check if a flag is enabled 
-//          * 
-//          * @param flag 
-//          */
-//         bool Enabled(int flag);
-// };
 
 #endif // _SUSTEXT_FLAG_HANDLER_H
