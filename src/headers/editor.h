@@ -4,6 +4,8 @@
 
 #include <termios.h>
 #include <stddef.h>
+#include <time.h>
+#include "colors.h"
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define SUSTEXT_TAB_STOP 8
@@ -49,11 +51,20 @@ namespace Editor
 	    int 	    dirty;		// Track amount of changes made to file
 	    char* 	    filepath;
 	    char	    statusmsg[80];
-	    // time_t 	    statusmsg_time;	// time out limit for status message
-	    // struct      EditorSyntax* syntax;
+	    time_t 	    statusmsg_time;	// time out limit for status message
+	    struct      EditorSyntax* syntax;
 	    struct      termios orig_termios;
     } ConfigData;
 
+    typedef struct {
+    	char* filetype;
+    	char** filematch;
+    	char** keywords;
+    	char* singleline_comment_start;
+    	char* multiline_comment_start;
+    	char* multiline_comment_end;
+    	int flags;
+    } Syntax;
 
     /*---- INITIALIZATION ----*/
     

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "editor.h"
+#include "appendbuffer.h"
 
 #include <ctype.h>
 // #include <errno.h>
@@ -400,7 +401,7 @@ namespace Editor
     {
     	static int quit_times = SUSTEXT_QUIT_TIMES;
     	int c = Terminal::editorReadKey();
-        
+
     	// Bane of my existance
     	switch (c) {
     	case '\r':
@@ -516,96 +517,97 @@ namespace Editor
             eConfig.colOff = eConfig.rx - eConfig.screenCols + 1;
     }
 
-    // void DrawRows(struct AppendBuffer::abuf* ab)
-    // {
-    //     for (int y = 0; y < eConfig.screenRows; y++) {
-    //         int filerow = y + eConfig.rowOff;
-    //         if (filerow >= eConfig.numrows) {
-    //             // Prepare the append buffer
-    //             if (eConfig.numrows == 0 && y == eConfig.screenRows / 3) {
-    //                 // The welcome text will only show if the editor is opened as a standalone
-    //                 // program with no inputs, on file open there is no welcome
-    //                 char welcome[80];
-    //                 int welcomelen = snprintf(welcome, sizeof(welcome),
-    //                                           "sustext editor -- version %s", SUSTEXT_VERSION);
+    void DrawRows(struct AppendBuffer::abuf* ab)
+    {
+        for (int y = 0; y < eConfig.screenRows; y++) {
+            int filerow = y + eConfig.rowOff;
+            if (filerow >= eConfig.numrows) {
+                // Prepare the append buffer
+                if (eConfig.numrows == 0 && y == eConfig.screenRows / 3) {
+                    // The welcome text will only show if the editor is opened as a standalone
+                    // program with no inputs, on file open there is no welcome
+                    char welcome[80];
+                    int welcomelen = snprintf(welcome, sizeof(welcome),
+                                              "sustext editor -- version %s", SUSTEXT_VERSION);
                     
-    //                 if (welcomelen > eConfig.screenCols)
-    //                     welcomelen = eConfig.screenCols;
+                    if (welcomelen > eConfig.screenCols)
+                        welcomelen = eConfig.screenCols;
 
-    //                 int padding = (eConfig.screenCols - welcomelen) / 2;
+                    int padding = (eConfig.screenCols - welcomelen) / 2;
 
-    //                 // Padding will always be present on blank lines
-    //                 if (padding) {
-    //                     abAppend(ab, "~", 1);
-    //                     padding--;
-    //                 }
+                    // Padding will always be present on blank lines
+                    if (padding) {
+                        abAppend(ab, "~", 1);
+                        padding--;
+                    }
 
-    //                 while (padding--) {
-    //                     abAppend(ab, " ", 1);
-    //                 }
+                    while (padding--) {
+                        abAppend(ab, " ", 1);
+                    }
 
-    //                 abAppend(ab, welcome, welcomelen);
-    //             } else {
-    //                 abAppend(ab, "~", 1);
-    //             }
-    //         } else {
-    //             int len = eConfig.row[filerow].rsize - eConfig.colOff;
-    //             // Prevent the length for being a negative number
-    //             if (len < 0)
-    //                 len = 0;
+                    abAppend(ab, welcome, welcomelen);
+                } else {
+                    abAppend(ab, "~", 1);
+                }
+            } else {
+                int len = eConfig.row[filerow].rsize - eConfig.colOff;
+                // Prevent the length for being a negative number
+                if (len < 0)
+                    len = 0;
 
-    //             if (len > eConfig.screenCols)
-    //                 len = eConfig.screenCols;
+                if (len > eConfig.screenCols)
+                    len = eConfig.screenCols;
 
-    //             char* c = &eConfig.row[filerow].render[eConfig.colOff];
-    //             unsigned char* highlight = &eConfig.row[filerow].highlight[eConfig.colOff];
-    //             int currentColor = -1;
-    //             for (int j = 0; j < len; j++) {
-    //                 if (iscntrl(c[j])) {
-    //                     // NULL character check
-    //                     char sym = (c[j] <= 26) ? '@' + c[j] : '?';
-    //                     AppendBuffer::abAppend(ab, "\x1b[7m", 4);
-    //                     AppendBuffer::abAppend(ab, &sym, 1);
-    //                     AppendBuffer::abAppend(ab, "\x1b[m", 3);
-    //                     if (currentColor != -1) {
-    //                         char buf[16];
-    //                         int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", currentColor);
-    //                         AppendBuffer::abAppend(ab, buf, clen);
-    //                     }
-    //                 } else if (highlight[j] == HL_NORMAL) {
-    //                     if (currentColor == -1) {
-    //                         AppendBuffer::abAppend(ab, "\x1b[39m", 5);
-    //                         currentColor = -1;
-    //                     }
+                char* c = &eConfig.row[filerow].render[eConfig.colOff];
+                unsigned char* highlight = &eConfig.row[filerow].highlight[eConfig.colOff];
+                int currentColor = -1;
+                for (int j = 0; j < len; j++) {
+                    if (iscntrl(c[j])) {
+                        // NULL character check
+                        char sym = (c[j] <= 26) ? '@' + c[j] : '?';
+                        AppendBuffer::abAppend(ab, "\x1b[7m", 4);
+                        AppendBuffer::abAppend(ab, &sym, 1);
+                        AppendBuffer::abAppend(ab, "\x1b[m", 3);
+                        
+                        if (currentColor != -1) {
+                            char buf[16];
+                            int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", currentColor);
+                            AppendBuffer::abAppend(ab, buf, clen);
+                        }
+                    } else if (highlight[j] == HL_NORMAL) {
+                        if (currentColor == -1) {
+                            AppendBuffer::abAppend(ab, "\x1b[39m", 5);
+                            currentColor = -1;
+                        }
 
-    //                     AppendBuffer::abAppend(ab, &c[j], 1);
-    //                 } else {
-    //                     int color = SyntaxToColor(highlight[j]);
-    //                     if (color != currentColor) {
-    //                         currentColor = color;
-    //                         char buf[16];
-    //                         int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", color);
-    //                         AppendBuffer::abAppend(ab, buf, clen);
-    //                     }
+                        AppendBuffer::abAppend(ab, &c[j], 1);
+                    } else {
+                        int color = SyntaxToColor(highlight[j]);
+                        if (color != currentColor) {
+                            currentColor = color;
+                            char buf[16];
+                            int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", color);
+                            AppendBuffer::abAppend(ab, buf, clen);
+                        }
 
-    //                     AppendBuffer::abAppend(ab, &c[j], 1);
-    //                 }
-    //             }
+                        AppendBuffer::abAppend(ab, &c[j], 1);
+                    }
+                }
 
-    //             AppendBuffer::abAppend(ab, "\x1b[39m", 5);
-    //         }
+                AppendBuffer::abAppend(ab, "\x1b[39m", 5);
+            }
 
-    //         // Since everything for the row is appended to the buffer everything
-    //         // after the cursor which effecively produces a clean row
-    //         abAppend(ab, "\x1b[K", 3);
+            // Since everything for the row is appended to the buffer everything
+            // after the cursor which effecively produces a clean row
+            abAppend(ab, "\x1b[K", 3);
 
-    //         // Account for the last row
-    //         abAppend(ab, "\r\n", 2);
-    //     }
-    // }
+            // Account for the last row
+            abAppend(ab, "\r\n", 2);
+        }
+    }
 
-    // void DrawStatusBar(struct AppendBuffer::abuf* ab)
-    // {
+    void DrawStatusBar(struct AppendBuffer::abuf* ab)
+    {
     //     AppendBuffer::abAppend(ab, "\x1b[7m", 4);
     //     char status[80], rstatus[80];
 
@@ -631,10 +633,10 @@ namespace Editor
 
     //     AppendBuffer::abAppend(ab, "\x1b[m", 3);
     //     AppendBuffer::abAppend(ab, "\r\n", 2);
-    // }
+    }
 
-    // void DrawMessageBar(AppendBuffer::abuf* ab)
-    // {
+    void DrawMessageBar(AppendBuffer::abuf* ab)
+    {
     //     AppendBuffer::abAppend(ab, "\x1b[K", 3);
     //     int msglen = strlen(eConfig.statusmsg);
     //     if (msglen > eConfig.screenCols)
@@ -642,29 +644,29 @@ namespace Editor
 
     //     if (msglen && time(NULL) - eConfig.statusmsg_time < 5)
     //         AppendBuffer::abAppend(ab, eConfig.statusmsg, msglen);
-    // }
+    }
 
     void RefreshScreen()
     {
-        // Scroll();
-        // struct AppendBuffer::abuf ab = ABUF_INIT;
+        Scroll();
+        struct AppendBuffer::abuf ab = ABUF_INIT;
 
-        // // Use the ?25l esacape sequence to hide to cursor on refresh
-        // abAppend(&ab, "\x1b[?25l", 6);
-        // abAppend(&ab, "\x1b[H", 3);
+        // Use the ?25l esacape sequence to hide to cursor on refresh
+        abAppend(&ab, "\x1b[?25l", 6);
+        abAppend(&ab, "\x1b[H", 3);
 
-        // DrawRows(&ab);
-        // DrawStatusBar(&ab);
-        // DrawMessageBar(&ab);
+        DrawRows(&ab);
+        DrawStatusBar(&ab);
+        DrawMessageBar(&ab);
 
-        // char buf[32];
-        // snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (eConfig.cy - eConfig.rowOff) + 1, (eConfig.rx - eConfig.colOff) + 1);
-        // abAppend(&ab, buf, strlen(buf));
+        char buf[32];
+        snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (eConfig.cy - eConfig.rowOff) + 1, (eConfig.rx - eConfig.colOff) + 1);
+        abAppend(&ab, buf, strlen(buf));
 
-        // abAppend(&ab, "\x1b[?25h", 6);
+        abAppend(&ab, "\x1b[?25h", 6);
 
-        // write(STDOUT_FILENO, ab.b, ab.len);
-        // abFree(&ab);
+        write(STDOUT_FILENO, ab.b, ab.len);
+        abFree(&ab);
     }
 
     void SetStatusMessage(const char* fmt...)

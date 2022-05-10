@@ -2,7 +2,6 @@
 #ifndef _SUSTEXT_H
 #define _SUSTEXT_H
 
-#define SUSTEXT_VERSION "v1.2.6"
 
 #include "editor.h"
 // #include "filehandler.h"
