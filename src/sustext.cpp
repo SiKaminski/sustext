@@ -29,7 +29,7 @@ void Sustext::Initialize(int argc, char** argv)
 	// Initialize editor and terminal
 	Editor::Initialize(argc, argv);
 	Terminal::enableRawMode();
-	FlagHandler::InitFlags(argc, argv);
+	FlagHandler::Initialize(argc, argv);
 
 	if (argc >= 2) {
 		if (FlagHandler::Enabled(FILEIN)) {

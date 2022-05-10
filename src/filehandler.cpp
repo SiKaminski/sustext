@@ -14,8 +14,11 @@
 
 int FileHandler::OpenFile(char *filepath)
 {
+	fprintf(stderr, "Opening File [%s]\n", filepath);
+	fprintf(stderr, "Editor File Path [%s]\n", eConfig.filepath);
+	
 	//Open a file in read mode
-	free(eConfig.filepath);
+	// free(eConfig.filepath);
 	eConfig.filepath = strdup(filepath);
 	Editor::SelectSyntaxHighlight();
 	FILE* fp = fopen(eConfig.filepath, "r"); 		// This line will eventually change

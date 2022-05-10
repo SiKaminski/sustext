@@ -13,7 +13,7 @@
 
 namespace FlagHandler
 {
-    int InitFlags(int argc, char** argv)
+    int Initialize(int argc, char** argv)
     {
         int opt;
         while ((opt = getopt(argc, argv, ":f:srwj")) != EOF) {

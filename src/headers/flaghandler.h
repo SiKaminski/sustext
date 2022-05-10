@@ -24,7 +24,7 @@ namespace FlagHandler
      * 
      * @return (int) status code
      */
-    int InitFlags(int argc, char** argv);
+    int Initialize(int argc, char** argv);
 
     void SetFlags(int flags, bool on);
 
