@@ -1,6 +1,22 @@
-#include "headers/terminal.hpp"
+#include "terminal.h"
 
-void Terminal::die(const char *s)
+#include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <termios.h>
+#include <sys/types.h>
+#include <time.h>
+#include <stdarg.h>
+#include <fcntl.h>
+
+#include "editor.h"
+#include "globals.h"
+
+void Terminal::die(const char* s)
 {
 	//Clear screen on exit
 	write(STDOUT_FILENO, "\x1b[2J", 4);
@@ -14,7 +30,7 @@ void Terminal::die(const char *s)
 void Terminal::disableRawMode()
 {
 	//Set the attributes of the terminal back to its origional state
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &gTerminalConfig.orig_termios) == -1)
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tConfig.OriginalTermios) == -1)
 		die("tcsetattr");
 
 	system("clear");
@@ -23,13 +39,13 @@ void Terminal::disableRawMode()
 void Terminal::enableRawMode()
 {
 	//Store origional termios attribs, if there is an error disable raw mode and exit
-	if (tcgetattr(STDIN_FILENO, &gTerminalConfig.orig_termios) == -1)
+	if (tcgetattr(STDIN_FILENO, &tConfig.OriginalTermios) == -1)
 		die("tcgetattr");
 
 	atexit(disableRawMode);
 
 	//Define a new terminal
-	struct termios raw = gTerminalConfig.orig_termios;
+	struct termios raw = tConfig.OriginalTermios;
 
 	//Disable flags to leave canonical mode
 	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -47,10 +63,12 @@ void Terminal::enableRawMode()
 
 int Terminal::editorReadKey()
 {
+	using namespace Editor;
 	int nread;
 	char c;
+
 	while ((nread = read(STDIN_FILENO , &c, 1)) != 1) {
-		if (nread == -1 && errno != EAGAIN)
+		if (nread == -1 && errno != EAGAIN) 
 			die("read");
 	}
 
@@ -70,7 +88,6 @@ int Terminal::editorReadKey()
 			if (seq[1] >= '0' && seq[1] <= '9') {
 				if (read(STDOUT_FILENO, &seq[2], 1) != 1)
 					return '\x1b';
-				
 				if (seq[2] == '~') {
 					switch (seq[1]) {
 					case '1':
@@ -116,7 +133,7 @@ int Terminal::editorReadKey()
 		}
 
 		return '\x1b';
-	} else {
+	} else {	
 		return c;
 	}
 }
@@ -131,8 +148,12 @@ int Terminal::getCursorPosition(int *rows, int *cols)
 		return -1;
 
 	while (i < sizeof(buf) - 1) {
-		if(read(STDIN_FILENO, &buf[i], 1) != 1) break;
-		if(buf[i] == 'R') break;
+		if (read(STDIN_FILENO, &buf[i], 1) != 1)
+			break;
+
+		if (buf[i] == 'R')
+			break;
+
 		i++;
 	}
 

@@ -1,15 +1,23 @@
-#include "filehandler.hpp"
+#include "globals.h"
+#include "filehandler.h"
+#include "editor.h"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
-FileHandler::FileHandler() {}
-FileHandler::~FileHandler() {}
-
-int FileHandler::OpenFile(char *filepath, Editor *editor)
+int FileHandler::OpenFile(char *filepath)
 {
+	fprintf(stderr, "Opening File [%s]\n", filepath);
+	fprintf(stderr, "Editor File Path [%s]\n", eConfig.filepath);
+	
 	//Open a file in read mode
-	free(E.filepath);
-	E.filepath = strdup(filepath);
-	editor->SelectSyntaxHighlight();
-	FILE* fp = fopen(E.filepath, "r"); 		// This line will eventually change
+	// free(eConfig.filepath);
+	eConfig.filepath = strdup(filepath);
+	Editor::SelectSyntaxHighlight();
+	FILE* fp = fopen(eConfig.filepath, "r");	// This line will eventually change
 	if (!fp)
 		Terminal::die("fopen");
 
@@ -20,47 +28,46 @@ int FileHandler::OpenFile(char *filepath, Editor *editor)
 	//Get the length of the line from the file
 	while ((linelen = getline(&line, &linecap, fp)) != -1) {
 		//stop if the escape sequence for new line or return carriage is next
-		while(linelen > 0 && (line[linelen - 1] == '\n' ||
-		line[linelen - 1] == '\r')) {
+		while (linelen > 0 && (line[linelen - 1] == '\n' || line[linelen - 1] == '\r')) {
 			linelen--;
 		}
-
-		editor->InsertRow(E.numrows, line, linelen);
+		
+		Editor::InsertRow(eConfig.numrows, line, linelen);
 	}
+
 	//Deallocate memory from line and close file connection
 	free(line);
 	fclose(fp);
-	E.dirty = 0;
+	eConfig.dirty = 0;
 
 	return 1;
 }
 
-int FileHandler::SaveFile(Editor *editor)
+int FileHandler::SaveFile()
 {
-	if (E.filepath == NULL) {
-		E.filepath = editor->Prompt((char*)"Save as: %s (ESC to cancel)", NULL);
-		if (E.filepath == NULL) {
-			editor->SetStatusMessage("Save Aborted");
+   	if (eConfig.filepath == NULL) {
+		eConfig.filepath = Editor::Prompt((char*)"Save as: %s (ESC to cancel)", NULL);
+		if (eConfig.filepath == NULL) {
+			Editor::SetStatusMessage("Save Aborted");
 			return 0;
 		}
 
-		editor->SelectSyntaxHighlight();
+		Editor::SelectSyntaxHighlight();
 	}
 
 	int len;
-    char* buf = editor->RowToString(&len);
+    char* buf = Editor::RowToString(&len);
 
     // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
     // the file will only be able to read it
-	int fd = open(E.filepath, O_RDWR | O_CREAT, 0644);
-
+	int fd = open(eConfig.filepath, O_RDWR | O_CREAT, 0644);
     if (fd != -1) {
 		if (ftruncate(fd, len) != -1) {
    			if (write(fd, buf, len) == len) {
  	  		 	close(fd);
  	  		 	free(buf);
-				E.dirty = 0;
-				editor->SetStatusMessage("[%d] bytes written to disk", len);
+				eConfig.dirty = 0;
+				Editor::SetStatusMessage("[%d] bytes written to disk", len);
 				return 0;
 			}
 		}
@@ -69,6 +76,6 @@ int FileHandler::SaveFile(Editor *editor)
 	}
 	
 	free(buf);
-	editor->SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
+	Editor::SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
     return 1;
 }

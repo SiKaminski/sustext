@@ -1,26 +1,44 @@
-#include "sustext.hpp"
+#include "globals.h"
+#include "sustext.h"
+#include "terminal.h"
+#include "editor.h"
+#include "prototypes.h"
+#include "flaghandler.h"
+#include "filehandler.h"
 
-Sustext::Sustext(int _argc, char **_argv)
+#include <stdint.h>
+
+uint64_t Flags;
+Editor::ConfigData eConfig;
+Terminal::ConfigData tConfig;
+
+int main(int argc, char** argv)
 {
-	argc = _argc;
-	argv = _argv;
-}
+	Sustext::Initialize(argc, argv);
 
-Sustext::~Sustext() {}
-
-int Sustext::Initialize()
-{
-	editor.Init(argc, argv);
-	Terminal::enableRawMode();
-
-	if (argc >= 2) {
-		if (editor.flags.Enabled(FILEIN)) {
-			if (!filehandler.OpenFile(editor.flags.argout.filepath, &editor))
-				Terminal::die("fopen");
-		}
+	while (true) {
+		Editor::RefreshScreen();
+		Editor::ProcessKeypress();
 	}
 
-	editor.SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
+	return 0;
+}
 
-	return 1;
+void Sustext::Initialize(int argc, char** argv)
+{
+	// Initialize editor and terminal
+	Editor::Initialize(argc, argv);
+	Terminal::enableRawMode();
+	FlagHandler::Initialize(argc, argv);
+
+	if (argc >= 2) {
+		if (FlagHandler::Enabled(FILEIN)) {
+			if (!FileHandler::OpenFile(eConfig.filepath)) {
+				Terminal::die("fopen");
+			}
+		}
+		// Check for other terminal flags
+	}
+
+	Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
 }

@@ -1,19 +1,14 @@
 #pragma once
-#ifndef __TERMINAL_HPP
-#define __TERMINAL_HPP
+#ifndef _SUSTEXT_TERMINAL_H
+#define _SUSTEXT_TERMINAL_H
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
 #include <termios.h>
-
-#include "globals.hpp"
-#include "configs.hpp"
 
 namespace Terminal
 {
+    typedef struct {
+        struct termios OriginalTermios;
+    } ConfigData;
 
     /**
      * Initialize the editor functions 
@@ -65,4 +60,4 @@ namespace Terminal
     int getWindowSize(int *rows, int *cols);
 }
 
-#endif // __TERMINAL_HPP
+#endif // _SUSTEXT_TERMINAL_H

@@ -1,13 +1,10 @@
 #pragma once
-#ifndef __APPENDBUFFER_HPP
-#define __APPENDBUFFER_HPP
-
-#include <stdlib.h>
-#include <string.h>
+#ifndef _APPENDBUFFER_H
+#define _APPENDBUFFER_H
 
 namespace AppendBuffer
 {
-    #define ABUF_INIT {NULL, 0}     //Default values for null abuf struct
+    #define ABUF_INIT {NULL, 0} //Default values for null abuf struct
     
     struct abuf {
     	char *b;
@@ -22,7 +19,7 @@ namespace AppendBuffer
      * @param len (int) amount of bytes needed to append to the buffer
      */
     void abAppend(struct abuf *ab, const char *s, int len);
-
+    
     /**
      * free buffer from memory 
      * 
@@ -31,4 +28,4 @@ namespace AppendBuffer
     void abFree(struct abuf *ab);
 }
 
-#endif // __APPENDBUFFER_HPP
+#endif // _APPENDBUFFER_H
