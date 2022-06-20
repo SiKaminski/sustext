@@ -120,7 +120,7 @@ namespace Editor
 
         // Free what was in the row previously and update it
         free(row->render);
-        row->render = (char*)malloc(row->size + tabs * (SUSTEXT_TAB_STOP - 1) + 1);
+        row->render = (char*)malloc(sizeof(char) * row->size + tabs * (SUSTEXT_TAB_STOP - 1) + 1);
 
         // Update each character in the row
         int i = 0;
@@ -137,7 +137,6 @@ namespace Editor
 
         row->render[i] = '\0';
         row->rsize = i;
-
         UpdateSyntax(row);
     }
 
@@ -154,7 +153,7 @@ namespace Editor
 
         eConfig.row[pos].idx = pos;
         eConfig.row[pos].size = len;
-        eConfig.row[pos].chars = (char*)malloc(len + 1);
+        eConfig.row[pos].chars = (char*)malloc(sizeof(char) * (len + 1));
 
         memcpy(eConfig.row[pos].chars, s, len);
         eConfig.row[pos].chars[len] = '\0';
@@ -226,7 +225,7 @@ namespace Editor
 
         FreeRow(&eConfig.row[pos]);
         memmove(&eConfig.row[pos], &eConfig.row[pos + 1], sizeof(RowData) * (eConfig.numrows - pos - 1));
-        for (int i = pos; eConfig.numrows - 1; i++) {
+        for (int i = pos; eConfig.numrows - i ; i++) {
             eConfig.row[i].idx--;
         }
 
@@ -259,9 +258,10 @@ namespace Editor
             eConfig.cx--;
         } else if (eConfig.cx == 0) {
             // DeleteRow(eConfig.cy);
-            eConfig.cx = eConfig.row[eConfig.cy - 1].size;
+            RowAppendString(&eConfig.row[eConfig.cy - 1], row->chars, row->size);
+            eConfig.cx = eConfig.row[eConfig.cy - 1].size - row->size;
+            DeleteRow(eConfig.cy);
             eConfig.cy = eConfig.cy == 0 ? 0 : eConfig.cy - 1;
-            // DeleteRowData(eConfig.cy);
             // eConfig.cx = eConfig.row[eConfig.cy - 1].size;
         } else {
             eConfig.cx = eConfig.row[eConfig.cy - 1].size;
@@ -328,7 +328,7 @@ namespace Editor
     	switch (c) {
     	case '\r':
     		InsertNewLine();
-		break;
+		    break;
 	    case CTRL_KEY('q'):
 		    if (eConfig.dirty && quit_times > 0) {
 	    		SetStatusMessage("File has unsaved changes. "
@@ -361,9 +361,9 @@ namespace Editor
 	    case DEL_KEY:
 	    	if (c == DEL_KEY)
 	    		MoveCursor(ARROW_RIGHT);
-
-	    	DeleteChar();
-	    	break;
+	    	
+            DeleteChar();
+            break;
 	    case CTRL_KEY('f'):
 		    Find();
 		    break;
@@ -405,7 +405,7 @@ namespace Editor
 
         *buflen = totalLen;
 
-        char* buf = (char*)malloc(totalLen);
+        char* buf = (char*)malloc(sizeof(char) * totalLen);
         char* ptr = buf;
 
         for (int i = 0; i < eConfig.numrows; i++) {
