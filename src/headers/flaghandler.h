@@ -14,6 +14,14 @@ enum Flags {
     DEFAULT_FLAGS = MODE_READ
 };
 
+// enum FlagIdentifiers {
+//     MODE_READ   = (1 << 0),
+//     MODE_WRITE  = (1 << 1),
+//     MODE_SUS    = (1 << 2),
+//     FILEIN      = (1 << 3),
+//     FILESACE    = (1 << 4)
+// };
+
 
 namespace FlagHandler 
 {

@@ -98,16 +98,16 @@ namespace Editor
     * @param s (char*) characters in the row
     * @param len (size_t) size of the row
     */
-    void InsertRow(int at, char* s, size_t len);
+    void InsertRow(int pos, char* s, size_t len);
     
     /**
      * Update the current row with an inputted char value 
     * 
     * @param row (RowData*)
-    * @param at position of row to insert char into
+    * @param pos position of row to insert char into
     * @param c char to input to row
     */
-    void RowInsertChar(RowData* row, int at, int c);
+    void RowInsertChar(RowData* row, int pos, int c);
     
     /**
      * Similar to RowInsertChar but instead there is only the
@@ -143,15 +143,15 @@ namespace Editor
     * 
     * @param at row position to remove
     */
-    void DeletRowData(int at);
+    void DeleteRowData(int pos);
     
     /**
      * Remove single character from row 
     * 
     * @param row 
-    * @param at where in the row to remove char
+    * @param pos where in the row to remove char
     */
-    void RowDeleteChar(RowData* row, int at);
+    void RowDeleteChar(RowData* row, int pos);
     
     /**
      * remove the char from the end of a row

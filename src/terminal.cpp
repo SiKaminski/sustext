@@ -138,7 +138,7 @@ int Terminal::editorReadKey()
 	}
 }
 
-int Terminal::getCursorPosition(int *rows, int *cols)
+int Terminal::getCursorPosition(int* rows, int* cols)
 {
 	char buf[32];
 	unsigned int i = 0;
@@ -170,7 +170,7 @@ int Terminal::getCursorPosition(int *rows, int *cols)
 	return 0;
 }
 
-int Terminal::getWindowSize(int *rows, int *cols)
+int Terminal::getWindowSize(int* rows, int* cols)
 {
 	struct winsize ws;
 

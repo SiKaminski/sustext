@@ -31,22 +31,23 @@ namespace Editor
 
     	if (Terminal::getWindowSize(&eConfig.screenRows, &eConfig.screenCols) == -1) 
     		Terminal::die("getWindowSize");
-	
-    	eConfig.screenRows -= 2; //Account for status bar sapce so it won't be drawn over
+ 
+	    //Account for status bar sapce so it won't be drawn over
+    	eConfig.screenRows -= 2; 
     }
 
     /*---- ROW OPERATIONS ----*/
     
 
-    char *Prompt(char *prompt, void (*callback)(char *query, int key, Editor::ConfigData*))
+    char* Prompt(char* prompt, void (*callback)(char* query, int key, Editor::ConfigData*))
     {
         size_t bufsize = 128;
-        char *buf = (char *)malloc(bufsize);
+        char* buf = new char;
 
         size_t buflen = 0;
         buf[0] = '\0';
 
-        while (1) {
+        while (true) {
             SetStatusMessage(prompt, buf);
             RefreshScreen();
 
@@ -95,7 +96,9 @@ namespace Editor
         int savedColOff = eConfig.colOff;
         int savedRowOff = eConfig.rowOff;
 
-        char *query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
+        // Set up query prompt pos the bottom of the screen
+        char* query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
+
 
         if (query) {
             free(query);
@@ -115,9 +118,11 @@ namespace Editor
                 tabs++;
         }
 
+        // Free what was in the row previously and update it
         free(row->render);
         row->render = (char*)malloc(row->size + tabs * (SUSTEXT_TAB_STOP - 1) + 1);
 
+        // Update each character in the row
         int i = 0;
         for (int j = 0; j < row->size; j++) {
             if (row->chars[j] == '\t') {
@@ -136,44 +141,44 @@ namespace Editor
         UpdateSyntax(row);
     }
 
-    void InsertRow(int at, char* s, size_t len)
+    void InsertRow(int pos, char* s, size_t len)
     {
-        if (at < 0 || at > eConfig.numrows)
+        if (pos < 0 || pos > eConfig.numrows)
             return;
 
         eConfig.row = (RowData*)realloc(eConfig.row, sizeof(RowData) * (eConfig.numrows + 1));
-        memmove(&eConfig.row[at + 1], &eConfig.row[at], sizeof(RowData) * (eConfig.numrows - at));
-        for (int i = at + 1; i <= eConfig.numrows; i++) {
+        memmove(&eConfig.row[pos + 1], &eConfig.row[pos], sizeof(RowData) * (eConfig.numrows - pos));
+        for (int i = pos + 1; i <= eConfig.numrows; i++) {
             eConfig.row[i].idx++;
         }
 
-        eConfig.row[at].idx = at;
-        eConfig.row[at].size = len;
-        eConfig.row[at].chars = (char *)malloc(len + 1);
+        eConfig.row[pos].idx = pos;
+        eConfig.row[pos].size = len;
+        eConfig.row[pos].chars = (char*)malloc(len + 1);
 
-        memcpy(eConfig.row[at].chars, s, len);
-        eConfig.row[at].chars[len] = '\0';
+        memcpy(eConfig.row[pos].chars, s, len);
+        eConfig.row[pos].chars[len] = '\0';
 
         // Initialize render for buffer
-        eConfig.row[at].rsize = 0;
-        eConfig.row[at].render = NULL;
-        eConfig.row[at].highlight = NULL;
-        eConfig.row[at].hl_open_comment = 0;
-        UpdateRow(&eConfig.row[at]);
+        eConfig.row[pos].rsize = 0;
+        eConfig.row[pos].render = NULL;
+        eConfig.row[pos].highlight = NULL;
+        eConfig.row[pos].hl_open_comment = 0;
+        UpdateRow(&eConfig.row[pos]);
 
         eConfig.numrows++;
         eConfig.dirty++;
     }
 
-    void RowInsertChar(RowData* row, int at, int c)
+    void RowInsertChar(RowData* row, int pos, int c)
     {
-        if (at < 0 || at > row->size)
-            at = row->size;
+        if (pos < 0 || pos > row->size)
+            pos = row->size;
 
         row->chars = (char*)realloc(row->chars, row->size + 2);
-        memmove(&row->chars[at + 1], &row->chars[at], row->size - at + 1);
+        memmove(&row->chars[pos + 1], &row->chars[pos], row->size - pos + 1);
         row->size++;
-        row->chars[at] = c;
+        row->chars[pos] = c;
         UpdateRow(row);
         eConfig.dirty++;
     }
@@ -190,9 +195,9 @@ namespace Editor
     void InsertNewLine()
     {
         if (eConfig.cx == 0) {
-            InsertRow(eConfig.cy, (char *)"", 0);
+            InsertRow(eConfig.cy, (char*)"", 0);
         } else {
-            RowData *row = &eConfig.row[eConfig.cy];
+            RowData* row = &eConfig.row[eConfig.cy];
             InsertRow(eConfig.cy + 1, &row->chars[eConfig.cx], row->size - eConfig.cx);
             row = &eConfig.row[eConfig.cy];
             row->size = eConfig.cx;
@@ -214,14 +219,14 @@ namespace Editor
         eConfig.dirty++;
     }
 
-    void DeleteRow(int at)
+    void DeleteRow(int pos)
     {
-        if (at < 0 || at >= eConfig.numrows)
+        if (pos < 0 || pos >= eConfig.numrows)
             return;
 
-        FreeRow(&eConfig.row[at]);
-        memmove(&eConfig.row[at], &eConfig.row[at + 1], sizeof(RowData) * (eConfig.numrows - at - 1));
-        for (int i = at; eConfig.numrows - 1; i++) {
+        FreeRow(&eConfig.row[pos]);
+        memmove(&eConfig.row[pos], &eConfig.row[pos + 1], sizeof(RowData) * (eConfig.numrows - pos - 1));
+        for (int i = pos; eConfig.numrows - 1; i++) {
             eConfig.row[i].idx--;
         }
 
@@ -229,12 +234,12 @@ namespace Editor
         eConfig.dirty++;
     }
 
-    void RowDeleteChar(RowData *row, int at)
+    void RowDeleteChar(RowData* row, int pos)
     {
-        if (at < 0 || at >= row->size)
+        if (pos < 0 || pos >= row->size)
             return;
 
-        memmove(&row->chars[at], &row->chars[at + 1], row->size - at);
+        memmove(&row->chars[pos], &row->chars[pos + 1], row->size - pos);
         row->size--;
         UpdateRow(row);
         eConfig.dirty++;
@@ -252,6 +257,12 @@ namespace Editor
         if (eConfig.cx > 0) {
             RowDeleteChar(row, eConfig.cx - 1);
             eConfig.cx--;
+        } else if (eConfig.cx == 0) {
+            // DeleteRow(eConfig.cy);
+            eConfig.cx = eConfig.row[eConfig.cy - 1].size;
+            eConfig.cy = eConfig.cy == 0 ? 0 : eConfig.cy - 1;
+            // DeleteRowData(eConfig.cy);
+            // eConfig.cx = eConfig.row[eConfig.cy - 1].size;
         } else {
             eConfig.cx = eConfig.row[eConfig.cy - 1].size;
             RowAppendString(&eConfig.row[eConfig.cy - 1], row->chars, row->size);
@@ -314,7 +325,6 @@ namespace Editor
     	static int quit_times = SUSTEXT_QUIT_TIMES;
     	int c = Terminal::editorReadKey();
 
-    	// Bane of my existance
     	switch (c) {
     	case '\r':
     		InsertNewLine();
@@ -463,9 +473,9 @@ namespace Editor
                 }
             } else {
                 int len = eConfig.row[filerow].rsize - eConfig.colOff;
-                // Prevent the length for being a negative number
-                if (len < 0)
-                    len = 0;
+                
+                // Prevent the length for being a neg:ative number
+                len = (len < 0) ? 0 : len;
 
                 if (len > eConfig.screenCols)
                     len = eConfig.screenCols;
@@ -487,10 +497,8 @@ namespace Editor
                             AppendBuffer::abAppend(ab, buf, clen);
                         }
                     } else if (highlight[j] == HL_NORMAL) {
-                        if (currentColor == -1) {
+                        if (currentColor == -1)
                             AppendBuffer::abAppend(ab, "\x1b[39m", 5);
-                            currentColor = -1;
-                        }
 
                         AppendBuffer::abAppend(ab, &c[j], 1);
                     } else {
@@ -842,7 +850,7 @@ void FindCallBack(char *query, int key, Editor::ConfigData* E)
                 E->rowOff = E->numrows;
 
                 savedHighlightLine = current;
-                savedHighlight = (char *)malloc(row->rsize);
+                savedHighlight = (char*)malloc(row->rsize);
                 memcpy(savedHighlight, row->highlight, row->rsize);
                 memset(&row->highlight[match - row->render], HL_MATCH, strlen(query));
                 break;

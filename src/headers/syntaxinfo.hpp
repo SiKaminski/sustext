@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_SYNTAX_INFO_H
-#define _SUSTEXT_SYNTAX_INFO_H
+#ifndef _SUSTEXT_SYNTAX_INFO_HPP
+#define _SUSTEXT_SYNTAX_INFO_HPP
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "editor.h"
@@ -28,4 +28,5 @@ static Editor::Syntax HLDB[] = {
 };
 
 #define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
+
 #endif // _SUSTEXT_SYNTAX_INFO_H
