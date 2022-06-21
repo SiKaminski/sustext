@@ -7,8 +7,8 @@ namespace AppendBuffer
     #define ABUF_INIT {NULL, 0} //Default values for null abuf struct
     
     struct abuf {
-    	char *b;
-    	int len;
+    	char*   b;
+    	int     len;
     };
 
     /**

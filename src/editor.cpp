@@ -75,7 +75,7 @@ namespace Editor
             } else if (!iscntrl(c) && c < 128) {
                 if (buflen == bufsize - 1) {
                     bufsize *= 2;
-                    buf = (char *)realloc(buf, bufsize);
+                    buf = static_cast<char*>(realloc(buf, bufsize));
                 }
 
                 buf[buflen++] = c;
@@ -120,7 +120,7 @@ namespace Editor
 
         // Free what was in the row previously and update it
         free(row->render);
-        row->render = (char*)malloc(sizeof(char) * row->size + tabs * (SUSTEXT_TAB_STOP - 1) + 1);
+        row->render = static_cast<char*>(malloc(sizeof(char) * row->size + tabs * (SUSTEXT_TAB_STOP - 1) + 1));
 
         // Update each character in the row
         int i = 0;
@@ -145,7 +145,7 @@ namespace Editor
         if (pos < 0 || pos > eConfig.numrows)
             return;
 
-        eConfig.row = (RowData*)realloc(eConfig.row, sizeof(RowData) * (eConfig.numrows + 1));
+        eConfig.row = static_cast<RowData*>(realloc(eConfig.row, sizeof(RowData) * (eConfig.numrows + 1)));
         memmove(&eConfig.row[pos + 1], &eConfig.row[pos], sizeof(RowData) * (eConfig.numrows - pos));
         for (int i = pos + 1; i <= eConfig.numrows; i++) {
             eConfig.row[i].idx++;
@@ -153,7 +153,7 @@ namespace Editor
 
         eConfig.row[pos].idx = pos;
         eConfig.row[pos].size = len;
-        eConfig.row[pos].chars = (char*)malloc(sizeof(char) * (len + 1));
+        eConfig.row[pos].chars = static_cast<char*>(malloc(sizeof(char) * (len + 1)));
 
         memcpy(eConfig.row[pos].chars, s, len);
         eConfig.row[pos].chars[len] = '\0';
@@ -174,7 +174,7 @@ namespace Editor
         if (pos < 0 || pos > row->size)
             pos = row->size;
 
-        row->chars = (char*)realloc(row->chars, row->size + 2);
+        row->chars = static_cast<char*>(realloc(row->chars, row->size + 2));
         memmove(&row->chars[pos + 1], &row->chars[pos], row->size - pos + 1);
         row->size++;
         row->chars[pos] = c;
@@ -185,7 +185,7 @@ namespace Editor
     void InsertChar(int c)
     {
         if (eConfig.cy == eConfig.numrows)
-            InsertRow(eConfig.numrows, (char*)"", 0);
+            InsertRow(eConfig.numrows, static_cast<char*>(""), 0);
 
         RowInsertChar(&eConfig.row[eConfig.cy], eConfig.cx, c);
         eConfig.cx++;
@@ -194,7 +194,7 @@ namespace Editor
     void InsertNewLine()
     {
         if (eConfig.cx == 0) {
-            InsertRow(eConfig.cy, (char*)"", 0);
+            InsertRow(eConfig.cy, static_cast<char*>(""), 0);
         } else {
             RowData* row = &eConfig.row[eConfig.cy];
             InsertRow(eConfig.cy + 1, &row->chars[eConfig.cx], row->size - eConfig.cx);
@@ -210,7 +210,7 @@ namespace Editor
 
     void RowAppendString(RowData* row, char* str, size_t len)
     {
-        row->chars = (char*)realloc(row->chars, row->size + len + 1);
+        row->chars = static_cast<char*>(realloc(row->chars, sizeof(char) * (row->size + len + 1)));
         memcpy(&row->chars[row->size], str, len);
         row->size += len;
         row->chars[row->size] = '\0';
@@ -405,7 +405,7 @@ namespace Editor
 
         *buflen = totalLen;
 
-        char* buf = (char*)malloc(sizeof(char) * totalLen);
+        char* buf = static_cast<char*>(malloc(sizeof(char) * totalLen));
         char* ptr = buf;
 
         for (int i = 0; i < eConfig.numrows; i++) {
@@ -415,7 +415,7 @@ namespace Editor
             ptr++;
         }
 
-        fprintf(stderr, "buf out: %s\n", (char *)buf);
+        fprintf(stderr, "buf out: %s\n", static_cast<char*>(buf));
         return buf;
     }
 
@@ -600,7 +600,7 @@ namespace Editor
 
     void UpdateSyntax(RowData* row)
     {
-        row->highlight = (unsigned char*)realloc(row->highlight, row->rsize);
+        row->highlight = static_cast<unsigned char*>(realloc(row->highlight, sizeof(unsigned char) * row->rsize));
         memset(row->highlight, HL_NORMAL, row->rsize);
 
         if (eConfig.syntax == NULL)
@@ -620,8 +620,7 @@ namespace Editor
         int inString = 0;
         int inComment = (row->idx > 0 && eConfig.row[row->idx - 1].hl_open_comment);
 
-        int i = 0;
-        while (i < row->size) {
+        for(int i = 0; i < row->size; i++) {
             char c = row->render[i];
             unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : HL_NORMAL;
 
@@ -679,7 +678,7 @@ namespace Editor
             }
 
             if (eConfig.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
-                if ((isdigit(c) && prevSep || (prevHL == HL_NUMBER)) || (c == '.' && prevHL == HL_NUMBER)) {
+                if (((isdigit(c) && prevSep) || (prevHL == HL_NUMBER)) || (c == '.' && prevHL == HL_NUMBER)) {
                     row->highlight[i] = HL_NUMBER;
                     i++;
                     prevSep = 0;
@@ -709,7 +708,6 @@ namespace Editor
             }
 
             prevSep = isSeperator(c);
-            i++;
         }
 
         int changed = (row->hl_open_comment != inComment);
@@ -750,8 +748,7 @@ namespace Editor
 
         for (unsigned int j = 0; j < HLDB_ENTRIES; j++) {
             Syntax *s = &HLDB[j];
-            unsigned int i = 0;
-            while (s->filematch[i]) {
+            for(unsigned int i = 0; s->filematch[i]; i++) {
                 int is_ext = (s->filematch[i][0] == '.');
                 if ((is_ext && ext && !strcmp(ext, s->filematch[i])) || (!is_ext && strstr(eConfig.filepath, s->filematch[i]))) {
                     eConfig.syntax = s;
@@ -762,8 +759,6 @@ namespace Editor
 
                     return;
                 }
-
-                i++;
             }
         }
     }
@@ -805,55 +800,55 @@ int isSeperator(int c)
 }
 
 void FindCallBack(char *query, int key, Editor::ConfigData* E)
-    {
-        static int lastMatch = -1;
-        static int direction = 1;
-        static int savedHighlightLine;
-        static char *savedHighlight = NULL;
+{
+    static int lastMatch = -1;
+    static int direction = 1;
+    static int savedHighlightLine;
+    static char *savedHighlight = NULL;
 
-        if (savedHighlight) {
-            memcpy(E->row[savedHighlightLine].highlight, savedHighlight, E->row[savedHighlightLine].rsize);
-            free(savedHighlight);
-            savedHighlight = NULL;
-        }
+    if (savedHighlight) {
+        memcpy(E->row[savedHighlightLine].highlight, savedHighlight, E->row[savedHighlightLine].rsize);
+        free(savedHighlight);
+        savedHighlight = NULL;
+    }
 
-        if (key == '\r' || key == '\x1b') {
-            lastMatch = -1;
-            direction = 1;
-        } else if (key == Editor::ARROW_RIGHT || key == Editor::ARROW_DOWN) {
-            direction = 1;
-        } else if (key == Editor::ARROW_LEFT || key == Editor::ARROW_UP) {
-            direction = 1;
-        } else {
-            lastMatch = -1;
-            direction = 1;
-        }
+    if (key == '\r' || key == '\x1b') {
+        lastMatch = -1;
+        direction = 1;
+    } else if (key == Editor::ARROW_RIGHT || key == Editor::ARROW_DOWN) {
+        direction = 1;
+    } else if (key == Editor::ARROW_LEFT || key == Editor::ARROW_UP) {
+        direction = 1;
+    } else {
+        lastMatch = -1;
+        direction = 1;
+    }
 
-        if (lastMatch == -1)
-            direction = 1;
+    if (lastMatch == -1)
+        direction = 1;
 
-        int current = lastMatch;
-        for (int i = 0; i < E->numrows; i++) {
-            current += direction;
+    int current = lastMatch;
+    for (int i = 0; i < E->numrows; i++) {
+        current += direction;
 
-            if (current == -1)
-                current = E->numrows - 1;
-            else if (current == E->numrows)
-                current = 0;
+        if (current == -1)
+            current = E->numrows - 1;
+        else if (current == E->numrows)
+            current = 0;
 
-            Editor::RowData* row = &E->row[current];
-            char *match = strstr(row->render, query);
-            if (match) {
-                lastMatch = current;
-                E->cy = current;
-                E->cx = RowRxToCx(row, match - row->render);
-                E->rowOff = E->numrows;
+        Editor::RowData* row = &E->row[current];
+        char* match = strstr(row->render, query);
+        if (match) {
+            lastMatch = current;
+            E->cy = current;
+            E->cx = RowRxToCx(row, match - row->render);
+            E->rowOff = E->numrows;
 
-                savedHighlightLine = current;
-                savedHighlight = (char*)malloc(row->rsize);
-                memcpy(savedHighlight, row->highlight, row->rsize);
-                memset(&row->highlight[match - row->render], HL_MATCH, strlen(query));
-                break;
-            }
+            savedHighlightLine = current;
+            savedHighlight = static_cast<char*>(malloc(sizeof(char) * row->rsize));
+            memcpy(savedHighlight, row->highlight, row->rsize);
+            memset(&row->highlight[match - row->render], HL_MATCH, strlen(query));
+            break;
         }
     }
+}

@@ -16,9 +16,9 @@
 
 namespace Editor 
 {
-	enum Keys {
-		BACKSPACE = 127,
-		ARROW_LEFT = 1000,
+	enum Keys : int {
+		BACKSPACE   = 127,
+		ARROW_LEFT  = 1000,
 		ARROW_RIGHT,
 		ARROW_UP,
 		ARROW_DOWN,
@@ -29,7 +29,7 @@ namespace Editor
 		PAGE_DOWN
 	};
 
-    typedef struct {
+    struct RowData {
 	    int 	        idx;
     	int 	        size;
 	    int		        rsize;
@@ -37,19 +37,19 @@ namespace Editor
 	    char* 	        render;
 	    unsigned char*  highlight;
 	    int 	        hl_open_comment;
-    } RowData;
+    };
 
-    typedef struct {
-    	char* filetype;
-    	char** filematch;
-    	char** keywords;
-    	char* singleline_comment_start;
-    	char* multiline_comment_start;
-    	char* multiline_comment_end;
-    	int flags;
-    } Syntax;
+    struct Syntax{
+    	char*   filetype;
+    	char**  filematch;
+    	char**  keywords;
+    	char*   singleline_comment_start;
+    	char*   multiline_comment_start;
+    	char*   multiline_comment_end;
+    	int     flags;
+    };
 
-    typedef struct {
+    struct ConfigData {
 	    int 	    cx;
 	    int 	    cy;  
 	    int 	    rx;	
@@ -65,7 +65,7 @@ namespace Editor
 	    time_t 	    statusmsg_time;	// time out limit for status message
 	    Syntax*     syntax;
 	    struct      termios orig_termios;
-    } ConfigData;
+    };
     
     /*---- INITIALIZATION ----*/
     
@@ -146,6 +146,7 @@ namespace Editor
     void DeleteRowData(int pos);
     
     /**
+     * 
      * Remove single character from row 
     * 
     * @param row 

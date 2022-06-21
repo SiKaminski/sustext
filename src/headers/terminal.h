@@ -6,9 +6,9 @@
 
 namespace Terminal
 {
-    typedef struct {
-        struct termios OriginalTermios;
-    } ConfigData;
+    struct ConfigData {
+        termios OriginalTermios;
+    };
 
     /**
      * Initialize the editor functions 

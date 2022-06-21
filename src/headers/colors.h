@@ -4,7 +4,7 @@
 
 /* These colors are based off ubuntu terminal colors */
 
-enum SustextHighlights {
+enum SustextHighlights : int {
     HL_NORMAL = 0,
 	HL_COMMENT,
     HL_MLCOMMENT,
@@ -15,7 +15,7 @@ enum SustextHighlights {
 	HL_MATCH
 };
 
-enum SustextConsoleColors {
+enum SustextConsoleColors : int {
     FG_BLACK = 30,
     FG_RED,
     FG_GREEN,

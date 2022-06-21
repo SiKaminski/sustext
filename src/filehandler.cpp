@@ -46,7 +46,7 @@ int FileHandler::OpenFile(char *filepath)
 int FileHandler::SaveFile()
 {
    	if (eConfig.filepath == NULL) {
-		eConfig.filepath = Editor::Prompt((char*)"Save as: %s (ESC to cancel)", NULL);
+		eConfig.filepath = Editor::Prompt(static_cast<char*>("Save as: %s (ESC to cancel)"), NULL);
 		if (eConfig.filepath == NULL) {
 			Editor::SetStatusMessage("Save Aborted");
 			return 0;

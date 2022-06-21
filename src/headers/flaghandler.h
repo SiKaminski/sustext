@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-enum Flags {
+enum Flags : uint64_t {
     MODE_READ   = 0x0001,
     MODE_WRITE  = 0x0002,
     MODE_SUS    = 0x0004,
