@@ -7,7 +7,7 @@
 // Editor Prototypes
 int RowCxToRx(Editor::RowData* row, int rx);
 int RowRxToCx(Editor::RowData* row, int rx);
-void FindCallBack(char* query, Editor::Key key, Editor::ConfigData* E);
+void FindCallBack(char* query, Editor::Key key, Editor::Config* E);
 
 // Terminal Protopytes
 

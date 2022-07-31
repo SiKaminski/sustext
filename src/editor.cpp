@@ -26,7 +26,7 @@ namespace Editor
         tConfig.state = Terminal::State::home;
 
     	if (Terminal::GetWindowSize(&eConfig.screenRows, &eConfig.screenCols) == -1) 
-    		Terminal::die("getWindowSize");
+    		Terminal::die((int)Severity::medium, "getWindowSize");
  
 	    //Account for status bar sapce so it won't be drawn over
     	eConfig.screenRows -= 2; 
@@ -36,7 +36,7 @@ namespace Editor
 
     /*---- ROW OPERATIONS ----*/
     
-    char* Prompt(char* prompt, void (*callback)(char* query, Key key, ConfigData*))
+    char* Prompt(char* prompt, void (*callback)(char* query, Key key, Config*))
     {
         size_t bufsize = 128;
         char* buf = new char[bufsize];
@@ -824,7 +824,7 @@ int isSeperator(int c)
     return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
 }
 
-void FindCallBack(char *query, Editor::Key key, Editor::ConfigData* E)
+void FindCallBack(char *query, Editor::Key key, Editor::Config* E)
 {
     using namespace Editor;
 

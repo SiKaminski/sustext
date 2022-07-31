@@ -13,9 +13,8 @@ namespace Terminal
         readonly,
     };
     
-
-    struct ConfigData {
-        termios OriginalTermios;
+    struct Config {  
+        termios OrigTermios;
         State   state; 
     };
 
@@ -24,7 +23,7 @@ namespace Terminal
      * 
      * @param s error message
      */
-    void die(const char* s);
+    void die(const int severity, const char* s);
 
     /**
      * Put the terminal window back to the origional state it was

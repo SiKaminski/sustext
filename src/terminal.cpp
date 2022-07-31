@@ -14,12 +14,10 @@
 #include <fcntl.h>
 #include <ncurses.h>
 
-#include "common.h"
-#include "editor.h"
 #include "Debug/logger.h"
-#include "globals.h"
+#include "common.h"
 
-void Terminal::die(const char* s)
+void Terminal::die(const int severity, const char* s)
 {
 	//Clear screen on exit
 	write(STDOUT_FILENO, "\x1b[2J", 4);
@@ -30,8 +28,8 @@ void Terminal::die(const char* s)
 void Terminal::DisableRawMode()
 {
 	//Set the attributes of the terminal back to its origional state
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tConfig.OriginalTermios) == -1)
-		die("tcsetattr");
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tConfig.OrigTermios) == -1)
+		die((int)Severity::high, "tcsetattr");
 
 	system("clear");
 }
@@ -40,13 +38,13 @@ void Terminal::EnableRawMode()
 {
     LOG_INFO << "Enabling terminal raw mode" << std::endl;
 	//Store original termios attribs, if there is an error disable raw mode and exit
-	if (tcgetattr(STDIN_FILENO, &tConfig.OriginalTermios) == -1)
-		die("tcgetattr");
+	if (tcgetattr(STDIN_FILENO, &tConfig.OrigTermios) == -1)
+		die((int)Severity::high, "tcgetattr");
 
 	atexit(DisableRawMode);
 
 	//Define a new terminal
-	termios raw = tConfig.OriginalTermios;
+	termios raw = tConfig.OrigTermios;
 
 	//Disable flags to leave canonical mode
 	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -59,7 +57,7 @@ void Terminal::EnableRawMode()
 	//Set the new terminal
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
-		die("tcsetattr");
+		die((int)Severity::high, "tcsetattr");
 
     LOG_SUCCESS << "Enabled terminal raw mode" << std::endl;
 }
@@ -72,7 +70,7 @@ Editor::Key Terminal::EditorReadKey()
 
 	while ((nread = read(STDIN_FILENO , &c, 1)) != 1) {
 		if (nread == -1 && errno != EAGAIN) 
-			die("read");
+			die((int)Severity::medium, "read");
 	}
 
 	//Check for escape sequence

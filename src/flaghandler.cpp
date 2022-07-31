@@ -59,11 +59,6 @@ namespace FlagHandler
         return 1;
     }
 
-    //void SetFlags(int flags, bool on)
-    //{
-        //Flags ^= flags;
-    //}
-
     bool Enabled(const Identifier identifier)
     {
         return Flags & (int)identifier;

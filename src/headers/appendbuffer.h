@@ -18,14 +18,14 @@ namespace AppendBuffer
      * @param s (char*) bytes to append to buffer 
      * @param len (int) amount of bytes needed to append to the buffer
      */
-    void abAppend(struct abuf *ab, const char *s, int len);
+    void abAppend(abuf *ab, const char *s, int len);
     
     /**
      * free buffer from memory 
      * 
      * @param ab (abuf*)
      */
-    void abFree(struct abuf *ab);
+    void abFree(abuf *ab);
 }
 
 #endif // _APPENDBUFFER_H

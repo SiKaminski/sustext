@@ -4,15 +4,14 @@
 #include "Debug/logger.h"
 
 uint64_t Flags;
-Editor::ConfigData eConfig;
-Terminal::ConfigData tConfig;
+Editor::Config eConfig;
+Terminal::Config tConfig;
 
 Logger logger;
 int main(int argc, char** argv)
 {
 	LOG_INIT("logs/", "info")
 
-	LOG_INFO << "Initializing Sustext\n";
 	Sustext::Initialize(argc, argv);
 
     while (true) {

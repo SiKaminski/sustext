@@ -12,13 +12,13 @@
 
 int FileHandler::OpenFile(const char* filepath)
 {
-	//Open a file in read mode
+	// Open a file in read mode
 	// free(eConfig.filepath);
 	eConfig.filepath = strdup(filepath);
 	Editor::SelectSyntaxHighlight();
 	FILE* fp = fopen(eConfig.filepath, "r");	// This line will eventually change
-	if (!fp)
-		Terminal::die("fopen");
+	if (fp == nullptr)
+		Terminal::die((int)Severity::medium, "fopen");
 
 	char* line = nullptr;
 	size_t linecap = 0;
@@ -44,9 +44,9 @@ int FileHandler::OpenFile(const char* filepath)
 
 int FileHandler::SaveFile()
 {
-   	if (eConfig.filepath == NULL) {
-		eConfig.filepath = Editor::Prompt((char*)("Save as: %s (ESC to cancel)"), NULL);
-		if (eConfig.filepath == NULL) {
+   	if (eConfig.filepath == nullptr) {
+		eConfig.filepath = Editor::Prompt((char*)("Save as: %s (ESC to cancel)"), nullptr);
+		if (eConfig.filepath == nullptr) {
 			Editor::SetStatusMessage("Save Aborted");
 			return 0;
 		}
