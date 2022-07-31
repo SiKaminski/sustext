@@ -2,3 +2,7 @@
 bin/*
 obj/*
 .dev_misc
+
+compile_commands.json
+.vimrc
+.cache/

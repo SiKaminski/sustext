@@ -3,17 +3,21 @@
 #define _SUSTEXT_TERMINAL_H
 
 #include <termios.h>
+#include "editor.h"
 
 namespace Terminal
 {
+    enum class State {
+        home,
+        edit,
+        readonly,
+    };
+    
+
     struct ConfigData {
         termios OriginalTermios;
+        State   state; 
     };
-
-    /**
-     * Initialize the editor functions 
-     */
-    void initEditor();
 
     /**
      * exit the program with a message to display what error occured 
@@ -26,20 +30,20 @@ namespace Terminal
      * Put the terminal window back to the origional state it was
      * at before (from raw input to canonical mode (cooked mode)) 
      */
-    void disableRawMode();
+    void DisableRawMode();
     
     /**
      * Enable raw input mode for the terminal by enabling and disabling
      * canonical flags
      */
-    void enableRawMode();
+    void EnableRawMode();
     
     /**
      * Read key input 
      * 
      * @return character that was pressed 
      */
-    int editorReadKey();
+    Editor::Key EditorReadKey();
     
     /**
      * Get the Cursor Position relative to the terminal window
@@ -48,7 +52,7 @@ namespace Terminal
      * @param cols (int) value to store column information
      * @return (int) exit status: 0 = success
      */
-    int getCursorPosition(int *rows, int *cols);
+    int GetCursorPosition(int *rows, int *cols);
     
     /**
      * Get the Window Size of the terminal
@@ -57,7 +61,7 @@ namespace Terminal
      * @param cols (int) value to store column information
      * @return (int) exit status: 0 = success
      */
-    int getWindowSize(int *rows, int *cols);
+    int GetWindowSize(int *rows, int *cols);
 }
 
 #endif // _SUSTEXT_TERMINAL_H

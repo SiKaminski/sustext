@@ -4,15 +4,6 @@
 
 #include <stdint.h>
 
-enum Flags : uint64_t {
-    MODE_READ   = 0x0001,
-    MODE_WRITE  = 0x0002,
-    MODE_SUS    = 0x0004,
-    FILEIN      = 0x0008,
-    FILESAVE    = 0x0010,
-    
-    DEFAULT_FLAGS = MODE_READ
-};
 
 // enum FlagIdentifiers {
 //     MODE_READ   = (1 << 0),
@@ -25,6 +16,16 @@ enum Flags : uint64_t {
 
 namespace FlagHandler 
 {
+    enum class Flag : uint64_t {
+        modeRead    = 0x0001,
+        modeWrite   = 0x0002,
+        modeSus     = 0x0004,
+        fileIn      = 0x0008,
+        fileSave    = 0x0010,
+        
+        defaultMode = modeRead
+    };
+
     /**
      * Set the flags for the given arguments
      * if none are provided then by default the editor

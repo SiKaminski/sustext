@@ -16,17 +16,26 @@
 
 namespace Editor 
 {
-	enum Keys : int {
-		BACKSPACE   = 127,
-		ARROW_LEFT  = 1000,
-		ARROW_RIGHT,
-		ARROW_UP,
-		ARROW_DOWN,
-		DEL_KEY,
-		HOME_KEY,
-		END_KEY,
-		PAGE_UP,
-		PAGE_DOWN
+	enum class Key {
+		backspace   = 127,
+		arrowLeft   = 1000,
+		arrowRight,
+		arrowUp,
+		arrowDown,
+		del,
+		home,
+		end,
+		pageUp,
+		pageDown,
+        
+        escapeSequence  = '\x1b',
+        carriageRet     = '\r',
+
+        ctrl_q = CTRL_KEY('q'),
+        ctrl_s = CTRL_KEY('s'),
+        ctrl_h = CTRL_KEY('h'),
+        ctrl_f = CTRL_KEY('f'),
+        ctrl_l = CTRL_KEY('l'),
 	};
 
     struct RowData {
@@ -64,7 +73,7 @@ namespace Editor
 	    char	    statusmsg[80];
 	    time_t 	    statusmsg_time;	// time out limit for status message
 	    Syntax*     syntax;
-	    struct      termios orig_termios;
+	    termios     orig_termios;
     };
     
     /*---- INITIALIZATION ----*/
@@ -81,7 +90,7 @@ namespace Editor
     * @param prompt 
     * @return char* 
     */
-    char* Prompt(char* prompt, void(*callback)(char*, int, Editor::ConfigData*));
+    char* Prompt(char* prompt, void(*callback)(char*, Key, ConfigData*));
 
     void Find();
     
@@ -204,13 +213,13 @@ namespace Editor
      * Prepare the inputted buffer with the next frame 
     * @param ab 
     */
-    void DrawRows(struct AppendBuffer::abuf* ab);
+    void DrawRows(AppendBuffer::abuf* ab);
     
     /**
      * Display status bar at the bottom of the screen 
     * @param ab 
     */
-    void DrawStatusBar(struct AppendBuffer::abuf* ab);
+    void DrawStatusBar(AppendBuffer::abuf* ab);
     
     /**
      * Display for information the user may need to see
@@ -219,7 +228,7 @@ namespace Editor
     * 
     * @param ab 
     */
-    void DrawMessageBar(struct AppendBuffer::abuf* ab);
+    void DrawMessageBar(AppendBuffer::abuf* ab);
     
     /**
      * Update the screen buffer 
@@ -235,7 +244,7 @@ namespace Editor
     
     void UpdateSyntax(RowData* row);
 
-    int SyntaxToColor(int highlight);
+    Foreground SyntaxToColor(Highlight highlight);
 
     void SelectSyntaxHighlight();
 }

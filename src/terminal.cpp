@@ -12,6 +12,7 @@
 #include <time.h>
 #include <stdarg.h>
 #include <fcntl.h>
+#include <ncurses.h>
 
 #include "editor.h"
 #include "globals.h"
@@ -27,7 +28,7 @@ void Terminal::die(const char* s)
 	exit(1);
 }
 
-void Terminal::disableRawMode()
+void Terminal::DisableRawMode()
 {
 	//Set the attributes of the terminal back to its origional state
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tConfig.OriginalTermios) == -1)
@@ -36,16 +37,16 @@ void Terminal::disableRawMode()
 	system("clear");
 }
 
-void Terminal::enableRawMode()
+void Terminal::EnableRawMode()
 {
-	//Store origional termios attribs, if there is an error disable raw mode and exit
+	//Store original termios attribs, if there is an error disable raw mode and exit
 	if (tcgetattr(STDIN_FILENO, &tConfig.OriginalTermios) == -1)
 		die("tcgetattr");
 
-	atexit(disableRawMode);
+	atexit(DisableRawMode);
 
 	//Define a new terminal
-	struct termios raw = tConfig.OriginalTermios;
+	termios raw = tConfig.OriginalTermios;
 
 	//Disable flags to leave canonical mode
 	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -61,7 +62,7 @@ void Terminal::enableRawMode()
 		die("tcsetattr");
 }
 
-int Terminal::editorReadKey()
+Editor::Key Terminal::EditorReadKey()
 {
 	using namespace Editor;
 	int nread;
@@ -78,67 +79,67 @@ int Terminal::editorReadKey()
 		char seq[3];
 
 		if (read(STDIN_FILENO, &seq[0], 1) != 1)
-			return '\x1b';
+			return Key::escapeSequence;
 
 		if (read(STDIN_FILENO, &seq[1], 1) != 1)
-			return '\x1b';
+			return Key::escapeSequence;
 
 		//'27'
 		if (seq[0] == '[') {
 			if (seq[1] >= '0' && seq[1] <= '9') {
 				if (read(STDOUT_FILENO, &seq[2], 1) != 1)
-					return '\x1b';
+					return Key::escapeSequence;
 				if (seq[2] == '~') {
 					switch (seq[1]) {
 					case '1':
-						return HOME_KEY;
+						return Key::home;
 					case '3':
-						return DEL_KEY;
+						return Key::del;
 					case '2':
-						return END_KEY;
+						return Key::end;
 					case '5':
-						return PAGE_UP;
+						return Key::pageUp;
 					case '6':
-						return PAGE_DOWN;
+						return Key::pageDown;
 					case '7':
-						return HOME_KEY;
+						return Key::home;
 					case '8':
-						return END_KEY;
+						return Key::end;
 					}
 				}
 			} else {
 				//There has to be a better way of implementing keypresses right?
 				switch (seq[1]) {
 				case 'A':
-					return ARROW_UP;
+					return Key::arrowUp;
 				case 'B':
-					return ARROW_DOWN;
+					return Key::arrowDown;
 				case 'C':
-					return ARROW_RIGHT;
+					return Key::arrowRight;
 				case 'D':
-					return ARROW_LEFT;
+					return Key::arrowLeft;
 				case 'H':
-					return HOME_KEY;
+					return Key::home;
 				case 'F':
-					return END_KEY;
+					return Key::end;
 				}
 			}
 		} else if (seq[0] == 'O') {
 			switch (seq[1]) {
 			case 'H':
-				return HOME_KEY;
+				return Key::home;
 			case 'F':
-				return END_KEY;
+				return Key::end;
 			}
 		}
 
-		return '\x1b';
+		return Key::escapeSequence;
 	} else {	
-		return c;
+		return (Key)c;
 	}
 }
 
-int Terminal::getCursorPosition(int* rows, int* cols)
+int Terminal::GetCursorPosition(int* rows, int* cols)
 {
 	char buf[32];
 	unsigned int i = 0;
@@ -170,7 +171,7 @@ int Terminal::getCursorPosition(int* rows, int* cols)
 	return 0;
 }
 
-int Terminal::getWindowSize(int* rows, int* cols)
+int Terminal::GetWindowSize(int* rows, int* cols)
 {
 	struct winsize ws;
 
@@ -179,7 +180,7 @@ int Terminal::getWindowSize(int* rows, int* cols)
 		if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12)
 			return -1;
 
-		return getCursorPosition(rows, cols);
+		return GetCursorPosition(rows, cols);
 	} else {
 		*cols = ws.ws_col;
 		*rows = ws.ws_row;
