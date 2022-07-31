@@ -14,7 +14,9 @@
 #include <fcntl.h>
 #include <ncurses.h>
 
+#include "common.h"
 #include "editor.h"
+#include "Debug/logger.h"
 #include "globals.h"
 
 void Terminal::die(const char* s)
@@ -22,10 +24,7 @@ void Terminal::die(const char* s)
 	//Clear screen on exit
 	write(STDOUT_FILENO, "\x1b[2J", 4);
 	write(STDOUT_FILENO, "\x1b[H", 3);
-
-	fprintf(stderr, s);
-	perror(s);
-	exit(1);
+    error((int)Severity::unknown, "Terminal Die:", s);
 }
 
 void Terminal::DisableRawMode()
@@ -39,6 +38,7 @@ void Terminal::DisableRawMode()
 
 void Terminal::EnableRawMode()
 {
+    LOG_INFO << "Enabling terminal raw mode" << std::endl;
 	//Store original termios attribs, if there is an error disable raw mode and exit
 	if (tcgetattr(STDIN_FILENO, &tConfig.OriginalTermios) == -1)
 		die("tcgetattr");
@@ -60,6 +60,8 @@ void Terminal::EnableRawMode()
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
 		die("tcsetattr");
+
+    LOG_SUCCESS << "Enabled terminal raw mode" << std::endl;
 }
 
 Editor::Key Terminal::EditorReadKey()

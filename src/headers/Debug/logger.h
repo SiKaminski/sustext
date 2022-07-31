@@ -15,10 +15,10 @@ class Logger;
 extern Logger logger;
 
 enum LogLevel {
-    ERROR = 0,
-    WARN = 1,
-    INFO = 2,
-    DEBUG = 3,
+    ERROR   = 0,
+    WARN    = 1,
+    INFO    = 2,
+    DEBUG   = 3,
     SUCCESS = 4,
 };
 

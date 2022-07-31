@@ -1,8 +1,11 @@
-#include "globals.h"
+#pragma GCC diagnostic ignored "-Wswitch"
+
+#include "common.h"
 #include "editor.h"
 #include "prototypes.h"
 #include "syntaxinfo.hpp"
 #include "filehandler.h"
+#include "Debug/logger.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -17,18 +20,8 @@ namespace Editor
 {
     void Initialize(int argc, char** argv)
     {
-    	eConfig.cx = 0;
-    	eConfig.cy = 0;
-    	eConfig.rx = 0;
-    	eConfig.rowOff = 0;
-    	eConfig.colOff = 0;
-    	eConfig.numrows = 0;
-    	eConfig.row = new RowData(ROWDATA_NULL);
-    	eConfig.filepath = NULL;
-    	eConfig.statusmsg[0] = '\0';
-    	eConfig.statusmsg_time = 0;
-    	eConfig.dirty = 0;
-    	eConfig.syntax = NULL;
+        LOG_INFO << "Initilaizing Editor" << std::endl;
+        eConfig = {};
 
         tConfig.state = Terminal::State::home;
 
@@ -37,6 +30,8 @@ namespace Editor
  
 	    //Account for status bar sapce so it won't be drawn over
     	eConfig.screenRows -= 2; 
+
+        LOG_SUCCESS << "Initialized Editor" << std::endl;
     }
 
     /*---- ROW OPERATIONS ----*/
@@ -44,7 +39,7 @@ namespace Editor
     char* Prompt(char* prompt, void (*callback)(char* query, Key key, ConfigData*))
     {
         size_t bufsize = 128;
-        char* buf = new char;
+        char* buf = new char[bufsize];
 
         size_t buflen = 0;
         buf[0] = '\0';

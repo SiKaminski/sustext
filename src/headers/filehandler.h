@@ -4,7 +4,7 @@
 
 namespace FileHandler
 {
-    int OpenFile(char* filename);
+    int OpenFile(const char* filename);
     int SaveFile();
 }
 

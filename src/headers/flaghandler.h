@@ -2,17 +2,8 @@
 #ifndef _SUSTEXT_FLAG_HANDLER_H
 #define _SUSTEXT_FLAG_HANDLER_H
 
+#include "common.h"
 #include <stdint.h>
-
-
-// enum FlagIdentifiers {
-//     MODE_READ   = (1 << 0),
-//     MODE_WRITE  = (1 << 1),
-//     MODE_SUS    = (1 << 2),
-//     FILEIN      = (1 << 3),
-//     FILESACE    = (1 << 4)
-// };
-
 
 namespace FlagHandler 
 {
@@ -24,6 +15,14 @@ namespace FlagHandler
         fileSave    = 0x0010,
         
         defaultMode = modeRead
+    };
+
+    enum class Identifier {
+        modeRead    = (1 << 0),
+        modeWrite   = (1 << 1),
+        modeSus     = (1 << 2),
+        fileIn      = (1 << 3),
+        fileSave    = (1 << 4)
     };
 
     /**
@@ -42,7 +41,7 @@ namespace FlagHandler
      * 
      * @param flag 
      */
-    bool Enabled(int flag);
+     bool Enabled(const Identifier identifier);
 }
 
 #endif // _SUSTEXT_FLAG_HANDLER_H

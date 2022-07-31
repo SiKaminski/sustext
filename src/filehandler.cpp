@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "common.h"
 #include "filehandler.h"
 #include "editor.h"
 #include <errno.h>
@@ -8,11 +8,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int FileHandler::OpenFile(char *filepath)
+#include "Debug/logger.h"
+
+int FileHandler::OpenFile(const char* filepath)
 {
-	fprintf(stderr, "Opening File [%s]\n", filepath);
-	fprintf(stderr, "Editor File Path [%s]\n", eConfig.filepath);
-	
 	//Open a file in read mode
 	// free(eConfig.filepath);
 	eConfig.filepath = strdup(filepath);
@@ -21,7 +20,7 @@ int FileHandler::OpenFile(char *filepath)
 	if (!fp)
 		Terminal::die("fopen");
 
-	char* line = NULL;
+	char* line = nullptr;
 	size_t linecap = 0;
 	ssize_t linelen;
 

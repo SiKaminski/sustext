@@ -23,7 +23,7 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
 sussy: all
 all: $(OBJ)
-	@mkdir $(LOG_DIR)
+	@mkdir -p $(LOG_DIR)
 	@mkdir -p $(@D)
 	@echo ---- Generating $^ ---
 

@@ -12,16 +12,14 @@ void Sustext::Initialize(int argc, char** argv)
 	// Initialize editor and terminal
 	Editor::Initialize(argc, argv);
 	Terminal::EnableRawMode();
-	// FlagHandler::Initialize(argc, argv);
+    FlagHandler::Initialize(argc, argv);
+    
+    if (FlagHandler::Enabled(FlagHandler::Identifier::fileIn)) {
+        if (!FileHandler::OpenFile(eConfig.filepath))
+            Terminal::die("fopen");     
+        
+        // Check for other flags and handle them
+    }    
 
-	// if (argc >= 2) {
-	// 	if (FlagHandler::Enabled(FILEIN)) {
-	// 		if (!FileHandler::OpenFile(eConfig.filepath)) {
-	// 			Terminal::die("fopen");
-	// 		}
-	// 	}
-	// 	// Check for other terminal flags
-	// }
-
-	// Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
+    Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
 }

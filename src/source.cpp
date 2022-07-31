@@ -10,7 +10,7 @@ Terminal::ConfigData tConfig;
 Logger logger;
 int main(int argc, char** argv)
 {
-	LOG_INIT("logs/", "log")
+	LOG_INIT("logs/", "info")
 
 	LOG_INFO << "Initializing Sustext\n";
 	Sustext::Initialize(argc, argv);
