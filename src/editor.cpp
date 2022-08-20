@@ -60,7 +60,7 @@ namespace Editor
                     callback(buf, key, &eConfig);
 
                 free(buf);
-                return NULL;
+                return nullptr;
             } else if (key == Key::carriageRet) {
                 if (buflen != 0) {
                     SetStatusMessage("");
@@ -93,7 +93,6 @@ namespace Editor
 
         // Set up query prompt pos the bottom of the screen
         char* query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
-
 
         if (query) {
             free(query);
@@ -155,8 +154,8 @@ namespace Editor
 
         // Initialize render for buffer
         eConfig.row[pos].rsize = 0;
-        eConfig.row[pos].render = NULL;
-        eConfig.row[pos].highlight = NULL;
+        eConfig.row[pos].render = nullptr;
+        eConfig.row[pos].highlight = nullptr;
         eConfig.row[pos].hl_open_comment = 0;
         UpdateRow(&eConfig.row[pos]);
 
@@ -277,7 +276,7 @@ namespace Editor
     void MoveCursor(Key key)
     {
         // Prevent cursor from going past the size of the screen not the file
-        RowData* row = (eConfig.cy >= eConfig.numrows) ? NULL : &eConfig.row[eConfig.cy];
+        RowData* row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
 
         switch (key) {
             case Key::arrowLeft:
@@ -317,7 +316,7 @@ namespace Editor
         }
 
         // Cursor snap to end of line
-        row = (eConfig.cy >= eConfig.numrows) ? NULL : &eConfig.row[eConfig.cy];
+        row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
         int rowlen = row ? row->size : 0;
         if (eConfig.cx > rowlen)
             eConfig.cx = rowlen;
@@ -510,7 +509,7 @@ namespace Editor
                 int currentColor = -1;
                 for (int j = 0; j < len; j++) {
                     if (iscntrl(c[j])) {
-                        // NULL character check
+                        // nullptr character check
                         char sym = (c[j] <= 26) ? '@' + c[j] : '?';
                         AppendBuffer::abAppend(ab, "\x1b[7m", 4);
                         AppendBuffer::abAppend(ab, &sym, 1);
@@ -587,7 +586,7 @@ namespace Editor
         if (msglen > eConfig.screenCols)
             msglen = eConfig.screenCols;
 
-        if (msglen && time(NULL) - eConfig.statusmsg_time < 5)
+        if (msglen && time(nullptr) - eConfig.statusmsg_time < 5)
             AppendBuffer::abAppend(ab, eConfig.statusmsg, msglen);
     }
 
@@ -620,7 +619,7 @@ namespace Editor
         va_start(ap, fmt);
         vsnprintf(eConfig.statusmsg, sizeof(eConfig.statusmsg), fmt, ap);
         va_end(ap);
-        eConfig.statusmsg_time = time(NULL);
+        eConfig.statusmsg_time = time(nullptr);
     }
 
     void UpdateSyntax(RowData* row)
@@ -628,7 +627,7 @@ namespace Editor
         row->highlight = static_cast<unsigned char*>(realloc(row->highlight, sizeof(unsigned char) * row->rsize));
         memset(row->highlight, (int)Highlight::normal, row->rsize);
 
-        if (eConfig.syntax == NULL)
+        if (eConfig.syntax == nullptr)
             return;
 
         char** keywords = eConfig.syntax->keywords;
@@ -726,7 +725,7 @@ namespace Editor
                     }
                 }
 
-                if (keywords[j] != NULL) {
+                if (keywords[j] != nullptr) {
                     prevSep = 0;
                     continue;
                 }
@@ -765,8 +764,8 @@ namespace Editor
 
     void SelectSyntaxHighlight()
     {
-        eConfig.syntax = NULL;
-        if (eConfig.filepath == NULL)
+        eConfig.syntax = nullptr;
+        if (eConfig.filepath == nullptr)
             return;
 
         char* ext = strrchr(eConfig.filepath, '.');
@@ -821,22 +820,22 @@ int RowRxToCx(Editor::RowData* row, int rx)
 
 int isSeperator(int c)
 {
-    return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
+    return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != nullptr;
 }
 
-void FindCallBack(char *query, Editor::Key key, Editor::Config* E)
+void FindCallBack(char* query, Editor::Key key, Editor::Config* E)
 {
     using namespace Editor;
 
     static int lastMatch = -1;
     static int direction = 1;
     static int savedHighlightLine;
-    static char *savedHighlight = NULL;
+    static char* savedHighlight = nullptr;
 
     if (savedHighlight) {
         memcpy(E->row[savedHighlightLine].highlight, savedHighlight, E->row[savedHighlightLine].rsize);
         free(savedHighlight);
-        savedHighlight = NULL;
+        savedHighlight = nullptr;
     }
 
     if (key == Key::carriageRet || key == Key::escapeSequence) {

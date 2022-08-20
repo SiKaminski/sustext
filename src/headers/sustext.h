@@ -7,4 +7,4 @@ namespace Sustext
     void Initialize(int argc, char** argv);
 }
 
-#endif // __SUSTEXT_H
+#endif // _SUSTEXT_H

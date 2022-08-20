@@ -34,7 +34,7 @@ If you want to run the terminal and open a specific file you can pass it in as a
 
 Example
 
-`./sustext -f [path_to_file]`
+`./sustext <flags> [path_to_file]`
 
 More info about different commands in the editor found in [Editor Commands](#editor-commands)
 

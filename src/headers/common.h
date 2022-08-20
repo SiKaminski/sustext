@@ -21,15 +21,15 @@ enum class Severity : int {
     high,
 }; 
 
-inline void error(int severity)
+inline void error(Severity severity)
 {
     LOG_ERROR << "Exiting with severity: " << int(severity) << std::endl;
     std::cerr << '\n';
-    std::exit(severity);
+    std::exit((int)severity);
 }
 
 template<typename T, typename... Ts>
-inline constexpr void error(int severity, T head, Ts... tail)
+inline constexpr void error(Severity severity, T head, Ts... tail)
 {
     std::cerr << head << " ";
     error(severity, tail...);

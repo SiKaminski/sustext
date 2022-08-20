@@ -22,7 +22,7 @@ void Terminal::die(const int severity, const char* s)
 	//Clear screen on exit
 	write(STDOUT_FILENO, "\x1b[2J", 4);
 	write(STDOUT_FILENO, "\x1b[H", 3);
-    error((int)Severity::unknown, "Terminal Die:", s);
+    error(Severity::unknown, "Terminal Die:", s);
 }
 
 void Terminal::DisableRawMode()
@@ -89,47 +89,48 @@ Editor::Key Terminal::EditorReadKey()
 			if (seq[1] >= '0' && seq[1] <= '9') {
 				if (read(STDOUT_FILENO, &seq[2], 1) != 1)
 					return Key::escapeSequence;
+
 				if (seq[2] == '~') {
 					switch (seq[1]) {
-					case '1':
-						return Key::home;
-					case '3':
-						return Key::del;
-					case '2':
-						return Key::end;
-					case '5':
-						return Key::pageUp;
-					case '6':
-						return Key::pageDown;
-					case '7':
-						return Key::home;
-					case '8':
-						return Key::end;
+                        case '1':
+                            return Key::home;
+                        case '3':
+                            return Key::del;
+                        case '2':
+                            return Key::end;
+                        case '5':
+                            return Key::pageUp;
+                        case '6':
+                            return Key::pageDown;
+                        case '7':
+                            return Key::home;
+                        case '8':
+                            return Key::end;
 					}
 				}
 			} else {
 				//There has to be a better way of implementing keypresses right?
 				switch (seq[1]) {
-				case 'A':
-					return Key::arrowUp;
-				case 'B':
-					return Key::arrowDown;
-				case 'C':
-					return Key::arrowRight;
-				case 'D':
-					return Key::arrowLeft;
-				case 'H':
-					return Key::home;
-				case 'F':
-					return Key::end;
+                    case 'A':
+                        return Key::arrowUp;
+                    case 'B':
+                        return Key::arrowDown;
+                    case 'C':
+                        return Key::arrowRight;
+                    case 'D':
+                        return Key::arrowLeft;
+                    case 'H':
+                        return Key::home;
+                    case 'F':
+                        return Key::end;
 				}
 			}
 		} else if (seq[0] == 'O') {
 			switch (seq[1]) {
-			case 'H':
-				return Key::home;
-			case 'F':
-				return Key::end;
+                case 'H':
+                    return Key::home;
+                case 'F':
+                    return Key::end;
 			}
 		}
 

@@ -1,4 +1,3 @@
-#include "globals.h"
 #include "flaghandler.h"
 #include "Debug/logger.h"
 

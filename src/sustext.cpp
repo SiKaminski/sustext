@@ -1,4 +1,3 @@
-#include "globals.h"
 #include "sustext.h"
 #include "terminal.h"
 #include "editor.h"

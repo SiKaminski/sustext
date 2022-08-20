@@ -22,7 +22,7 @@ int FileHandler::OpenFile(const char* filepath)
 
 	char* line = nullptr;
 	size_t linecap = 0;
-	ssize_t linelen;
+	ssize_t linelen = 0;
 
 	//Get the length of the line from the file
 	while ((linelen = getline(&line, &linecap, fp)) != -1) {
@@ -60,20 +60,20 @@ int FileHandler::SaveFile()
     // 644 -> give ownership of file permissions to read and write to the file, anyone else who didn't make
     // the file will only be able to read it
 	int fd = open(eConfig.filepath, O_RDWR | O_CREAT, 0644);
-    if (fd != -1) {
-		if (ftruncate(fd, len) != -1) {
-   			if (write(fd, buf, len) == len) {
- 	  		 	close(fd);
- 	  		 	free(buf);
-				eConfig.dirty = 0;
-				Editor::SetStatusMessage("[%d] bytes written to disk", len);
-				return 0;
-			}
-		}
+    if (fd < 0)
+        error(Severity::high, "File Handler:", "Open");
 
-		close(fd);
-	}
-	
+    if (ftruncate(fd, len) != -1) {
+        if (write(fd, buf, len) == len) {
+            close(fd);
+            free(buf);
+            eConfig.dirty = 0;
+            Editor::SetStatusMessage("[%d] bytes written to disk", len);
+            return 0;
+        }
+    }
+
+    close(fd);
 	free(buf);
 	Editor::SetStatusMessage("Unable to save File I/O error: %s", strerror(errno));
     return 1;
