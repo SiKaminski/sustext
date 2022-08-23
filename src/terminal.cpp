@@ -12,7 +12,6 @@
 #include <time.h>
 #include <stdarg.h>
 #include <fcntl.h>
-#include <ncurses.h>
 
 #include "Debug/logger.h"
 #include "common.h"
@@ -174,7 +173,7 @@ int Terminal::GetCursorPosition(int* rows, int* cols)
 
 int Terminal::GetWindowSize(int* rows, int* cols)
 {
-	struct winsize ws;
+	winsize ws;
 
 	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
 		//Make sure the curusor reaches the bottom right of the screen
@@ -185,7 +184,6 @@ int Terminal::GetWindowSize(int* rows, int* cols)
 	} else {
 		*cols = ws.ws_col;
 		*rows = ws.ws_row;
-
 		return 0;
 	}
 }

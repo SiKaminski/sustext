@@ -1,3 +1,4 @@
+#include "sustext.h"
 #pragma GCC diagnostic ignored "-Wswitch"
 
 #include "common.h"
@@ -114,14 +115,14 @@ namespace Editor
 
         // Free what was in the row previously and update it
         free(row->render);
-        row->render = static_cast<char*>(malloc(sizeof(char) * row->size + tabs * (SUSTEXT_TAB_STOP - 1) + 1));
+        row->render = static_cast<char*>(malloc(sizeof(char) * row->size + tabs * (Sustext::TAB_STOP - 1) + 1));
 
         // Update each character in the row
         int i = 0;
         for (int j = 0; j < row->size; j++) {
             if (row->chars[j] == '\t') {
                 row->render[i++] = ' ';
-                while (i % SUSTEXT_TAB_STOP != 0) {
+                while (i % Sustext::TAB_STOP != 0) {
                     row->render[i++] = ' ';
                 }
             } else {
@@ -324,7 +325,7 @@ namespace Editor
     
     void ProcessKeypress()
     {
-    	static int quit_times = SUSTEXT_QUIT_TIMES;
+    	static int quit_times = Sustext::QUIT_TIMES;
     	Key key = Terminal::EditorReadKey();
 
     	switch (key) {
@@ -417,7 +418,7 @@ namespace Editor
             }
 	    }
 
-	    quit_times = SUSTEXT_QUIT_TIMES;
+	    quit_times = Sustext::QUIT_TIMES;
     }
 
     char* RowToString(int* buflen)
@@ -474,7 +475,7 @@ namespace Editor
                     // program with no inputs, on file open there is no welcome
                     char welcome[80];
                     int welcomelen = snprintf(welcome, sizeof(welcome),
-                                              "sustext editor -- version %s", SUSTEXT_VERSION);
+                                              "sustext editor -- version %s", Sustext::VERSION);
                     
                     if (welcomelen > eConfig.screenCols)
                         welcomelen = eConfig.screenCols;
@@ -593,7 +594,7 @@ namespace Editor
     void RefreshScreen()
     {
         Scroll();
-        struct AppendBuffer::abuf ab = ABUF_INIT;
+        AppendBuffer::abuf ab = {};
 
         // Use the ?25l esacape sequence to hide to cursor on refresh
         abAppend(&ab, "\x1b[?25l", 6);
@@ -646,7 +647,7 @@ namespace Editor
 
         for(int i = 0; i < row->size; i++) {
             char c = row->render[i];
-            unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : (int)Highlight::normal;
+            unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : (unsigned char)Highlight::normal;
 
             if (scsLen && !inString && !inComment) {
                 if (!strncmp(&row->render[i], scs, scsLen)) {
@@ -794,7 +795,7 @@ int RowCxToRx(Editor::RowData* row, int cx)
     for (int i = 0; i < cx; i++) {
         // Check to see how many columns to the left of the next tab the cursor is
         if (row->chars[i] == '\t')
-            rx += (SUSTEXT_TAB_STOP - 1) - (rx % SUSTEXT_TAB_STOP);
+            rx += (Sustext::TAB_STOP - 1) - (rx % Sustext::TAB_STOP);
 
         rx++;
     }
@@ -808,7 +809,7 @@ int RowRxToCx(Editor::RowData* row, int rx)
     int cx;
     for (cx = 0; cx < row->size; cx++) {
         if (row->chars[cx] == '\t')
-            curRx += (SUSTEXT_TAB_STOP - 1) - (curRx % SUSTEXT_TAB_STOP);
+            curRx += (Sustext::TAB_STOP - 1) - (curRx % Sustext::TAB_STOP);
 
         curRx++;
         if (curRx > rx)

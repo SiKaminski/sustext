@@ -9,6 +9,7 @@
 void Sustext::Initialize(int argc, char** argv)
 {
 	LOG_INFO << "Initializing Sustext" << std::endl;
+
 	// Initialize editor and terminal
 	Editor::Initialize(argc, argv);
 	Terminal::EnableRawMode();
@@ -17,9 +18,11 @@ void Sustext::Initialize(int argc, char** argv)
     if (FlagHandler::Enabled(FlagHandler::Identifier::fileIn)) {
         if (!FileHandler::OpenFile(eConfig.filepath))
             Terminal::die((int)Severity::medium, "fopen");     
-        
-        // Check for other flags and handle them
     }    
+
+    if (FlagHandler::Enabled(FlagHandler::Identifier::modeSus)) {
+        // TODO
+    }
 
     Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
 

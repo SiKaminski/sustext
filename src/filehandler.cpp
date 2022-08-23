@@ -13,10 +13,10 @@
 int FileHandler::OpenFile(const char* filepath)
 {
 	// Open a file in read mode
-	// free(eConfig.filepath);
 	eConfig.filepath = strdup(filepath);
 	Editor::SelectSyntaxHighlight();
 	FILE* fp = fopen(eConfig.filepath, "r");	// This line will eventually change
+                                                
 	if (fp == nullptr)
 		Terminal::die((int)Severity::medium, "fopen");
 

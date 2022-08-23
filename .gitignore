@@ -6,3 +6,5 @@ obj/*
 compile_commands.json
 .vimrc
 .cache/
+
+sustext

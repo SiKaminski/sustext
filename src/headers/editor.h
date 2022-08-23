@@ -9,8 +9,6 @@
 #include "appendbuffer.h"
 
 #define CTRL_KEY(k) ((k) & 0x1F)
-#define SUSTEXT_TAB_STOP 4
-#define SUSTEXT_QUIT_TIMES 1
 
 namespace Editor 
 {

@@ -8,8 +8,6 @@
 #include "terminal.h"
 #include "editor.h"
 
-#define SUSTEXT_VERSION "v1.2.6"
-
 extern uint64_t Flags;
 extern Editor::Config eConfig;
 extern Terminal::Config tConfig;
