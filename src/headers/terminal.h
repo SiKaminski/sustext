@@ -51,7 +51,7 @@ namespace Terminal
      * @param cols (int) value to store column information
      * @return (int) exit status: 0 = success
      */
-    int GetCursorPosition(int *rows, int *cols);
+    int GetCursorPosition(int* rows, int* cols);
     
     /**
      * Get the Window Size of the terminal
@@ -60,7 +60,7 @@ namespace Terminal
      * @param cols (int) value to store column information
      * @return (int) exit status: 0 = success
      */
-    int GetWindowSize(int *rows, int *cols);
+    int GetWindowSize(int* rows, int* cols);
 }
 
 #endif // _SUSTEXT_TERMINAL_H

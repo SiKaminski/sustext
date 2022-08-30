@@ -37,7 +37,7 @@ namespace Editor
 
     /*---- ROW OPERATIONS ----*/
     
-    char* Prompt(char* prompt, void (*callback)(char* query, Key key, Config*))
+    char* Prompt(const char* prompt, void (*callback)(char* query, Key key, Config*))
     {
         size_t bufsize = 128;
         char* buf = new char[bufsize];
@@ -92,7 +92,7 @@ namespace Editor
         int savedColOff = eConfig.colOff;
         int savedRowOff = eConfig.rowOff;
 
-        // Set up query prompt pos the bottom of the screen
+        // Set up query prompt position to the bottom of the screen
         char* query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
 
         if (query) {
@@ -506,7 +506,7 @@ namespace Editor
                     len = eConfig.screenCols;
 
                 char* c = &eConfig.row[filerow].render[eConfig.colOff];
-                unsigned char* highlight = &eConfig.row[filerow].highlight[eConfig.colOff];
+                byte* highlight = &eConfig.row[filerow].highlight[eConfig.colOff];
                 int currentColor = -1;
                 for (int j = 0; j < len; j++) {
                     if (iscntrl(c[j])) {
@@ -521,7 +521,7 @@ namespace Editor
                             int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", currentColor);
                             AppendBuffer::abAppend(ab, buf, clen);
                         }
-                    } else if (highlight[j] == (unsigned char)Highlight::normal) {
+                    } else if (highlight[j] == (byte)Highlight::normal) {
                         if (currentColor == -1)
                             AppendBuffer::abAppend(ab, "\x1b[39m", 5);
 
@@ -625,7 +625,7 @@ namespace Editor
 
     void UpdateSyntax(RowData* row)
     {
-        row->highlight = static_cast<unsigned char*>(realloc(row->highlight, sizeof(unsigned char) * row->rsize));
+        row->highlight = static_cast<byte*>(realloc(row->highlight, sizeof(byte) * row->rsize));
         memset(row->highlight, (int)Highlight::normal, row->rsize);
 
         if (eConfig.syntax == nullptr)
@@ -647,7 +647,7 @@ namespace Editor
 
         for(int i = 0; i < row->size; i++) {
             char c = row->render[i];
-            unsigned char prevHL = (i > 0) ? row->highlight[i - 1] : (unsigned char)Highlight::normal;
+            byte prevHL = (i > 0) ? row->highlight[i - 1] : (byte)Highlight::normal;
 
             if (scsLen && !inString && !inComment) {
                 if (!strncmp(&row->render[i], scs, scsLen)) {
@@ -658,7 +658,7 @@ namespace Editor
 
             if (mcsLen && mceLen && !inString) {
                 if (inComment) {
-                    row->highlight[i] = (unsigned char)Highlight::mlComment;
+                    row->highlight[i] = (byte)Highlight::mlComment;
                     if (!strncmp(&row->render[i], mce, mceLen)) {
                         memset(&row->highlight[i], (int)Highlight::mlComment, mceLen);
                         i += mceLen;
@@ -679,9 +679,9 @@ namespace Editor
 
             if (eConfig.syntax->flags & HL_HIGHLIGHT_STRINGS) {
                 if (inString) {
-                    row->highlight[i] = (unsigned char)Highlight::string;
+                    row->highlight[i] = (byte)Highlight::string;
                     if (c == '\\' && i + 1 < row->rsize) {
-                        row->highlight[i + 1] = (unsigned char)Highlight::string;
+                        row->highlight[i + 1] = (byte)Highlight::string;
                         i += 2;
                         continue;
                     }
@@ -695,7 +695,7 @@ namespace Editor
                 } else {
                     if (c == '"' || c == '\'') {
                         inString = c;
-                        row->highlight[i] = (unsigned char)Highlight::string;
+                        row->highlight[i] = (byte)Highlight::string;
                         i++;
                         continue;
                     }
@@ -703,8 +703,8 @@ namespace Editor
             }
 
             if (eConfig.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
-                if (((isdigit(c) && prevSep) || (prevHL == (unsigned char)Highlight::number)) || (c == '.' && prevHL == (unsigned char)Highlight::number)) {
-                    row->highlight[i] = (unsigned char)Highlight::number;
+                if (((isdigit(c) && prevSep) || (prevHL == (byte)Highlight::number)) || (c == '.' && prevHL == (byte)Highlight::number)) {
+                    row->highlight[i] = (byte)Highlight::number;
                     i++;
                     prevSep = 0;
                     continue;

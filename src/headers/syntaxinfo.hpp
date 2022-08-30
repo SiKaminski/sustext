@@ -29,7 +29,7 @@ static char* C_HL_keywords[] = {
 static char* CPP_HL_extensions[] = {".cpp", NULL};
 static char* CPP_HL_keywords[] = {
 	"switch", "if", "while", "for", "break", "continue", "return", "else",
-	"struct", "union", "typedef", "static", "enum", "class", "case",
+	"struct", "union", "typedef", "static", "enum", "class", "case", "include",
 
 	"int|", "long|", "double|", "float|", "char|", "unsigned|", "signed|", "new|",
 	"void|", NULL

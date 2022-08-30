@@ -1,6 +1,4 @@
 #File Directory things (might be overkill idk yet)
-NCURSES = -lncurses
-NCURSESDBG = -lncurses_g
 INCLUDE = -I$(SRC_DIR)/headers
 SRC_DIR = src
 OBJ_DIR = obj
@@ -9,7 +7,7 @@ LOG_DIR = logs
 
 #Compiler and linker things
 CC = g++
-CCFLAGS = -g -Wall -Wextra $(NCURSES)
+CCFLAGS = -g -Wall -Wextra 
 CCFLAGS += -Wno-write-strings # figure out how to make a make recipe for suppressed warnings rather than forcing it
 LD = ld
 LDFLAGS = 

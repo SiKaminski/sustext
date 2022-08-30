@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <time.h>
 #include "colors.h"
+#include "types.h"
 #include "appendbuffer.h"
 
 #define CTRL_KEY(k) ((k) & 0x1F)
@@ -40,7 +41,7 @@ namespace Editor
 	    int		        rsize;
 	    char* 	        chars;
 	    char* 	        render;
-	    unsigned char*  highlight;
+	    byte*  highlight;
 	    int 	        hl_open_comment;
     };
 
@@ -86,7 +87,7 @@ namespace Editor
      * @param prompt 
      * @return char* 
      */
-    char* Prompt(char* prompt, void(*callback)(char*, Key, Config*));
+    char* Prompt(const char* prompt, void(*callback)(char*, Key, Config*));
 
     void Find();
     
