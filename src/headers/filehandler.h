@@ -4,8 +4,8 @@
 
 namespace FileHandler
 {
-    int OpenFile(const char* filename);
-    int SaveFile();
+    //int OpenFile(const char* filename);
+    //int SaveFile();
 }
 
 #endif // _SUSTEXT_FILEHANDLER_H

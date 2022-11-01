@@ -4,27 +4,30 @@
 #include "prototypes.h"
 #include "flaghandler.h"
 #include "filehandler.h"
-#include "Debug/logger.h"
+#include "logger.h"
+#include <ncurses.h>
 
 void Sustext::Initialize(int argc, char** argv)
 {
 	LOG_INFO << "Initializing Sustext" << std::endl;
 
+    Editor::Initialize();
+
 	// Initialize editor and terminal
-	Editor::Initialize(argc, argv);
-	Terminal::EnableRawMode();
-    FlagHandler::Initialize(argc, argv);
+	//Editor::Initialize(argc, argv);
+    //Terminal::EnableRawMode();
+    //FlagHandler::Initialize(argc, argv);
     
-    if (FlagHandler::Enabled(FlagHandler::Identifier::fileIn)) {
-        if (!FileHandler::OpenFile(eConfig.filepath))
-            Terminal::die((int)Severity::medium, "fopen");     
-    }    
+    //if (FlagHandler::Enabled(FlagHandler::Identifier::fileIn)) {
+        //if (!FileHandler::OpenFile(eConfig.filepath))
+            //Terminal::die((int)Severity::medium, "fopen");     
+    //}    
 
-    if (FlagHandler::Enabled(FlagHandler::Identifier::modeSus)) {
+    //if (FlagHandler::Enabled(FlagHandler::Identifier::modeSus)) {
         // TODO
-    }
+    //}
 
-    Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
+    //Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
 
 	LOG_SUCCESS << "Initialized Sustext" << std::endl;
 }

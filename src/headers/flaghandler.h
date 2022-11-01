@@ -32,16 +32,16 @@ namespace FlagHandler
      * 
      * @return (int) status code
      */
-    int Initialize(int argc, char** argv);
+    //int Initialize(int argc, char** argv);
 
-    void SetFlags(int flags, bool on);
+    //void SetFlags(int flags, bool on);
 
     /**
      * Check if a flag is enabled 
      * 
      * @param flag 
      */
-     bool Enabled(const Identifier identifier);
+     //bool Enabled(const Identifier identifier);
 }
 
 #endif // _SUSTEXT_FLAG_HANDLER_H

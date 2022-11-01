@@ -1,48 +1,51 @@
-#pragma once
-#ifndef _SUSTEXT_TERMINAL_H
-#define _SUSTEXT_TERMINAL_H
+//#pragma once
+//#ifndef _SUSTEXT_TERMINAL_H
+//#define _SUSTEXT_TERMINAL_H
 
-#include <termios.h>
-#include "editor.h"
+//#include <termios.h>
+//#include <ncurses.h>
+//#include "editor.h"
 
-namespace Terminal
-{
-    enum class State {
-        home,
-        edit,
-        readonly,
-    };
+//namespace Terminal
+//{
+    //enum class State {
+        //home,
+        //edit,
+        //readonly,
+    //};
     
-    struct Config {  
-        termios OrigTermios;
-        State   state; 
-    };
+    //struct Config {  
+        //termios OrigTermios;
+        //State   state; 
+    //};
+
+    //void Initialize();
 
     /**
      * exit the program with a message to display what error occured 
      * 
      * @param s error message
      */
-    void die(const int severity, const char* s);
+    //void die(const int severity, const char* s);
 
     /**
      * Put the terminal window back to the origional state it was
      * at before (from raw input to canonical mode (cooked mode)) 
      */
-    void DisableRawMode();
+    //void DisableRawMode();
     
     /**
      * Enable raw input mode for the terminal by enabling and disabling
      * canonical flags
      */
-    void EnableRawMode();
+    //void EnableRawMode();
     
     /**
      * Read key input 
      * 
      * @return character that was pressed 
      */
-    Editor::Key EditorReadKey();
+    //Editor::Key EditorReadKey();
     
     /**
      * Get the Cursor Position relative to the terminal window
@@ -51,7 +54,7 @@ namespace Terminal
      * @param cols (int) value to store column information
      * @return (int) exit status: 0 = success
      */
-    int GetCursorPosition(int* rows, int* cols);
+    //int GetCursorPosition(int* rows, int* cols);
     
     /**
      * Get the Window Size of the terminal
@@ -60,7 +63,7 @@ namespace Terminal
      * @param cols (int) value to store column information
      * @return (int) exit status: 0 = success
      */
-    int GetWindowSize(int* rows, int* cols);
-}
+    //int GetWindowSize(int* rows, int* cols);
+//}
 
-#endif // _SUSTEXT_TERMINAL_H
+//#endif // _SUSTEXT_TERMINAL_H

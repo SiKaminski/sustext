@@ -4,9 +4,9 @@
 
 namespace Sustext
 {
-    constexpr char* VERSION     {"v1.2.6"};
-    constexpr int TAB_STOP      {4};
-    constexpr int QUIT_TIMES    {1};
+    //constexpr char* VERSION     {"v1.2.6"};
+    //constexpr int TAB_STOP      {4};
+    //constexpr int QUIT_TIMES    {1};
 
     void Initialize(int argc, char** argv);
 }

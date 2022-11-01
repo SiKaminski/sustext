@@ -7,10 +7,10 @@ LOG_DIR = logs
 
 #Compiler and linker things
 CC = g++
-CCFLAGS = -g -Wall -Wextra 
+CCFLAGS = -g -Wall -Wextra -std=c++17
 CCFLAGS += -Wno-write-strings # figure out how to make a make recipe for suppressed warnings rather than forcing it
 LD = ld
-LDFLAGS = 
+LDFLAGS = -lncurses 
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
@@ -28,7 +28,7 @@ all: $(OBJ)
 $(OBJ): $(OBJS)
 	@echo ---- Linking $^ ----
 	@mkdir -p $(@D)
-	$(CC) $^ -o $@
+	$(CC) $(LDFLAGS) $^ -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo ---- Compiling $^ ----
@@ -40,3 +40,4 @@ clean:
 	rm -rf $(OBJ_DIR)/
 	rm -rf $(LOG_DIR)/
 	rm $(OBJ)
+

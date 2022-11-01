@@ -1,23 +1,23 @@
 #include "sustext.h"
 #include "editor.h"
 #include "terminal.h"
-#include "Debug/logger.h"
+#include "logger.h"
 
-uint64_t Flags;
-Editor::Config eConfig;
-Terminal::Config tConfig;
+//uint64_t Flags;
+//Editor::Config eConfig;
+//Terminal::Config tConfig;
+
 Logger logger;
-
 int main(int argc, char** argv)
 {
 	LOG_INIT("logs/", "info")
 
 	Sustext::Initialize(argc, argv);
 
-    while (true) {
-        Editor::RefreshScreen();
-        Editor::ProcessKeypress();
-    }
+    //while (true) {
+        //Editor::RefreshScreen();
+        //Editor::ProcessKeypress();
+    //}
 
 	logger.Close();
 	return 0;

@@ -2,15 +2,15 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#include <stdint.h>
+//#include <stdint.h>
 #include <iostream>
-#include "Debug/logger.h"
-#include "terminal.h"
-#include "editor.h"
+#include "logger.h"
+//#include "terminal.h"
+//#include "editor.h"
 
-extern uint64_t Flags;
-extern Editor::Config eConfig;
-extern Terminal::Config tConfig;
+//extern uint64_t Flags;
+//extern Editor::Config eConfig;
+//extern Terminal::Config tConfig;
 
 enum class Severity : int {
     unknown,
