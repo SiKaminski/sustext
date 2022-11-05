@@ -21,7 +21,10 @@ seen in the source files of IO and Terminal
 g++ compiler
 
 ```bash
-sudo apt install g++
+sudo apt install g++ ncurses
+```
+```bash
+sudo pacman -S g++ ncurses
 ```
 
 ## Running the editor
