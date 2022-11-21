@@ -65,7 +65,7 @@ namespace Editor
 
     struct Config {
         bool    colorSupport;
-        int     state;
+        size_t  state;
 
         int     rows;
         int     cols;  
@@ -95,7 +95,7 @@ namespace Editor
 
     void EnableRawMode();
 
-    int DumpState(std::string filepath = "logs/editor.log");
+    size_t DumpState(std::string filepath = "logs/editor.log");
     
     /**
      * Display a prompt to the user on the bottom portion

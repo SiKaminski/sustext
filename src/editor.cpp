@@ -15,6 +15,7 @@
 //#include <unistd.h>
 //#include <time.h>
 //#include <stdarg.h>
+#include <bits/stdc++.h>
 #include <iostream>
 #include <sys/ioctl.h>
 #include <ncurses.h>
@@ -28,6 +29,7 @@ namespace Editor
 
     // Declare callback functions
     static void sigwinchHandler(int sig);
+    static void sigintHandler(int sig);
 
 
     void Initialize()
@@ -55,6 +57,7 @@ namespace Editor
          
         // Load signal handlers
         signal(SIGWINCH, sigwinchHandler);
+        signal(SIGINT, sigintHandler);
 
         //tConfig.state = Terminal::State::home;
 
@@ -67,13 +70,18 @@ namespace Editor
         LOG_SUCCESS << "Initialized Editor" << std::endl;
     }
 
-    int DumpState(std::string filepath)
+    size_t DumpState(std::string filepath)
     {
         std::ofstream logFile;
         logFile.open(filepath);
 
+        logFile << "\n---------- DUMPING CURRENT STATE ----------\n";
+        logFile << "Raw: " << config.state << "\n";
+        logFile << "Raw Binary: " << std::bitset<64>(config.state) << "\n"; 
+        logFile << "-------------------------------------------\n";
         logFile.close();
         
+        return config.state;
     }
 
     // Callbacks
@@ -90,7 +98,11 @@ namespace Editor
             config.cols = tmpWinsize.ws_col;
         }
         gMutex.unlock();
+    }
 
+    void sigintHandler(int sig)
+    {
+        // TODO: Properly dispose of everything
     }
 
     // ---- ROW OPERATIONS ----

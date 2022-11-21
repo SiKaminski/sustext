@@ -14,6 +14,7 @@ int main(int argc, char** argv)
 
 	Sustext::Initialize(argc, argv);
 
+    Editor::DumpState();
     //while (true) {
         //Editor::RefreshScreen();
         //Editor::ProcessKeypress();

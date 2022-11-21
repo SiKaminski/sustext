@@ -4,6 +4,7 @@
 
 //#include <stdint.h>
 #include <iostream>
+#include <bits/stdc++.h>
 #include "logger.h"
 //#include "terminal.h"
 //#include "editor.h"
