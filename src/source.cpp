@@ -10,6 +10,7 @@
 Logger logger;
 int main(int argc, char** argv)
 {
+    using namespace Sustext;
 	LOG_INIT("logs/", "info")
 
 	Sustext::Initialize(argc, argv);

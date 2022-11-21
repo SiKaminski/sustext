@@ -1,7 +1,7 @@
 #include "sustext.h"
-#include "terminal.h"
+//#include "terminal.h"
 #include "editor.h"
-#include "prototypes.h"
+//#include "prototypes.h"
 #include "flaghandler.h"
 #include "filehandler.h"
 #include "logger.h"
@@ -11,7 +11,8 @@ void Sustext::Initialize(int argc, char** argv)
 {
 	LOG_INFO << "Initializing Sustext" << std::endl;
 
-    Editor::Initialize();
+    Editor::Initialize(argc, argv);
+
 
 	// Initialize editor and terminal
 	//Editor::Initialize(argc, argv);

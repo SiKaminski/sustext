@@ -13,6 +13,14 @@
 //extern Editor::Config eConfig;
 //extern Terminal::Config tConfig;
 
+namespace Sustext 
+{
+    enum Status {
+        failure = -1,
+        success = 0
+    };
+}
+
 enum class Severity : int {
     unknown,
     low,
