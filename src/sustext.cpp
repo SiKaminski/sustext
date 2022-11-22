@@ -1,30 +1,51 @@
 #include "sustext.h"
-#include "terminal.h"
+//#include "terminal.h"
 #include "editor.h"
-#include "prototypes.h"
+//#include "prototypes.h"
 #include "flaghandler.h"
 #include "filehandler.h"
-#include "Debug/logger.h"
+#include "logger.h"
+#include <thread>
 
-void Sustext::Initialize(int argc, char** argv)
+namespace Sustext 
 {
-	LOG_INFO << "Initializing Sustext" << std::endl;
+    void Initialize(int argc, char** argv)
+    {
+        LOG_INFO << "Initializing Sustext" << std::endl;
 
-	// Initialize editor and terminal
-	Editor::Initialize(argc, argv);
-	Terminal::EnableRawMode();
-    FlagHandler::Initialize(argc, argv);
-    
-    if (FlagHandler::Enabled(FlagHandler::Identifier::fileIn)) {
-        if (!FileHandler::OpenFile(eConfig.filepath))
-            Terminal::die((int)Severity::medium, "fopen");     
-    }    
+        Editor::Initialize(argc, argv);
 
-    if (FlagHandler::Enabled(FlagHandler::Identifier::modeSus)) {
-        // TODO
+
+        // Initialize editor and terminal
+        //Editor::Initialize(argc, argv);
+        //Terminal::EnableRawMode();
+        //FlagHandler::Initialize(argc, argv);
+        
+        //if (FlagHandler::Enabled(FlagHandler::Identifier::fileIn)) {
+            //if (!FileHandler::OpenFile(eConfig.filepath))
+                //Terminal::die((int)Severity::medium, "fopen");     
+        //}    
+
+        //if (FlagHandler::Enabled(FlagHandler::Identifier::modeSus)) {
+            // TODO
+        //}
+
+        //Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
+
+        LOG_SUCCESS << "Initialized Sustext" << std::endl;
     }
 
-    Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
+    void Loop()
+    {
+        while (Editor::config.running) {
+            Editor::ProcessKeypress();
+            Editor::RefreshScreen();
+        }
+        //std::thread tRefreshEditor(Editor::RefreshScreen);
+        //std::thread tProcessKeyPressEditor(Editor::ProcessKeypress);
 
-	LOG_SUCCESS << "Initialized Sustext" << std::endl;
+        //tProcessKeyPressEditor.join();
+        //tRefreshEditor.join();
+    }
+
 }
