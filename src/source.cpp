@@ -14,11 +14,12 @@ int main(int argc, char** argv)
 	LOG_INIT("logs/", "info")
 
 	Sustext::Initialize(argc, argv);
+    Sustext::Loop();
 
-    Editor::DumpState();
+    //Editor::DumpState();
     //while (true) {
         //Editor::RefreshScreen();
-        //Editor::ProcessKeypress();
+        ////Editor::ProcessKeypress();
     //}
 
 	logger.Close();

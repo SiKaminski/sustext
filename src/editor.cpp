@@ -60,10 +60,11 @@ namespace Sustext
             config.state |= State::Home;
             config.rows = LINES;
             config.cols = COLS;
+            config.mode = Normal;
 
             if (FlagHandler::Initialize(argc, argv, &config) == failure)
                 error(Severity::high, "Flag Handler:", "Unable to initialize flags");
-             
+
             // Load signal handlers
             signal(SIGWINCH, sigwinchHandler);
             signal(SIGINT, sigintHandler);
@@ -71,11 +72,12 @@ namespace Sustext
             //tConfig.state = Terminal::State::home;
 
             //if (Terminal::GetWindowSize(&eConfig.screenRows, &eConfig.screenCols) == -1) 
-                //Terminal::die((int)Severity::medium, "getWindowSize");
-     
+            //Terminal::die((int)Severity::medium, "getWindowSize");
+
             //Account for status bar sapce so it won't be drawn over
             //eConfig.screenRows -= 2; 
 
+            config.running = true;
             LOG_SUCCESS << "Initialized Editor" << std::endl;
         }
 
@@ -89,7 +91,7 @@ namespace Sustext
             logFile << "Raw Binary: " << std::bitset<64>(config.state) << "\n"; 
             logFile << "-------------------------------------------\n";
             logFile.close();
-            
+
             return config.state;
         }
 
@@ -99,9 +101,8 @@ namespace Sustext
             gMutex.lock();
             {
                 winsize tmpWinsize;
-                if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &tmpWinsize) < 0) {
-                    // Error 
-                }
+                if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &tmpWinsize) < 0)
+                    error(Severity::high, "sigwinchHandler:", "Error getting new size for window");
 
                 config.rows = tmpWinsize.ws_row;
                 config.cols = tmpWinsize.ws_col;
@@ -112,298 +113,312 @@ namespace Sustext
         void sigintHandler(int sig)
         {
             // TODO: Properly dispose of everything
+            endwin();
+            exit(0);
         }
 
         // ---- ROW OPERATIONS ----
-        
+
         //char* Prompt(const char* prompt, void (*callback)(char* query, Key key, Config*))
         //{
-            //size_t bufsize = 128;
-            //char* buf = new char[bufsize];
+        //size_t bufsize = 128;
+        //char* buf = new char[bufsize];
 
-            //size_t buflen = 0;
-            //buf[0] = '\0';
+        //size_t buflen = 0;
+        //buf[0] = '\0';
 
-            //while (true) {
-                //SetStatusMessage(prompt, buf);
-                //RefreshScreen();
+        //while (true) {
+        //SetStatusMessage(prompt, buf);
+        //RefreshScreen();
 
-                //Key key = Terminal::EditorReadKey();
+        //Key key = Terminal::EditorReadKey();
 
-                // Check if user is removing a character
-                //if (key == Key::del || key == (Key)CTRL_KEY('h') || key == Key::backspace) {
-                    //if (buflen != 0)
-                        //buf[--buflen] = '\0';
-                //} else if (key == Key::escapeSequence) {
-                    //SetStatusMessage("");
-                    //if (callback)
-                        //callback(buf, key, &eConfig);
+        // Check if user is removing a character
+        //if (key == Key::del || key == (Key)CTRL_KEY('h') || key == Key::backspace) {
+        //if (buflen != 0)
+        //buf[--buflen] = '\0';
+        //} else if (key == Key::escapeSequence) {
+        //SetStatusMessage("");
+        //if (callback)
+        //callback(buf, key, &eConfig);
 
-                    //free(buf);
-                    //return nullptr;
-                //} else if (key == Key::carriageRet) {
-                    //if (buflen != 0) {
-                        //SetStatusMessage("");
-                        //if (callback)
-                            //callback(buf, key, &eConfig);
+        //free(buf);
+        //return nullptr;
+        //} else if (key == Key::carriageRet) {
+        //if (buflen != 0) {
+        //SetStatusMessage("");
+        //if (callback)
+        //callback(buf, key, &eConfig);
 
-                        //return buf;
-                    //}
-                //} else if (!iscntrl((int)key) && (int)key < 128) {
-                    //if (buflen == bufsize - 1) {
-                        //bufsize *= 2;
-                        //buf = (char*)realloc(buf, bufsize);
-                    //}
+        //return buf;
+        //}
+        //} else if (!iscntrl((int)key) && (int)key < 128) {
+        //if (buflen == bufsize - 1) {
+        //bufsize *= 2;
+        //buf = (char*)realloc(buf, bufsize);
+        //}
 
-                    //buf[buflen++] = (char)key;
-                    //buf[buflen] = '\0';
-                //}
+        //buf[buflen++] = (char)key;
+        //buf[buflen] = '\0';
+        //}
 
-                //if (callback)
-                    //callback(buf, key, &eConfig);
-            //}
+        //if (callback)
+        //callback(buf, key, &eConfig);
+        //}
         //}
 
         //void Find()
         //{
-            //int savedCx = eConfig.cx;
-            //int savedCy = eConfig.cy;
-            //int savedColOff = eConfig.colOff;
-            //int savedRowOff = eConfig.rowOff;
+        //int savedCx = eConfig.cx;
+        //int savedCy = eConfig.cy;
+        //int savedColOff = eConfig.colOff;
+        //int savedRowOff = eConfig.rowOff;
 
-            // Set up query prompt position to the bottom of the screen
-            //char* query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
+        // Set up query prompt position to the bottom of the screen
+        //char* query = Prompt("Search -> %s (ESC to cancel)", FindCallBack);
 
-            //if (query) {
-                //free(query);
-            //} else {
-                //eConfig.cx = savedCx;
-                //eConfig.cy = savedCy;
-                //eConfig.colOff = savedColOff;
-                //eConfig.rowOff = savedRowOff;
-            //}
+        //if (query) {
+        //free(query);
+        //} else {
+        //eConfig.cx = savedCx;
+        //eConfig.cy = savedCy;
+        //eConfig.colOff = savedColOff;
+        //eConfig.rowOff = savedRowOff;
+        //}
         //}
 
         //void UpdateRow(RowData* row) 
         //{
-            //int tabs = 0;
-            //for (int j = 0; j < row->size; j++) {
-                //if (row->chars[j] == '\t')
-                    //tabs++;
-            //}
+        //int tabs = 0;
+        //for (int j = 0; j < row->size; j++) {
+        //if (row->chars[j] == '\t')
+        //tabs++;
+        //}
 
-            //// Free what was in the row previously and update it
-            //free(row->render);
-            //row->render = new char[row->size + tabs * (Sustext::TAB_STOP - 1) + 1];
+        //// Free what was in the row previously and update it
+        //free(row->render);
+        //row->render = new char[row->size + tabs * (Sustext::TAB_STOP - 1) + 1];
 
-            //// Update each character in the row
-            //int i = 0;
-            //for (int j = 0; j < row->size; j++) {
-                //if (row->chars[j] == '\t') {
-                    //row->render[i++] = ' ';
-                    //while (i % Sustext::TAB_STOP != 0) {
-                        //row->render[i++] = ' ';
-                    //}
-                //} else {
-                    //row->render[i++] = row->chars[j];
-                //}
-            //}
+        //// Update each character in the row
+        //int i = 0;
+        //for (int j = 0; j < row->size; j++) {
+        //if (row->chars[j] == '\t') {
+        //row->render[i++] = ' ';
+        //while (i % Sustext::TAB_STOP != 0) {
+        //row->render[i++] = ' ';
+        //}
+        //} else {
+        //row->render[i++] = row->chars[j];
+        //}
+        //}
 
-            //row->render[i] = '\0';
-            //row->rsize = i;
-            //UpdateSyntax(row);
+        //row->render[i] = '\0';
+        //row->rsize = i;
+        //UpdateSyntax(row);
         //}
 
         //void InsertRow(int pos, char* s, size_t len)
         //{
-            //if (pos < 0 || pos > eConfig.numrows)
-                //return;
+        //if (pos < 0 || pos > eConfig.numrows)
+        //return;
 
-            //eConfig.row = static_cast<RowData*>(realloc(eConfig.row, sizeof(RowData) * (eConfig.numrows + 1)));
-            //memmove(&eConfig.row[pos + 1], &eConfig.row[pos], sizeof(RowData) * (eConfig.numrows - pos));
-            //for (int i = pos + 1; i <= eConfig.numrows; i++) {
-                //eConfig.row[i].idx++;
-            //}
+        //eConfig.row = static_cast<RowData*>(realloc(eConfig.row, sizeof(RowData) * (eConfig.numrows + 1)));
+        //memmove(&eConfig.row[pos + 1], &eConfig.row[pos], sizeof(RowData) * (eConfig.numrows - pos));
+        //for (int i = pos + 1; i <= eConfig.numrows; i++) {
+        //eConfig.row[i].idx++;
+        //}
 
-            //eConfig.row[pos].idx = pos;
-            //eConfig.row[pos].size = len;
-            //eConfig.row[pos].chars = new char[len + 1];
+        //eConfig.row[pos].idx = pos;
+        //eConfig.row[pos].size = len;
+        //eConfig.row[pos].chars = new char[len + 1];
 
-            //memcpy(eConfig.row[pos].chars, s, len);
-            //eConfig.row[pos].chars[len] = '\0';
+        //memcpy(eConfig.row[pos].chars, s, len);
+        //eConfig.row[pos].chars[len] = '\0';
 
-            //// Initialize render for buffer
-            //eConfig.row[pos].rsize = 0;
-            //eConfig.row[pos].render = nullptr;
-            //eConfig.row[pos].highlight = nullptr;
-            //eConfig.row[pos].hl_open_comment = 0;
-            //UpdateRow(&eConfig.row[pos]);
+        //// Initialize render for buffer
+        //eConfig.row[pos].rsize = 0;
+        //eConfig.row[pos].render = nullptr;
+        //eConfig.row[pos].highlight = nullptr;
+        //eConfig.row[pos].hl_open_comment = 0;
+        //UpdateRow(&eConfig.row[pos]);
 
-            //eConfig.numrows++;
-            //eConfig.dirty++;
+        //eConfig.numrows++;
+        //eConfig.dirty++;
         //}
 
         //void RowInsertChar(RowData* row, int pos, int c)
         //{
-            //if (pos < 0 || pos > row->size)
-                //pos = row->size;
+        //if (pos < 0 || pos > row->size)
+        //pos = row->size;
 
-            //row->chars = static_cast<char*>(realloc(row->chars, row->size + 2));
-            //memmove(&row->chars[pos + 1], &row->chars[pos], row->size - pos + 1);
-            //row->size++;
-            //row->chars[pos] = c;
-            //UpdateRow(row);
-            //eConfig.dirty++;
+        //row->chars = static_cast<char*>(realloc(row->chars, row->size + 2));
+        //memmove(&row->chars[pos + 1], &row->chars[pos], row->size - pos + 1);
+        //row->size++;
+        //row->chars[pos] = c;
+        //UpdateRow(row);
+        //eConfig.dirty++;
         //}
 
         //void InsertChar(int c)
         //{
-            //if (eConfig.cy == eConfig.numrows)
-                //InsertRow(eConfig.numrows, (char*)"", 0);
+        //if (eConfig.cy == eConfig.numrows)
+        //InsertRow(eConfig.numrows, (char*)"", 0);
 
-            //RowInsertChar(&eConfig.row[eConfig.cy], eConfig.cx, c);
-            //eConfig.cx++;
+        //RowInsertChar(&eConfig.row[eConfig.cy], eConfig.cx, c);
+        //eConfig.cx++;
         //}
 
         //void InsertNewLine()
         //{
-            //if (eConfig.cx == 0) {
-                //InsertRow(eConfig.cy, (char*)"", 0);
-            //} else {
-                //RowData* row = &eConfig.row[eConfig.cy];
-                //InsertRow(eConfig.cy + 1, &row->chars[eConfig.cx], row->size - eConfig.cx);
-                //row = &eConfig.row[eConfig.cy];
-                //row->size = eConfig.cx;
-                //row->chars[row->size] = '\0';
-                //UpdateRow(row);
-            //}
+        //if (eConfig.cx == 0) {
+        //InsertRow(eConfig.cy, (char*)"", 0);
+        //} else {
+        //RowData* row = &eConfig.row[eConfig.cy];
+        //InsertRow(eConfig.cy + 1, &row->chars[eConfig.cx], row->size - eConfig.cx);
+        //row = &eConfig.row[eConfig.cy];
+        //row->size = eConfig.cx;
+        //row->chars[row->size] = '\0';
+        //UpdateRow(row);
+        //}
 
-            //eConfig.cy++;
-            //eConfig.cx = 0;
+        //eConfig.cy++;
+        //eConfig.cx = 0;
         //}
 
         //void RowAppendString(RowData* row, char* str, size_t len)
         //{
-            //row->chars = static_cast<char*>(realloc(row->chars, sizeof(char) * (row->size + len + 1)));
-            //memcpy(&row->chars[row->size], str, len);
-            //row->size += len;
-            //row->chars[row->size] = '\0';
-            //UpdateRow(row);
-            //eConfig.dirty++;
+        //row->chars = static_cast<char*>(realloc(row->chars, sizeof(char) * (row->size + len + 1)));
+        //memcpy(&row->chars[row->size], str, len);
+        //row->size += len;
+        //row->chars[row->size] = '\0';
+        //UpdateRow(row);
+        //eConfig.dirty++;
         //}
 
         //void DeleteRow(int pos)
         //{
-            //if (pos < 0 || pos >= eConfig.numrows)
-                //return;
+        //if (pos < 0 || pos >= eConfig.numrows)
+        //return;
 
-            //FreeRow(&eConfig.row[pos]);
-            //memmove(&eConfig.row[pos], &eConfig.row[pos + 1], sizeof(RowData) * (eConfig.numrows - pos - 1));
-            //for (int i = pos; eConfig.numrows - i ; i++) {
-                //eConfig.row[i].idx--;
-            //}
+        //FreeRow(&eConfig.row[pos]);
+        //memmove(&eConfig.row[pos], &eConfig.row[pos + 1], sizeof(RowData) * (eConfig.numrows - pos - 1));
+        //for (int i = pos; eConfig.numrows - i ; i++) {
+        //eConfig.row[i].idx--;
+        //}
 
-            //eConfig.numrows--;
-            //eConfig.dirty++;
+        //eConfig.numrows--;
+        //eConfig.dirty++;
         //}
 
         //void RowDeleteChar(RowData* row, int pos)
         //{
-            //if (pos < 0 || pos >= row->size)
-                //return;
+        //if (pos < 0 || pos >= row->size)
+        //return;
 
-            //memmove(&row->chars[pos], &row->chars[pos + 1], row->size - pos);
-            //row->size--;
-            //UpdateRow(row);
-            //eConfig.dirty++;
+        //memmove(&row->chars[pos], &row->chars[pos + 1], row->size - pos);
+        //row->size--;
+        //UpdateRow(row);
+        //eConfig.dirty++;
         //}
 
         //void DeleteChar()
         //{
-            //if (eConfig.cy == eConfig.numrows)
-                //return;
+        //if (eConfig.cy == eConfig.numrows)
+        //return;
 
-            //if (eConfig.cx == 0 && eConfig.cy == 0)
-                //return;
+        //if (eConfig.cx == 0 && eConfig.cy == 0)
+        //return;
 
-            //RowData* row = &eConfig.row[eConfig.cy];
-            //if (eConfig.cx > 0) {
-                //RowDeleteChar(row, eConfig.cx - 1);
-                //eConfig.cx--;
-            //} else if (eConfig.cx == 0) {
-                // DeleteRow(eConfig.cy);
-                //RowAppendString(&eConfig.row[eConfig.cy - 1], row->chars, row->size);
-                //eConfig.cx = eConfig.row[eConfig.cy - 1].size - row->size;
-                //DeleteRow(eConfig.cy);
-                //eConfig.cy = eConfig.cy == 0 ? 0 : eConfig.cy - 1;
-                // eConfig.cx = eConfig.row[eConfig.cy - 1].size;
-            //} else {
-                //eConfig.cx = eConfig.row[eConfig.cy - 1].size;
-                //RowAppendString(&eConfig.row[eConfig.cy - 1], row->chars, row->size);
-                //DeleteRow(eConfig.cy);
-                //eConfig.cy--;
-            //}
+        //RowData* row = &eConfig.row[eConfig.cy];
+        //if (eConfig.cx > 0) {
+        //RowDeleteChar(row, eConfig.cx - 1);
+        //eConfig.cx--;
+        //} else if (eConfig.cx == 0) {
+        // DeleteRow(eConfig.cy);
+        //RowAppendString(&eConfig.row[eConfig.cy - 1], row->chars, row->size);
+        //eConfig.cx = eConfig.row[eConfig.cy - 1].size - row->size;
+        //DeleteRow(eConfig.cy);
+        //eConfig.cy = eConfig.cy == 0 ? 0 : eConfig.cy - 1;
+        // eConfig.cx = eConfig.row[eConfig.cy - 1].size;
+        //} else {
+        //eConfig.cx = eConfig.row[eConfig.cy - 1].size;
+        //RowAppendString(&eConfig.row[eConfig.cy - 1], row->chars, row->size);
+        //DeleteRow(eConfig.cy);
+        //eConfig.cy--;
+        //}
         //}
 
         //void FreeRow(RowData* row)
         //{
-            //free(row->render);
-            //free(row->chars);
-            //free(row->highlight);
+        //free(row->render);
+        //free(row->chars);
+        //free(row->highlight);
         //}
 
         // ---- INPUT ----
         //void MoveCursor(Key key)
         //{
-            // Prevent cursor from going past the size of the screen not the file
-            //RowData* row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
+        // Prevent cursor from going past the size of the screen not the file
+        //RowData* row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
 
-            //switch (key) {
-                //case Key::arrowLeft:
-                //{
-                    //if (eConfig.cx != 0) {
-                        //eConfig.cx--;
-                    //} else if (eConfig.cy > 0) {
-                        //eConfig.cy--;
-                        //eConfig.cx = eConfig.row[eConfig.cy].size;
-                    //}
-
-                    //break;
-                //}
-                //case Key::arrowRight:
-                //{
-                    //if (row && eConfig.cx < row->size) {
-                        //eConfig.cx++;
-                    //} else if (row && eConfig.cx == row->size) {
-                        //eConfig.cy++;
-                        //eConfig.cx = 0;
-                    //}
-
-                    //break;
-                //}
-                //case Key::arrowUp:
-                //{
-                    //if (eConfig.cy != 0)
-                        //eConfig.cy--;
-                    //break;
-                //}
-                //case Key::arrowDown:
-                //{
-                    //if (eConfig.cy < eConfig.numrows)
-                        //eConfig.cy++;
-                    //break;
-                //}
-            //}
-
-            // Cursor snap to end of line
-            //row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
-            //int rowlen = row ? row->size : 0;
-            //if (eConfig.cx > rowlen)
-                //eConfig.cx = rowlen;
-        //}
-        
-        //void ProcessKeypress()
+        //switch (key) {
+        //case Key::arrowLeft:
         //{
+        //if (eConfig.cx != 0) {
+        //eConfig.cx--;
+        //} else if (eConfig.cy > 0) {
+        //eConfig.cy--;
+        //eConfig.cx = eConfig.row[eConfig.cy].size;
+        //}
+
+        //break;
+        //}
+        //case Key::arrowRight:
+        //{
+        //if (row && eConfig.cx < row->size) {
+        //eConfig.cx++;
+        //} else if (row && eConfig.cx == row->size) {
+        //eConfig.cy++;
+        //eConfig.cx = 0;
+        //}
+
+        //break;
+        //}
+        //case Key::arrowUp:
+        //{
+        //if (eConfig.cy != 0)
+        //eConfig.cy--;
+        //break;
+        //}
+        //case Key::arrowDown:
+        //{
+        //if (eConfig.cy < eConfig.numrows)
+        //eConfig.cy++;
+        //break;
+        //}
+        //}
+
+        // Cursor snap to end of line
+        //row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
+        //int rowlen = row ? row->size : 0;
+        //if (eConfig.cx > rowlen)
+        //eConfig.cx = rowlen;
+        //}
+
+        void ProcessKeypress()
+        {
+            int pressed = getch();
+            switch (pressed) {
+                case CTRL('c'):
+                {
+                    sigintHandler(SIGINT);
+                    break; 
+                }
+                default:
+                {
+                    break;
+                }
+            }
             //static int quit_times = Sustext::QUIT_TIMES;
             //Key key = Terminal::EditorReadKey();
 
@@ -498,7 +513,7 @@ namespace Sustext
             //}
 
             //quit_times = Sustext::QUIT_TIMES;
-        //}
+        }
 
         //char* RowToString(int* buflen)
         //{
@@ -671,8 +686,9 @@ namespace Sustext
                 //AppendBuffer::abAppend(ab, eConfig.statusmsg, msglen);
         //}
 
-        //void RefreshScreen()
-        //{
+        void RefreshScreen()
+        {
+            refresh();
             //Scroll();
             //AppendBuffer::abuf ab = {};
 
@@ -692,7 +708,9 @@ namespace Sustext
 
             //write(STDOUT_FILENO, ab.b, ab.len);
             //abFree(&ab);
-        //}
+            
+            // Call ncurses refresh
+        }
 
         //void SetStatusMessage(const char* fmt...)
         //{

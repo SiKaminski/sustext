@@ -19,6 +19,22 @@ namespace Sustext
         failure = -1,
         success = 0
     };
+
+    namespace Editor 
+    {
+        enum State : int {
+            Home        = 0b1,
+            Edit        = 0b10,
+            Readonly    = 0b100,
+            Raw         = 0b1000,
+        };
+
+        enum Mode {
+            Insert,
+            Visual,
+            Normal
+        };
+    }
 }
 
 enum class Severity : int {

@@ -10,60 +10,10 @@
 //#include "appendbuffer.h"
 #include "structs.h"
 
-#define CTRL_KEY(k) ((k) & 0x1F)
-
 namespace Sustext
 {
     namespace Editor 
     {
-        //enum class Key {
-            //backspace   = 127,
-            //arrowLeft   = 1000,
-            //arrowRight,
-            //arrowUp,
-            //arrowDown,
-            //del,
-            //home,
-            //end,
-            //pageUp,
-            //pageDown,
-            
-            //escapeSequence  = '\x1b',
-            //carriageRet     = '\r',
-
-            //ctrl_q = CTRL_KEY('q'),
-            //ctrl_s = CTRL_KEY('s'),
-            //ctrl_h = CTRL_KEY('h'),
-            //ctrl_f = CTRL_KEY('f'),
-            //ctrl_l = CTRL_KEY('l'),
-        //};
-
-        //struct RowData {
-            //int 	        idx;
-            //int 	        size;
-            //int		        rsize;
-            //char* 	        chars;
-            //char* 	        render;
-            //byte*  highlight;
-            //int 	        hl_open_comment;
-        //};
-
-        //struct Syntax {
-            //char*   filetype;
-            //char**  filematch;
-            //char**  keywords;
-            //char*   singleline_comment_start;
-            //char*   multiline_comment_start;
-            //char*   multiline_comment_end;
-            //int     flags;
-        //};
-
-        enum State : int {
-            Home        = 0b1,
-            Edit        = 0b10,
-            Readonly    = 0b100,
-            Raw         = 0b1000,
-        };
 
         inline Config config;
         
@@ -186,7 +136,7 @@ namespace Sustext
          * Take in key input from terminal and determine
          * what function to do
          */
-        //void ProcessKeypress();
+        void ProcessKeypress();
         
         /**
          * Convert the contents stored in a row to a string 
@@ -230,7 +180,7 @@ namespace Sustext
         /**
          * Update the screen buffer 
          */
-        //void RefreshScreen();
+        void RefreshScreen();
         
         /**
          * Set the Status Message with a formatted string

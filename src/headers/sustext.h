@@ -9,6 +9,7 @@ namespace Sustext
     //constexpr int QUIT_TIMES    {1};
 
     void Initialize(int argc, char** argv);
+    void Loop();
 }
 
 #endif // _SUSTEXT_H
