@@ -50,9 +50,6 @@ namespace Sustext
            
             // Disable echo since the user will be in normal mode initially
             noecho();
-            
-            // Set terminal to raw mode
-            //raw();
 
             // Check for terminal color support
             config.colorSupport = false;
@@ -70,6 +67,8 @@ namespace Sustext
 
             if (config.filepath == "")
                 config.state |= State::Welcome;
+            else
+                LOG_ERROR << "TODO: Unimplemented file opening" << std::endl;
 
             // Load signal handlers
             signal(SIGWINCH, sigwinchHandler);
@@ -93,11 +92,10 @@ namespace Sustext
 
             char welcome[80];
             int welcomelen = snprintf(welcome, sizeof(welcome), "sustext editor -- version %s", VERSION);
+            int padding = (config.cols - welcomelen) / 2;
             
             if (welcomelen > config.cols)
                 welcomelen = config.cols;
-
-            int padding = (config.cols - welcomelen) / 2;
 
             config.windows.GrettingText = newwin(4, welcomelen, config.rows / 2, padding);
             waddstr(config.windows.GrettingText, welcome);
@@ -125,6 +123,8 @@ namespace Sustext
             gMutex.lock();
             {
                 winsize tmpWinsize;
+           
+            // Disable echo since the user will be in normal mode initially
                 if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &tmpWinsize) < 0)
                     error(Severity::high, "sigwinchHandler:", "Error getting new size for window");
 
@@ -137,6 +137,9 @@ namespace Sustext
         void sigintHandler(int sig)
         {
             // TODO: Properly dispose of everything
+            if (config.mode == Mode::Insert)
+                return;
+
             endwin();
             exit(0);
         }
@@ -144,25 +147,80 @@ namespace Sustext
         void ProcessKeypress()
         {
             int pressed = getch();
-            switch (pressed) {
-                case esc:
-                {
-                    LOG_INFO << "Entering Normal mode" << std::endl;
-                    EnterNormalMode();
-                    break; 
-                }
+
+            if (pressed == esc) {
+                EnterNormalMode();
+                return;
+            }
+            
+            if (config.mode == Mode::Normal)
+                NormalKeyHandler(pressed);
+            else if (config.mode == Mode::Insert)
+                InsertKeyHandler(pressed);
+            else if (config.mode == Mode::Visual)
+                VisualKeyHandler(pressed);
+        }
+
+        void NormalKeyHandler(int key)
+        {
+            switch (key) {
                 case 'i':
                 {
-                    if (config.mode == Mode::Normal)
-                       EnterInsertMode();
-
+                    LOG_DEBUG << "Entering Insert mode" << std::endl;
+                    EnterInsertMode();
+                    break;
+                }
+                case 'v':
+                {
+                    LOG_DEBUG << "Entering Visual mode" << std::endl;
+                    EnterVisualMode();
+                    break;
+                }
+                case ':':
+                {
+                    nocbreak();
+                    char cmd[100];
+                    getstr(cmd);
+                    NormalCommandHandler(cmd);
+                    cbreak();
                     break;
                 }
                 default:
                 {
+                    LOG_DEBUG << "Unimplemented Normal mode key [" << key << "]" << std::endl;
                     break;
                 }
             }
+        }
+
+        void NormalCommandHandler(char* cmd)
+        {
+            std::string cmdStr = cmd;
+            if (cmdStr == "q")
+                sigintHandler(SIGINT);
+        }
+
+        void InsertKeyHandler(int key)
+        {
+            switch (key) {
+                default:
+                {
+                    printw("%c", key);
+                    break;
+                }
+            }
+        }
+        
+        void VisualKeyHandler(int key)
+        {
+            switch (key) {
+                default:
+                {
+                    LOG_DEBUG << "Unimplemented Visual mode key [" << key << "]" << std::endl;
+                    break;
+                }
+            }
+        }
             //static int quit_times = Sustext::QUIT_TIMES;
             //Key key = Terminal::EditorReadKey();
 
@@ -257,11 +315,9 @@ namespace Sustext
             //}
 
             //quit_times = Sustext::QUIT_TIMES;
-        }
 
         void RefreshScreen()
         {
-            LOG_INFO << (State::Welcome & config.state) << std::endl;
             if ((State::Welcome & config.state) > 0)
                 WelcomeScreen();
 
@@ -292,15 +348,16 @@ namespace Sustext
         void EnterInsertMode()
         {
             config.mode = Mode::Insert;
-            nocbreak();
-            echo();
+            raw();
         }
 
         void EnterNormalMode()
         {
             config.mode = Mode::Normal;
+            
             cbreak();
-            echo();
+            keypad(stdscr, TRUE);
+            noecho();
         }
 
         void EnterVisualMode()
@@ -310,8 +367,8 @@ namespace Sustext
 
         // ---- ROW OPERATIONS ----
 
-        //char* Prompt(const char* prompt, void (*callback)(char* query, Key key, Config*))
-        //{
+        void DrawPrompt(std::string prompt, void(*callback)(char*, int, Config))
+        {
         //size_t bufsize = 128;
         //char* buf = new char[bufsize];
 
@@ -377,7 +434,7 @@ namespace Sustext
         //eConfig.colOff = savedColOff;
         //eConfig.rowOff = savedRowOff;
         //}
-        //}
+        }
 
         //void UpdateRow(RowData* row) 
         //{

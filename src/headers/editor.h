@@ -33,6 +33,11 @@ namespace Sustext
         void EnterNormalMode();
         void EnterVisualMode();
         
+        void NormalKeyHandler(int key);
+        void NormalCommandHandler(char* cmd);
+        void InsertKeyHandler(int key);
+        void VisualKeyHandler(int key);
+
         /**
          * Display a prompt to the user on the bottom portion
          * of the status bar 
@@ -41,6 +46,7 @@ namespace Sustext
          * @return char* 
          */
         //char* Prompt(const char* prompt, void(*callback)(char*, Key, Config*));
+        void DrawPrompt(std::string prompt, void(*callback)(char*, int, Config));
 
         //void Find();
         
