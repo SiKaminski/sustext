@@ -11,6 +11,7 @@ namespace Sustext
         int Initialize(int argc, char** argv, Editor::Config* config)
         {
             LOG_INFO << "Initializing flags" << std::endl; 
+            config->filepath = "";
 
             int opt;
             while ((opt = getopt(argc, argv, "srwj")) != EOF) {

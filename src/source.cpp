@@ -14,7 +14,9 @@ int main(int argc, char** argv)
 	LOG_INIT("logs/", "info")
 
 	Sustext::Initialize(argc, argv);
+    Editor::DumpState();
     Sustext::Loop();
+
 
     //Editor::DumpState();
     //while (true) {

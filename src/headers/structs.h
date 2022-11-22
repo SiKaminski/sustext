@@ -5,11 +5,17 @@
 #include "common.h"
 #include <stdint.h>
 #include <string>
+#include <ncurses.h>
 
 namespace Sustext 
 {
     namespace Editor
     {
+        struct Windows {
+            WINDOW*     GrettingText;
+            WINDOW*     Prompt; 
+        };
+
         struct Config {
             bool        colorSupport;
             size_t      state;
@@ -20,6 +26,9 @@ namespace Sustext
             int         rows;
             int         cols;  
             bool        running;
+
+            Windows     windows;
+
             //int 	    rx;	
             //int 	    rowOff;
             //int 	    colOff;

@@ -27,6 +27,11 @@ namespace Sustext
         //void EnableRawMode();
 
         size_t DumpState(std::string filepath = "logs/editor.log");
+
+        void WelcomeScreen();
+        void EnterInsertMode();
+        void EnterNormalMode();
+        void EnterVisualMode();
         
         /**
          * Display a prompt to the user on the bottom portion

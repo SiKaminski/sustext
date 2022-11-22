@@ -8,6 +8,7 @@
 #include "filehandler.h"
 #include "flaghandler.h"
 #include "logger.h"
+#include "keys.h"
 
 //#include <ctype.h>
 //#include <stdio.h>
@@ -44,12 +45,14 @@ namespace Sustext
             // Initialize ncruses functions
             setlocale(LC_ALL, "");
             initscr();
-            //cbreak();
+            cbreak();
+            keypad(stdscr, TRUE);
+           
+            // Disable echo since the user will be in normal mode initially
             noecho();
             
             // Set terminal to raw mode
-            raw();
-            
+            //raw();
 
             // Check for terminal color support
             config.colorSupport = false;
@@ -57,13 +60,16 @@ namespace Sustext
                 config.colorSupport = true;
             
             // Set general information about the current window
-            config.state |= State::Home;
+            //config.state |= State::Home;
             config.rows = LINES;
             config.cols = COLS;
             config.mode = Normal;
 
             if (FlagHandler::Initialize(argc, argv, &config) == failure)
                 error(Severity::high, "Flag Handler:", "Unable to initialize flags");
+
+            if (config.filepath == "")
+                config.state |= State::Welcome;
 
             // Load signal handlers
             signal(SIGWINCH, sigwinchHandler);
@@ -79,6 +85,24 @@ namespace Sustext
 
             config.running = true;
             LOG_SUCCESS << "Initialized Editor" << std::endl;
+        }
+
+        void WelcomeScreen()
+        {
+            LOG_DEBUG << "Preparing Welcome Screen" << std::endl;
+
+            char welcome[80];
+            int welcomelen = snprintf(welcome, sizeof(welcome), "sustext editor -- version %s", VERSION);
+            
+            if (welcomelen > config.cols)
+                welcomelen = config.cols;
+
+            int padding = (config.cols - welcomelen) / 2;
+
+            config.windows.GrettingText = newwin(4, welcomelen, config.rows / 2, padding);
+            waddstr(config.windows.GrettingText, welcome);
+            wrefresh(config.windows.GrettingText);
+            LOG_DEBUG << "Welcome Screen prepared" << std::endl;
         }
 
         size_t DumpState(std::string filepath)
@@ -117,6 +141,173 @@ namespace Sustext
             exit(0);
         }
 
+        void ProcessKeypress()
+        {
+            int pressed = getch();
+            switch (pressed) {
+                case esc:
+                {
+                    LOG_INFO << "Entering Normal mode" << std::endl;
+                    EnterNormalMode();
+                    break; 
+                }
+                case 'i':
+                {
+                    if (config.mode == Mode::Normal)
+                       EnterInsertMode();
+
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            //static int quit_times = Sustext::QUIT_TIMES;
+            //Key key = Terminal::EditorReadKey();
+
+            //switch (key) {
+                //case Key::carriageRet:
+                //{
+                    //InsertNewLine();
+                    //break;
+                //}
+                //case Key::ctrl_q:
+                //{
+                    //if (eConfig.dirty && quit_times > 0) {
+                        //SetStatusMessage("File has unsaved changes. "
+                                    //"Press Ctrl-Q %d more time(s) to confirm.",
+                                    //quit_times);
+                        //quit_times--;
+                        //return;
+                    //}
+
+                    //[2J will erase all of the diaply without moving the cursor position
+                    //write(STDOUT_FILENO, "\x1b[2J", 4);
+
+                    // Return cursor to home
+                    //write(STDOUT_FILENO, "\x1b[H", 3);
+                    //exit(0);
+                    //break;
+                //}
+                //case Key::ctrl_s:
+                //{
+                    //FileHandler::SaveFile();
+                    //return;
+                //}
+                //case Key::home:
+                //{
+                    //eConfig.cx = 0;
+                    //break;
+                //}
+                //case Key::end:
+                //{
+                    //if (eConfig.cx < eConfig.numrows)
+                        //eConfig.cx = eConfig.row[eConfig.cy].size;
+
+                    //break;
+                //}
+                //case Key::backspace:
+                //case Key::ctrl_h:
+                //case Key::del:
+                //{
+                    //if (key == Key::del)
+                        //MoveCursor(Key::arrowRight);
+                    
+                    //DeleteChar();
+                    //break;
+                //}
+                //case Key::ctrl_f:
+                //{
+                    //Find();
+                    //break;
+                //}
+                //case Key::pageUp:
+                //case Key::pageDown:
+                //{
+                    //if (key == Key::pageUp) {
+                        //eConfig.cy = eConfig.rowOff;
+                    //} else if (key == Key::pageDown) {
+                        //eConfig.cy = eConfig.rowOff + eConfig.screenRows - 1;
+
+                        //if (eConfig.cy > eConfig.numrows)
+                            //eConfig.cy = eConfig.numrows;
+                    //}
+
+                    //break;
+                //}
+                //case Key::arrowUp:
+                //case Key::arrowDown:
+                //case Key::arrowLeft:
+                //case Key::arrowRight:
+                //{
+                    //MoveCursor(key);
+                    //break;
+                //}
+                //case Key::ctrl_l:
+                //case Key::escapeSequence:
+                //{
+                    //break;
+                //}
+                //default:
+                //{
+                    //InsertChar((int)key);
+                    //break;
+                //}
+            //}
+
+            //quit_times = Sustext::QUIT_TIMES;
+        }
+
+        void RefreshScreen()
+        {
+            LOG_INFO << (State::Welcome & config.state) << std::endl;
+            if ((State::Welcome & config.state) > 0)
+                WelcomeScreen();
+
+            refresh();
+            //Scroll();
+            //AppendBuffer::abuf ab = {};
+
+            // Use the ?25l esacape sequence to hide to cursor on refresh
+            //abAppend(&ab, "\x1b[?25l", 6);
+            //abAppend(&ab, "\x1b[H", 3);
+
+            //DrawRows(&ab);
+            //DrawStatusBar(&ab);
+            //DrawMessageBar(&ab);
+
+            //char buf[32];
+            //snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (eConfig.cy - eConfig.rowOff) + 1, (eConfig.rx - eConfig.colOff) + 1);
+            //abAppend(&ab, buf, strlen(buf));
+
+            //abAppend(&ab, "\x1b[?25h", 6);
+
+            //write(STDOUT_FILENO, ab.b, ab.len);
+            //abFree(&ab);
+            
+            // Call ncurses refresh
+        }
+
+        void EnterInsertMode()
+        {
+            config.mode = Mode::Insert;
+            nocbreak();
+            echo();
+        }
+
+        void EnterNormalMode()
+        {
+            config.mode = Mode::Normal;
+            cbreak();
+            echo();
+        }
+
+        void EnterVisualMode()
+        {
+            config.mode = Mode::Visual;
+        }
+
         // ---- ROW OPERATIONS ----
 
         //char* Prompt(const char* prompt, void (*callback)(char* query, Key key, Config*))
@@ -130,6 +321,7 @@ namespace Sustext
         //while (true) {
         //SetStatusMessage(prompt, buf);
         //RefreshScreen();
+        //int padding = 0;
 
         //Key key = Terminal::EditorReadKey();
 
@@ -405,115 +597,6 @@ namespace Sustext
         //eConfig.cx = rowlen;
         //}
 
-        void ProcessKeypress()
-        {
-            int pressed = getch();
-            switch (pressed) {
-                case CTRL('c'):
-                {
-                    sigintHandler(SIGINT);
-                    break; 
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            //static int quit_times = Sustext::QUIT_TIMES;
-            //Key key = Terminal::EditorReadKey();
-
-            //switch (key) {
-                //case Key::carriageRet:
-                //{
-                    //InsertNewLine();
-                    //break;
-                //}
-                //case Key::ctrl_q:
-                //{
-                    //if (eConfig.dirty && quit_times > 0) {
-                        //SetStatusMessage("File has unsaved changes. "
-                                    //"Press Ctrl-Q %d more time(s) to confirm.",
-                                    //quit_times);
-                        //quit_times--;
-                        //return;
-                    //}
-
-                    //[2J will erase all of the diaply without moving the cursor position
-                    //write(STDOUT_FILENO, "\x1b[2J", 4);
-
-                    // Return cursor to home
-                    //write(STDOUT_FILENO, "\x1b[H", 3);
-                    //exit(0);
-                    //break;
-                //}
-                //case Key::ctrl_s:
-                //{
-                    //FileHandler::SaveFile();
-                    //return;
-                //}
-                //case Key::home:
-                //{
-                    //eConfig.cx = 0;
-                    //break;
-                //}
-                //case Key::end:
-                //{
-                    //if (eConfig.cx < eConfig.numrows)
-                        //eConfig.cx = eConfig.row[eConfig.cy].size;
-
-                    //break;
-                //}
-                //case Key::backspace:
-                //case Key::ctrl_h:
-                //case Key::del:
-                //{
-                    //if (key == Key::del)
-                        //MoveCursor(Key::arrowRight);
-                    
-                    //DeleteChar();
-                    //break;
-                //}
-                //case Key::ctrl_f:
-                //{
-                    //Find();
-                    //break;
-                //}
-                //case Key::pageUp:
-                //case Key::pageDown:
-                //{
-                    //if (key == Key::pageUp) {
-                        //eConfig.cy = eConfig.rowOff;
-                    //} else if (key == Key::pageDown) {
-                        //eConfig.cy = eConfig.rowOff + eConfig.screenRows - 1;
-
-                        //if (eConfig.cy > eConfig.numrows)
-                            //eConfig.cy = eConfig.numrows;
-                    //}
-
-                    //break;
-                //}
-                //case Key::arrowUp:
-                //case Key::arrowDown:
-                //case Key::arrowLeft:
-                //case Key::arrowRight:
-                //{
-                    //MoveCursor(key);
-                    //break;
-                //}
-                //case Key::ctrl_l:
-                //case Key::escapeSequence:
-                //{
-                    //break;
-                //}
-                //default:
-                //{
-                    //InsertChar((int)key);
-                    //break;
-                //}
-            //}
-
-            //quit_times = Sustext::QUIT_TIMES;
-        }
 
         //char* RowToString(int* buflen)
         //{
@@ -685,32 +768,6 @@ namespace Sustext
             //if (msglen && time(nullptr) - eConfig.statusmsg_time < 5)
                 //AppendBuffer::abAppend(ab, eConfig.statusmsg, msglen);
         //}
-
-        void RefreshScreen()
-        {
-            refresh();
-            //Scroll();
-            //AppendBuffer::abuf ab = {};
-
-            // Use the ?25l esacape sequence to hide to cursor on refresh
-            //abAppend(&ab, "\x1b[?25l", 6);
-            //abAppend(&ab, "\x1b[H", 3);
-
-            //DrawRows(&ab);
-            //DrawStatusBar(&ab);
-            //DrawMessageBar(&ab);
-
-            //char buf[32];
-            //snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (eConfig.cy - eConfig.rowOff) + 1, (eConfig.rx - eConfig.colOff) + 1);
-            //abAppend(&ab, buf, strlen(buf));
-
-            //abAppend(&ab, "\x1b[?25h", 6);
-
-            //write(STDOUT_FILENO, ab.b, ab.len);
-            //abFree(&ab);
-            
-            // Call ncurses refresh
-        }
 
         //void SetStatusMessage(const char* fmt...)
         //{

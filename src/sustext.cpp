@@ -38,8 +38,8 @@ namespace Sustext
     void Loop()
     {
         while (Editor::config.running) {
-            Editor::ProcessKeypress();
             Editor::RefreshScreen();
+            Editor::ProcessKeypress();
         }
         //std::thread tRefreshEditor(Editor::RefreshScreen);
         //std::thread tProcessKeyPressEditor(Editor::ProcessKeypress);

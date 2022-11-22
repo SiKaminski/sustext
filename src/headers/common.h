@@ -26,7 +26,7 @@ namespace Sustext
             Home        = 0b1,
             Edit        = 0b10,
             Readonly    = 0b100,
-            Raw         = 0b1000,
+            Welcome     = 0b1000,
         };
 
         enum Mode {
