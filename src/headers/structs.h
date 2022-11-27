@@ -11,6 +11,11 @@ namespace Sustext
 {
     namespace Editor
     {
+        struct Position {
+            int x;
+            int y;
+        };
+
         struct Windows {
             WINDOW*     GrettingText;
             WINDOW*     Prompt; 
@@ -26,6 +31,7 @@ namespace Sustext
             int         rows;
             int         cols;  
             bool        running;
+            Position    cursorPos;
 
             Windows     windows;
 

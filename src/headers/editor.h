@@ -38,6 +38,8 @@ namespace Sustext
         void InsertKeyHandler(int key);
         void VisualKeyHandler(int key);
 
+        void MoveCursor(Position pos);
+
         /**
          * Display a prompt to the user on the bottom portion
          * of the status bar 

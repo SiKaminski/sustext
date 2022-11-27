@@ -1,6 +1,5 @@
 #include "sustext.h"
 #include "editor.h"
-#include "terminal.h"
 #include "logger.h"
 
 //uint64_t Flags;

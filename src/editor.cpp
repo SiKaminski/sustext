@@ -1,11 +1,11 @@
 #include "sustext.h"
-#pragma GCC diagnostic ignored "-Wswitch"
+//#pragma GCC diagnostic ignored "-Wswitch"
 
 #include "common.h"
 #include "editor.h"
-#include "prototypes.h"
-#include "syntaxinfo.hpp"
-#include "filehandler.h"
+//#include "prototypes.h"
+//#include "syntaxinfo.hpp"
+//#include "filehandler.h"
 #include "flaghandler.h"
 #include "logger.h"
 #include "keys.h"
@@ -176,6 +176,34 @@ namespace Sustext
                     EnterVisualMode();
                     break;
                 }
+                case KEY_LEFT:
+                case 'h':
+                {
+                    config.cursorPos.x--;
+                    MoveCursor(config.cursorPos);
+                    break;
+                }
+                case KEY_DOWN:
+                case 'j':
+                {
+                    config.cursorPos.y++;
+                    MoveCursor(config.cursorPos);
+                    break;
+                }
+                case KEY_UP:
+                case 'k':
+                {
+                    config.cursorPos.y--;
+                    MoveCursor(config.cursorPos);
+                    break;
+                }
+                case KEY_RIGHT:
+                case 'l':
+                {
+                    config.cursorPos.x++;
+                    MoveCursor(config.cursorPos);
+                    break;
+                }
                 case ':':
                 {
                     nocbreak();
@@ -220,6 +248,66 @@ namespace Sustext
                     break;
                 }
             }
+        }
+
+        void MoveCursor(Position pos)
+        {
+            if (pos.x >= config.cols)
+                pos.x = config.cols;
+            else if (pos.x <= 0)
+                pos.x = 0;
+
+            if (pos.y >= config.rows)
+                pos.y = config.rows;
+            else if (pos.y <= 0)
+                pos.y = 0;
+
+            move(pos.y, pos.x);
+        // Prevent cursor from going past the size of the screen not the file
+        //RowData* row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
+
+        //switch (key) {
+        //case Key::arrowLeft:
+        //{
+        //if (eConfig.cx != 0) {
+        //eConfig.cx--;
+        //} else if (eConfig.cy > 0) {
+        //eConfig.cy--;
+        //eConfig.cx = eConfig.row[eConfig.cy].size;
+        //}
+
+        //break;
+        //}
+        //case Key::arrowRight:
+        //{
+        //if (row && eConfig.cx < row->size) {
+        //eConfig.cx++;
+        //} else if (row && eConfig.cx == row->size) {
+        //eConfig.cy++;
+        //eConfig.cx = 0;
+        //}
+
+        //break;
+        //}
+        //case Key::arrowUp:
+        //{
+        //if (eConfig.cy != 0)
+        //eConfig.cy--;
+        //break;
+        //}
+        //case Key::arrowDown:
+        //{
+        //if (eConfig.cy < eConfig.numrows)
+        //eConfig.cy++;
+        //break;
+        //}
+        //}
+
+        // Cursor snap to end of line
+        //row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
+        //int rowlen = row ? row->size : 0;
+        //if (eConfig.cx > rowlen)
+        //eConfig.cx = rowlen;
         }
             //static int quit_times = Sustext::QUIT_TIMES;
             //Key key = Terminal::EditorReadKey();
@@ -605,55 +693,6 @@ namespace Sustext
         //}
 
         // ---- INPUT ----
-        //void MoveCursor(Key key)
-        //{
-        // Prevent cursor from going past the size of the screen not the file
-        //RowData* row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
-
-        //switch (key) {
-        //case Key::arrowLeft:
-        //{
-        //if (eConfig.cx != 0) {
-        //eConfig.cx--;
-        //} else if (eConfig.cy > 0) {
-        //eConfig.cy--;
-        //eConfig.cx = eConfig.row[eConfig.cy].size;
-        //}
-
-        //break;
-        //}
-        //case Key::arrowRight:
-        //{
-        //if (row && eConfig.cx < row->size) {
-        //eConfig.cx++;
-        //} else if (row && eConfig.cx == row->size) {
-        //eConfig.cy++;
-        //eConfig.cx = 0;
-        //}
-
-        //break;
-        //}
-        //case Key::arrowUp:
-        //{
-        //if (eConfig.cy != 0)
-        //eConfig.cy--;
-        //break;
-        //}
-        //case Key::arrowDown:
-        //{
-        //if (eConfig.cy < eConfig.numrows)
-        //eConfig.cy++;
-        //break;
-        //}
-        //}
-
-        // Cursor snap to end of line
-        //row = (eConfig.cy >= eConfig.numrows) ? nullptr : &eConfig.row[eConfig.cy];
-        //int rowlen = row ? row->size : 0;
-        //if (eConfig.cx > rowlen)
-        //eConfig.cx = rowlen;
-        //}
-
 
         //char* RowToString(int* buflen)
         //{

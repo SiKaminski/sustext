@@ -2,10 +2,9 @@
 //#include "terminal.h"
 #include "editor.h"
 //#include "prototypes.h"
-#include "flaghandler.h"
-#include "filehandler.h"
+//#include "filehandler.h"
 #include "logger.h"
-#include <thread>
+//#include <thread>
 
 namespace Sustext 
 {
