@@ -27,7 +27,19 @@ namespace Sustext
         //void EnableRawMode();
 
         size_t DumpState(std::string filepath = "logs/editor.log");
+
+        void WelcomeScreen();
+        void EnterInsertMode();
+        void EnterNormalMode();
+        void EnterVisualMode();
         
+        void NormalKeyHandler(int key);
+        void NormalCommandHandler(char* cmd);
+        void InsertKeyHandler(int key);
+        void VisualKeyHandler(int key);
+
+        void MoveCursor(Position pos);
+
         /**
          * Display a prompt to the user on the bottom portion
          * of the status bar 
@@ -36,6 +48,7 @@ namespace Sustext
          * @return char* 
          */
         //char* Prompt(const char* prompt, void(*callback)(char*, Key, Config*));
+        void DrawPrompt(std::string prompt, void(*callback)(char*, int, Config));
 
         //void Find();
         

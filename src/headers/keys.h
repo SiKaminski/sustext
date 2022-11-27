@@ -5,7 +5,8 @@
 
 namespace Sustext 
 {
-    enum class Key {
+    enum Key : int {
+        esc         = 27,
         backspace   = 127,
         arrowLeft   = 1000,
         arrowRight,

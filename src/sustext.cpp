@@ -2,10 +2,9 @@
 //#include "terminal.h"
 #include "editor.h"
 //#include "prototypes.h"
-#include "flaghandler.h"
-#include "filehandler.h"
+//#include "filehandler.h"
 #include "logger.h"
-#include <thread>
+//#include <thread>
 
 namespace Sustext 
 {
@@ -38,8 +37,8 @@ namespace Sustext
     void Loop()
     {
         while (Editor::config.running) {
-            Editor::ProcessKeypress();
             Editor::RefreshScreen();
+            Editor::ProcessKeypress();
         }
         //std::thread tRefreshEditor(Editor::RefreshScreen);
         //std::thread tProcessKeyPressEditor(Editor::ProcessKeypress);
