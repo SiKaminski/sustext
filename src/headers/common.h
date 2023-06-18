@@ -1,11 +1,10 @@
 #pragma once
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef _COMMON_H_
+#define _COMMON_H_
 
 //#include <stdint.h>
 #include <iostream>
 #include <bits/stdc++.h>
-#include "logger.h"
 //#include "terminal.h"
 //#include "editor.h"
 
@@ -37,25 +36,4 @@ namespace Sustext
     }
 }
 
-enum class Severity : int {
-    unknown,
-    low,
-    medium,
-    high,
-}; 
-
-inline void error(Severity severity)
-{
-    LOG_ERROR << "Exiting with severity: " << int(severity) << std::endl;
-    std::cerr << '\n';
-    std::exit((int)severity);
-}
-
-template<typename T, typename... Ts>
-inline constexpr void error(Severity severity, T head, Ts... tail)
-{
-    std::cerr << head << " ";
-    error(severity, tail...);
-}
-
-#endif // _COMMON_H
+#endif // _COMMON_H_

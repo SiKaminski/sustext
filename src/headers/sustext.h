@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_H
-#define _SUSTEXT_H
+#ifndef _SUSTEXT_H_
+#define _SUSTEXT_H_
 
 namespace Sustext
 {
@@ -12,4 +12,4 @@ namespace Sustext
     void Loop();
 }
 
-#endif // _SUSTEXT_H
+#endif // _SUSTEXT_H_

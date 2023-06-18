@@ -1,6 +1,6 @@
 //#pragma once
-//#ifndef _SUSTEXT_TERMINAL_H
-//#define _SUSTEXT_TERMINAL_H
+//#ifndef _SUSTEXT_TERMINAL_H_
+//#define _SUSTEXT_TERMINAL_H_
 
 //#include <termios.h>
 //#include <ncurses.h>
@@ -66,4 +66,4 @@
     //int GetWindowSize(int* rows, int* cols);
 //}
 
-//#endif // _SUSTEXT_TERMINAL_H
+//#endif // _SUSTEXT_TERMINAL_H_

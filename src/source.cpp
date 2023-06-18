@@ -1,6 +1,6 @@
 #include "sustext.h"
 #include "editor.h"
-#include "logger.h"
+#include "utils/logger.h"
 
 //uint64_t Flags;
 //Editor::Config eConfig;
@@ -10,7 +10,7 @@ Logger logger;
 int main(int argc, char** argv)
 {
     using namespace Sustext;
-	LOG_INIT("logs/", "info")
+    logger = Logger("logs/", "info", false);
 
 	Sustext::Initialize(argc, argv);
     Editor::DumpState();

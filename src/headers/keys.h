@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_KEYS_H
-#define _SUSTEXT_KEYS_H
+#ifndef _SUSTEXT_KEYS_H_
+#define _SUSTEXT_KEYS_H_
 #define CTRL_KEY(k) ((k) & 0x1F)
 
 namespace Sustext 
@@ -30,4 +30,4 @@ namespace Sustext
 
 }
 
-#endif // _SUSTEXT_KEYS_H
+#endif // _SUSTEXT_KEYS_H_

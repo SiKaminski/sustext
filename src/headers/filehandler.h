@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_FILEHANDLER_H
-#define _SUSTEXT_FILEHANDLER_H
+#ifndef _SUSTEXT_FILEHANDLER_H_
+#define _SUSTEXT_FILEHANDLER_H_
 
 namespace FileHandler
 {
@@ -8,4 +8,4 @@ namespace FileHandler
     //int SaveFile();
 }
 
-#endif // _SUSTEXT_FILEHANDLER_H
+#endif // _SUSTEXT_FILEHANDLER_H_

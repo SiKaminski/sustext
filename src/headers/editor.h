@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_EDITOR_H
-#define _SUSTEXT_EDITOR_H
+#ifndef _SUSTEXT_EDITOR_H_
+#define _SUSTEXT_EDITOR_H_
 
 //#include <termios.h>
 //#include <stddef.h>
@@ -210,4 +210,4 @@ namespace Sustext
     }
 }
 
-#endif // _SUSTEXT_EDITOR_H
+#endif // _SUSTEXT_EDITOR_H_

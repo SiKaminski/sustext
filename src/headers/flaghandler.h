@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_FLAG_HANDLER_H
-#define _SUSTEXT_FLAG_HANDLER_H
+#ifndef _SUSTEXT_FLAG_HANDLER_H_
+#define _SUSTEXT_FLAG_HANDLER_H_
 
 #include "common.h"
 #include "structs.h"
@@ -48,4 +48,4 @@ namespace Sustext
     }
 }
 
-#endif // _SUSTEXT_FLAG_HANDLER_H
+#endif // _SUSTEXT_FLAG_HANDLER_H_
