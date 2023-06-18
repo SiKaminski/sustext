@@ -7,7 +7,8 @@
 //#include "syntaxinfo.hpp"
 //#include "filehandler.h"
 #include "flaghandler.h"
-#include "logger.h"
+#include "utils/logger.h"
+#include "utils/error.h"
 #include "keys.h"
 
 //#include <ctype.h>
@@ -35,10 +36,9 @@ namespace Sustext
         static void sigwinchHandler(int sig);
         static void sigintHandler(int sig);
 
-
         void Initialize(int argc, char** argv)
         {
-            LOG_INFO << "Initilaizing Editor" << std::endl;
+            logger.Log(INFO, "Initializing Editor");
 
             config = {}; 
 
@@ -68,7 +68,7 @@ namespace Sustext
             if (config.filepath == "")
                 config.state |= State::Welcome;
             else
-                LOG_ERROR << "TODO: Unimplemented file opening" << std::endl;
+                logger.Log(ERROR, "TODO: Unimplemented file opening");
 
             // Load signal handlers
             signal(SIGWINCH, sigwinchHandler);
@@ -83,12 +83,12 @@ namespace Sustext
             //eConfig.screenRows -= 2; 
 
             config.running = true;
-            LOG_SUCCESS << "Initialized Editor" << std::endl;
+            logger.Log(SUCCESS, "Initialized Editor");
         }
 
         void WelcomeScreen()
         {
-            LOG_DEBUG << "Preparing Welcome Screen" << std::endl;
+            logger.Log(DEBUG, "Preparing Welcome Screen");
 
             char welcome[80];
             int welcomelen = snprintf(welcome, sizeof(welcome), "sustext editor -- version %s", VERSION);
@@ -100,7 +100,7 @@ namespace Sustext
             config.windows.GrettingText = newwin(4, welcomelen, config.rows / 2, padding);
             waddstr(config.windows.GrettingText, welcome);
             wrefresh(config.windows.GrettingText);
-            LOG_DEBUG << "Welcome Screen prepared" << std::endl;
+            logger.Log(DEBUG, "Welcome Screen prepared"); 
         }
 
         size_t DumpState(std::string filepath)
@@ -166,13 +166,13 @@ namespace Sustext
             switch (key) {
                 case 'i':
                 {
-                    LOG_DEBUG << "Entering Insert mode" << std::endl;
+                    logger.Log(DEBUG, "Entering Insert mode"); 
                     EnterInsertMode();
                     break;
                 }
                 case 'v':
                 {
-                    LOG_DEBUG << "Entering Visual mode" << std::endl;
+                    logger.Log(DEBUG, "Entering Visual mode"); 
                     EnterVisualMode();
                     break;
                 }
@@ -215,7 +215,7 @@ namespace Sustext
                 }
                 default:
                 {
-                    LOG_DEBUG << "Unimplemented Normal mode key [" << key << "]" << std::endl;
+                    logger.Log(DEBUG, "Unimplemented Normal mode key [%d]", key);
                     break;
                 }
             }
@@ -244,7 +244,7 @@ namespace Sustext
             switch (key) {
                 default:
                 {
-                    LOG_DEBUG << "Unimplemented Visual mode key [" << key << "]" << std::endl;
+                    logger.Log(DEBUG, "Unimplemented Normal mode key [%d]", key);
                     break;
                 }
             }

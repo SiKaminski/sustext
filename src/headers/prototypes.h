@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _PROTOTYPES_H
-#define _PROTOTYPES_H
+#ifndef _PROTOTYPES_H_
+#define _PROTOTYPES_H_
 
 #include "editor.h"
 
@@ -15,4 +15,4 @@
 //int isSeperator(int c);
 //void SelectSyntaxHighlight();
 
-#endif // __PROTOTYPES_H
+#endif // __PROTOTYPES_H_

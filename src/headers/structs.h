@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_STRUCTS_H
-#define _SUSTEXT_STRUCTS_H
+#ifndef _SUSTEXT_STRUCTS_H_
+#define _SUSTEXT_STRUCTS_H_
 
 #include "common.h"
 #include <stdint.h>
@@ -72,4 +72,4 @@ namespace Sustext
     }
 }
 
-#endif // _SUSTEXT_STRUCTS_H
+#endif // _SUSTEXT_STRUCTS_H_

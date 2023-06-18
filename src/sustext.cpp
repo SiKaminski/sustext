@@ -3,14 +3,14 @@
 #include "editor.h"
 //#include "prototypes.h"
 //#include "filehandler.h"
-#include "logger.h"
+#include "utils/logger.h"
 //#include <thread>
 
 namespace Sustext 
 {
     void Initialize(int argc, char** argv)
     {
-        LOG_INFO << "Initializing Sustext" << std::endl;
+        logger.Log(INFO, "Initializing Sustext"); 
 
         Editor::Initialize(argc, argv);
 
@@ -31,7 +31,7 @@ namespace Sustext
 
         //Editor::SetStatusMessage("HELP: Ctrl-s = save | Ctrl-q = quit | Ctrl-f = find", FindCallBack);
 
-        LOG_SUCCESS << "Initialized Sustext" << std::endl;
+        logger.Log(SUCCESS, "Initialized Sustext"); 
     }
 
     void Loop()

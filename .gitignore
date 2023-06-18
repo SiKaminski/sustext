@@ -1,6 +1,7 @@
 .vscode
 bin/*
 obj/*
+logs/*
 .dev_misc
 
 compile_commands.json

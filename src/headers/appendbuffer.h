@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _APPENDBUFFER_H
-#define _APPENDBUFFER_H
+#ifndef _APPENDBUFFER_H_
+#define _APPENDBUFFER_H_
 
 namespace AppendBuffer
 {
@@ -26,4 +26,4 @@ namespace AppendBuffer
     //void abFree(abuf* ab);
 }
 
-#endif // _APPENDBUFFER_H
+#endif // _APPENDBUFFER_H_

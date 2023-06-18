@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SUSTEXT_COLORS_H
-#define _SUSTEXT_COLORS_H
+#ifndef _SUSTEXT_COLORS_H_
+#define _SUSTEXT_COLORS_H_
 
 /* These colors are based off ubuntu terminal colors */
 
@@ -53,4 +53,4 @@ enum class Background : int {
     brightWhite,
 };
 
-#endif // _SUSTEXT_COLORS_H
+#endif // _SUSTEXT_COLORS_H_
