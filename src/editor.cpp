@@ -4,23 +4,9 @@
 #include "utils/skutilflagparser.hpp"
 
 #include "editor.hpp"
-
-#include "sustext.h"
-//#include "prototypes.h"
-//#include "syntaxinfo.hpp"
-//#include "filehandler.h"
-// #include "flaghandler.h"
-#include "utils/logger.h"
+#include "utils/logger.hpp"
 #include "utils/error.h"
 #include "keys.h"
-
-//#include <ctype.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <unistd.h>
-//#include <time.h>
-//#include <stdarg.h>
 #include <bits/stdc++.h>
 #include <iostream>
 #include <sys/ioctl.h>
@@ -28,8 +14,26 @@
 #include <signal.h>
 #include <mutex>
 
-// namespace Sustext
-// {
+// #include "sustext.h"
+// #include "prototypes.h"
+// #include "syntaxinfo.hpp"
+// #include "filehandler.h"
+// #include "flaghandler.h"
+
+// #include <ctype.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <unistd.h>
+// #include <time.h>
+// #include <stdarg.h>
+
+namespace Sustext
+{
+    void Editor::Initialize()
+    {
+        logger.Log(INFO, "Initializing Editor");
+    }
 //     namespace Editor
 //     {
 //         void SusMode(OPT int inputCount, OPT char** intputVals)
@@ -1150,4 +1154,4 @@
 //             //}
 //         //}
 //     }
-// }
+} // namespace sustext

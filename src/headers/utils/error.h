@@ -3,11 +3,9 @@
 #define _ERROR_H_
 
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <iostream>
-#include "utils/logger.h"
+#include "utils/logger.hpp"
 #define OPT [[maybe_unused]]
 
 enum class Severity {

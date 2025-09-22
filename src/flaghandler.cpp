@@ -1,5 +1,5 @@
 #include "flaghandler.h"
-#include "utils/logger.h"
+#include "utils/logger.hpp"
 
 #include <unistd.h>
 #include <stdio.h>

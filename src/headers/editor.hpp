@@ -3,6 +3,7 @@
 #define _SUSTEXT_EDITOR_HPP_
 
 #include "utils/common.hpp"
+#include <mutex>
 // #include <termios.h>
 // #include <stddef.h>
 // #include <time.h>
@@ -24,55 +25,79 @@ namespace Sustext
         WELCOME,
     };
 
+    struct Windows {
+        WINDOW *GrettingText;
+        WINDOW *Prompt;
+    };
+
+    struct Config {
+        bool colorSupport;
+        size_t state;
+        size_t flags;
+        std::string filepath;
+        Mode mode;
+
+        int rows;
+        int cols;
+        bool running;
+        Position cursorPos;
+
+        Windows windows;
+
+        // int 	    rx;
+        // int 	    rowOff;
+        // int 	    colOff;
+        // int 	    screenRows;
+        // int 	    screenCols;
+        // int 	    numrows;
+        // RowData*    row;
+        // int 	    dirty;		// Track amount of changes made to file
+        // char* 	    filepath;
+        // char	    statusmsg[80];
+        // time_t 	    statusmsg_time;	// time out limit for status message
+        // Syntax*     syntax;
+        // termios     orig_termios;
+    };
+
+    // Singleton class
     class Editor 
     {
-        struct Windows {
-            WINDOW *GrettingText;
-            WINDOW *Prompt;
-        };
+        public:
+            Editor(const Editor* obj) = delete;
 
-        struct Config {
-            bool colorSupport;
-            size_t state;
-            size_t flags;
-            std::string filepath;
-            Mode mode;
+            static Editor* getInstance() {
+                if (instancePtr == nullptr) {
+                    std::lock_guard<std::mutex> lock(mtx);
+                    if (instancePtr == nullptr) {
+                        instancePtr = new Editor();
+                    }
+                }
 
-            int rows;
-            int cols;
-            bool running;
-            Position cursorPos;
+                return instancePtr;
+            }
 
-            Windows windows;
+            /**
+             * Initialize the editor functions
+             */
+            void Initialize();
+            
+        private:
+            // Static pointer to the editor instance
+            static Editor* instancePtr;
 
-            // int 	    rx;
-            // int 	    rowOff;
-            // int 	    colOff;
-            // int 	    screenRows;
-            // int 	    screenCols;
-            // int 	    numrows;
-            // RowData*    row;
-            // int 	    dirty;		// Track amount of changes made to file
-            // char* 	    filepath;
-            // char	    statusmsg[80];
-            // time_t 	    statusmsg_time;	// time out limit for status message
-            // Syntax*     syntax;
-            // termios     orig_termios;
-        };
+            // Mutex for thread saftey
+            static std::mutex mtx;
 
-        Editor();
+            Editor() {}
     };
+
 // namespace Editor
 // {
 //     inline Config config;
 //
 //     /* ---------- INITIALIZATION ---------- */
 //
-//     /**
-//      * Initialize the editor functions
-//      */
-//     void Initialize(int argc, char** argv);
-
+//
 //     //void EnableRawMode();
 
 //     size_t DumpState(std::string filepath = "logs/editor.log");

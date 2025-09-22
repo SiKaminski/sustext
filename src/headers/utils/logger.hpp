@@ -1,16 +1,14 @@
 #pragma once
-#ifndef _LOGGER_H_
-#define _LOGGER_H_
+#ifndef _LOGGER_HPP_
+#define _LOGGER_HPP_
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include <fstream>
 #include <iostream>
-#include <memory>
 #include <string>
-#include <string_view>
 #include <chrono>
-#include "utils/strutils.h"
+#include "utils/strutils.hpp"
 
 class Logger;
 extern Logger logger;
@@ -187,4 +185,4 @@ class Logger
         bool mConsoleOutEnabled;
 };
 
-#endif // _LOGGER_H_
+#endif // _LOGGER_HPP_
