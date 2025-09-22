@@ -1,5 +1,5 @@
 #include "sustext.h"
-#include "editor.h"
+// #include "editor.h"
 #include "utils/logger.h"
 
 //uint64_t Flags;
@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     logger = Logger("logs/", "info", false);
 
 	Sustext::Initialize(argc, argv);
-    Editor::DumpState();
+    // Editor::DumpState();
     Sustext::Loop();
 
 
