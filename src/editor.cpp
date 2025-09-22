@@ -30,18 +30,51 @@
 
 namespace Sustext
 {
+
     void Editor::Initialize()
     {
         logger.Log(INFO, "Initializing Editor");
+
+        // Initialize ncruses functions
+        setlocale(LC_ALL, "");
+        initscr();
+        cbreak();
+        keypad(stdscr, TRUE);
+
+        // Disable echo since the user will be in normal mode initially
+        noecho();
+
+        mConfig = new EditorConfig;
+
+        // Check for terminal color support
+        mConfig->colorSupport = false;
+        if (start_color() != ERR)
+            mConfig->colorSupport = true;
+
+        // Set general information about the current window
+        // config.state |= State::Home;
+        mConfig->rows = LINES;
+        mConfig->cols = COLS;
+        mConfig->mode = NORMAL;
+
+        if (mConfig->filepath == "")
+           mConfig->state |= State::WELCOME;
+        else
+           logger.Log(ERROR, "TODO: Unimplemented file opening");
     }
+
+    EditorConfig* Editor::GetConfig()
+    {
+        return mConfig;
+    }
+
+    void Editor::SetConfig(EditorConfig* newCfg)
+    {
+        mConfig = newCfg;
+    }
+
 //     namespace Editor
 //     {
-//         void SusMode(OPT int inputCount, OPT char** intputVals)
-//         {
-//             logger.Log(INFO, "SUSSY!!!\n");
-//             config->flags |= (int)Flag::modeSus;
-//         }
-// 
 //         // Declare misc variables to be used in editor functions
 //         static std::mutex gMutex;
 // 
@@ -49,50 +82,10 @@ namespace Sustext
 //         static void sigwinchHandler(int sig);
 //         static void sigintHandler(int sig);
 // 
-//         // Declare flags here for now I guess
-//         SKUTIL::SK_VEC<SKUTIL::Flag> flag {
-//             {
-//                 's',
-//                 "sus",
-//                 "Enter Sus mode (Sussy)",
-//                 0,
-//                 SusMode,
-//             },
-//         };
-// 
 //         void Initialize(int argc, char** argv)
 //         {
-//             logger.Log(INFO, "Initializing Editor");
-// 
-//             config = {}; 
-// 
-//             // Initialize ncruses functions
-//             setlocale(LC_ALL, "");
-//             initscr();
-//             cbreak();
-//             keypad(stdscr, TRUE);
-//            
-//             // Disable echo since the user will be in normal mode initially
-//             noecho();
-// 
-//             // Check for terminal color support
-//             config.colorSupport = false;
-//             if (start_color() != ERR)
-//                 config.colorSupport = true;
-//             
-//             // Set general information about the current window
-//             //config.state |= State::Home;
-//             config.rows = LINES;
-//             config.cols = COLS;
-//             config.mode = Normal;
-// 
 //             if (FlagHandler::Initialize(argc, argv, &config) == FAILURE)
 //                 error(Severity::high, "Flag Handler:", "Unable to initialize flags");
-// 
-//             if (config.filepath == "")
-//                 config.state |= State::Welcome;
-//             else
-//                 logger.Log(ERROR, "TODO: Unimplemented file opening");
 // 
 //             // Load signal handlers
 //             signal(SIGWINCH, sigwinchHandler);

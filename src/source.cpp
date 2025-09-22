@@ -1,23 +1,47 @@
 #include "utils/logger.hpp"
+#include "utils/skutilflagparser.hpp"
 #include "editor.hpp"
+#include "utils/common.hpp"
 
 using namespace Sustext;
 
-//uint64_t Flags;
-//Editor::Config eConfig;
-//Terminal::Config tConfig;
-
 Editor* Editor::instancePtr = nullptr;
+Editor* editor = nullptr;
 std::mutex Editor::mtx;
 Logger logger;
+
+//uint64_t Flags;
+//Terminal::Config tConfig;
+
+void SusMode(OPT int inputCount, OPT char** intputVals)
+{
+    logger.Log(INFO, "SUSSY!!!\n");
+    EditorConfig* cfg = editor->GetConfig();
+    cfg->mode = Mode::SUS;
+    editor->SetConfig(cfg);
+}
+
+SKUTIL::SK_VEC<SKUTIL::Flag> flags {
+    {
+        's',
+        "sus",
+        "Enter Sus mode (Sussy)",
+        0,
+        SusMode,
+    },
+};
 
 int main(int argc, char** argv)
 {
     logger = Logger("logs/", "info"); 
     logger.Log(INFO, "Initializing Sustext");
+
+    // Setup flags
+    SKUTIL::FlagParser parser = SKUTIL::FlagParser(&flags);
+    parser.ParseFlags(argc, argv);
     
     // Editor::Initialize(argc, argv);
-    Editor* editor = Editor::getInstance();
+    editor = Editor::getInstance();
     editor->Initialize();
 
     // Initialize editor and terminal

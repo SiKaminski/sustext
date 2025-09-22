@@ -30,12 +30,12 @@ namespace Sustext
         WINDOW *Prompt;
     };
 
-    struct Config {
+    struct EditorConfig {
         bool colorSupport;
+        Mode mode;
         size_t state;
         size_t flags;
         std::string filepath;
-        Mode mode;
 
         int rows;
         int cols;
@@ -80,6 +80,9 @@ namespace Sustext
              * Initialize the editor functions
              */
             void Initialize();
+
+            EditorConfig* GetConfig();
+            void SetConfig(EditorConfig* newCfg);
             
         private:
             // Static pointer to the editor instance
@@ -89,6 +92,9 @@ namespace Sustext
             static std::mutex mtx;
 
             Editor() {}
+
+        private:
+            EditorConfig* mConfig;
     };
 
 // namespace Editor

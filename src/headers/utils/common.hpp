@@ -27,6 +27,7 @@ namespace Sustext
         INSERT,
         VISUAL,
         NORMAL,
+        SUS,
     };
 
     struct Position {
