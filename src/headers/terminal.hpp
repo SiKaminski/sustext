@@ -1,19 +1,15 @@
-//#pragma once
-//#ifndef _SUSTEXT_TERMINAL_H_
-//#define _SUSTEXT_TERMINAL_H_
+#pragma once
+#ifndef _SUSTEXT_TERMINAL_HPP_
+#define _SUSTEXT_TERMINAL_HPP_
 
 //#include <termios.h>
 //#include <ncurses.h>
 //#include "editor.h"
 
-//namespace Terminal
-//{
-    //enum class State {
-        //home,
-        //edit,
-        //readonly,
-    //};
-    
+namespace Sustext
+{
+    class Terminal {
+    }
     //struct Config {  
         //termios OrigTermios;
         //State   state; 
@@ -64,6 +60,6 @@
      * @return (int) exit status: 0 = success
      */
     //int GetWindowSize(int* rows, int* cols);
-//}
+}
 
-//#endif // _SUSTEXT_TERMINAL_H_
+#endif // _SUSTEXT_TERMINAL_HPP_

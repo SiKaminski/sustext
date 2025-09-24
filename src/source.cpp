@@ -2,12 +2,13 @@
 #include "utils/skutilflagparser.hpp"
 #include "editor.hpp"
 #include "utils/common.hpp"
+#include "signals.hpp"
 
 using namespace Sustext;
 
-Editor* Editor::instancePtr = nullptr;
-Editor* editor = nullptr;
-std::mutex Editor::mtx;
+Editor::Editor* Editor::Editor::instancePtr = nullptr;
+Editor::Editor* editor = nullptr;
+std::mutex Editor::Editor::mtx;
 Logger logger;
 
 //uint64_t Flags;
@@ -16,8 +17,8 @@ Logger logger;
 void SusMode(OPT int inputCount, OPT char** intputVals)
 {
     logger.Log(INFO, "SUSSY!!!\n");
-    EditorConfig* cfg = editor->GetConfig();
-    cfg->mode = Mode::SUS;
+    Editor::EditorConfig* cfg = editor->GetConfig();
+    cfg->mode = Editor::Mode::SUS;
     editor->SetConfig(cfg);
 }
 
@@ -36,12 +37,17 @@ int main(int argc, char** argv)
     logger = Logger("logs/", "info"); 
     logger.Log(INFO, "Initializing Sustext");
 
+    if (atexit(Sustext::Cleanup) != 0) {
+        logger.Log(ERROR, "Unable to bind exit function");
+        exit(1);
+    }
+
     // Setup flags
     SKUTIL::FlagParser parser = SKUTIL::FlagParser(&flags);
     parser.ParseFlags(argc, argv);
     
     // Editor::Initialize(argc, argv);
-    editor = Editor::getInstance();
+    editor = Editor::Editor::getInstance();
     editor->Initialize();
 
     // Initialize editor and terminal
