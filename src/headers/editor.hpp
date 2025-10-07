@@ -35,7 +35,7 @@ namespace Sustext
         struct EditorConfig {
             bool            colorSupport;
             Editor::Mode    mode;
-            size_t          state;
+            Editor::State   state;
             size_t          flags;
             std::string     filepath;
 
@@ -61,7 +61,7 @@ namespace Sustext
             // termios     orig_termios;
         };
 
-        // Singleton class
+        // Singleton Class
         class Editor 
         {
             public:

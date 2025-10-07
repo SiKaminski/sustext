@@ -4,6 +4,7 @@
 
 #include "editor.hpp"
 #include "utils/logger.hpp"
+#include "terminal.hpp"
 #include "utils/error.h"
 #include "keys.h"
 #include <bits/stdc++.h>
@@ -59,14 +60,18 @@ namespace Sustext
 
             // Set general information about the current window
             // config.state |= State::Home;
+            mConfig->state = State::HOME;
             mConfig->rows = LINES;
             mConfig->cols = COLS;
             mConfig->mode = NORMAL;
 
             if (mConfig->filepath == "")
-               mConfig->state |= State::WELCOME;
+               mConfig->state = State::WELCOME;
             else
                logger.Log(ERROR, "TODO: Unimplemented file opening");
+
+            mConfig->running = true;
+            logger.Log(SUCCESS, "Initialized Editor");
         }
 
         EditorConfig* Editor::GetConfig()
@@ -95,9 +100,6 @@ namespace Sustext
     // 
     //         void Initialize(int argc, char** argv)
     //         {
-    //             if (FlagHandler::Initialize(argc, argv, &config) == FAILURE)
-    //                 error(Severity::high, "Flag Handler:", "Unable to initialize flags");
-    // 
     //             // Load signal handlers
     //             signal(SIGWINCH, sigwinchHandler);
     //             signal(SIGINT, sigintHandler);
@@ -109,9 +111,6 @@ namespace Sustext
     // 
     //             //Account for status bar sapce so it won't be drawn over
     //             //eConfig.screenRows -= 2; 
-    // 
-    //             config.running = true;
-    //             logger.Log(SUCCESS, "Initialized Editor");
     //         }
     // 
     //         void WelcomeScreen()

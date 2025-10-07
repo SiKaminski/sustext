@@ -46,7 +46,6 @@ int main(int argc, char** argv)
     SKUTIL::FlagParser parser = SKUTIL::FlagParser(&flags);
     parser.ParseFlags(argc, argv);
     
-    // Editor::Initialize(argc, argv);
     editor = Editor::Editor::getInstance();
     editor->Initialize();
 
