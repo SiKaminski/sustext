@@ -20,13 +20,6 @@ namespace Sustext
 {
     namespace Editor
     {
-        enum State : int {
-            HOME,
-            EDIT,
-            READ_ONLY,
-            WELCOME,
-        };
-
         struct Windows {
             WINDOW *GrettingText;
             WINDOW *Prompt;
@@ -34,8 +27,8 @@ namespace Sustext
 
         struct EditorConfig {
             bool            colorSupport;
-            Editor::Mode    mode;
-            Editor::State   state;
+            Mode            mode;
+            State           state;
             size_t          flags;
             std::string     filepath;
 
@@ -294,7 +287,7 @@ namespace Sustext
 
     //     //void SelectSyntaxHighlight();
     // }
-    } // namespace editor
+    } // namespace Editor
 } // namespace Sustext
 
 #endif // _SUSTEXT_EDITOR_HPP_

@@ -1,4 +1,4 @@
-#include "terminal.h"
+#include "terminal.hpp"
 
 //#include <ctype.h>
 //#include <errno.h>
@@ -15,6 +15,14 @@
 
 //#include "Debug/logger.h"
 //#include "common.h"
+
+namespace Sustext
+{
+    namespace Terminal
+    {
+        
+    } // namespace Terminal
+} // namespace Sustext
 
 //void Initialize()
 //{

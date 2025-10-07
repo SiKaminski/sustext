@@ -1157,5 +1157,5 @@ namespace Sustext
     //             //}
     //         //}
     //     }
-    } // namespace editor
+    } // namespace Editor
 } // namespace sustext

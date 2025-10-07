@@ -4,20 +4,15 @@
 
 #include <termios.h>
 #include <mutex>
-//#include <ncurses.h>
-//#include "editor.h"
+// #include <ncurses.h>
+
+#include "utils/common.hpp"
+// #include "editor.h"
 
 namespace Sustext
 {
     namespace Terminal
     {
-        enum State : int {
-            HOME,
-            EDIT,
-            READ_ONLY,
-            WELCOME,
-        };
-
         struct TerminalConfig {  
             termios OrigTermios;
             State   state; 
@@ -33,7 +28,7 @@ namespace Sustext
                     if (instancePtr == nullptr) {
                         std::lock_guard<std::mutex> lock(mtx);
                         if (instancePtr == nullptr) {
-                            instancePtr = new Editor();
+                            instancePtr = new Terminal();
                         }
                     }
 
@@ -107,6 +102,6 @@ namespace Sustext
                 static std::mutex mtx;
         };
     } // namespace Terminal
-}
+} // namespace Sustext
 
 #endif // _SUSTEXT_TERMINAL_HPP_

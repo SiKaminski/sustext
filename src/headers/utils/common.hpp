@@ -29,22 +29,24 @@ namespace Sustext
             SUS,
         };
 
-        // enum State : int {
-        //     HOME        = 0b1,
-        //     EDIT        = 0b10,
-        //     READONLY    = 0b100,
-        //     WELCOME     = 0b1000,
-        // };
-    }
+        enum State : int {
+            HOME        = 0b1,
+            EDIT        = 0b10,
+            READONLY    = 0b100,
+            WELCOME     = 0b1000,
+        };
+    } // namespace Editor
 
     namespace Terminal
     {
-        enum State {
-            HOME,
-            EDIT,
-            READONLY,
+        enum State : int {
+            HOME        = 0b1,
+            EDIT        = 0b10,
+            READONLY    = 0b100,
+            WELCOME     = 0b1000,
         };
-    }
-}
+
+    } // namespace Terminal
+} // namespace Sustext
 
 #endif // _UTILS_COMMON_HPP_
