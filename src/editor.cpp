@@ -5,7 +5,7 @@
 #include "editor.hpp"
 #include "utils/logger.hpp"
 #include "terminal.hpp"
-#include "utils/error.h"
+#include "utils/error.hpp"
 #include "keys.h"
 #include <bits/stdc++.h>
 #include <iostream>

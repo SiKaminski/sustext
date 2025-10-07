@@ -45,7 +45,6 @@ namespace Sustext
             READONLY    = 0b100,
             WELCOME     = 0b1000,
         };
-
     } // namespace Terminal
 } // namespace Sustext
 

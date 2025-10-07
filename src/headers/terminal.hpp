@@ -7,6 +7,7 @@
 // #include <ncurses.h>
 
 #include "utils/common.hpp"
+#include "utils/error.hpp"
 // #include "editor.h"
 
 namespace Sustext
@@ -42,7 +43,7 @@ namespace Sustext
                 * 
                 * @param s error message
                 */
-                void Die(const int severity, const char* s);
+                void Die(Error::Severity severity, const char* s);
 
                 /**
                 * Read key input 

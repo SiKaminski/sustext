@@ -1,25 +1,33 @@
 #include "terminal.hpp"
 
-//#include <ctype.h>
-//#include <errno.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <sys/ioctl.h>
-//#include <unistd.h>
-//#include <termios.h>
-//#include <sys/types.h>
-//#include <time.h>
-//#include <stdarg.h>
-//#include <fcntl.h>
+// #include <ctype.h>
+// #include <errno.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <sys/ioctl.h>
+// #include <unistd.h>
+// #include <termios.h>
+// #include <sys/types.h>
+// #include <time.h>
+// #include <stdarg.h>
+// #include <fcntl.h>
 
-//#include "Debug/logger.h"
-//#include "common.h"
+#include "utils/logger.hpp"
+#include "utils/error.hpp"
 
 namespace Sustext
 {
     namespace Terminal
     {
+        void Terminal::Die(Error::Severity severity, const char* s)
+        {
+            // Clear screen on exit
+            write(STDOUT_FILENO, "\x1b[2J", 4);
+            write(STDOUT_FILENO, "\x1b[H", 3);
+
+            Error::Error(severity, "Terminal Die:", s);
+        }
         
     } // namespace Terminal
 } // namespace Sustext
