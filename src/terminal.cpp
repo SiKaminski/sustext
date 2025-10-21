@@ -3,7 +3,7 @@
 // #include <ctype.h>
 // #include <errno.h>
 // #include <stdio.h>
-// #include <stdlib.h>
+#include <stdlib.h>
 // #include <string.h>
 // #include <sys/ioctl.h>
 // #include <unistd.h>
@@ -20,6 +20,11 @@ namespace Sustext
 {
     namespace Terminal
     {
+        void Terminal::Initialize()
+        {
+
+        }
+
         void Terminal::Die(Error::Severity severity, const char* s)
         {
             // Clear screen on exit
@@ -28,60 +33,46 @@ namespace Sustext
 
             Error::Error(severity, "Terminal Die:", s);
         }
+
+        void Terminal::DisableRawMode()
+        {
+            //Set the attributes of the terminal back to its origional state
+            if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &mConfig->OrigTermios) == -1)
+                Die(Error::Severity::HIGH, "tcsetattr");
+
+            system("clear");
+        }
         
+        void Terminal::EnableRawMode()
+        {
+            logger.Log(INFO, "Enabling terminal raw mode");
+
+            //Store original termios attribs, if there is an error disable raw mode and exit
+            if (tcgetattr(STDIN_FILENO, &mConfig->OrigTermios) == -1)
+                Die(Error::Severity::HIGH, "tcgetattr");
+
+            atexit(DisableRawMode);
+
+            //Define a new terminal
+            //termios raw = tConfig.OrigTermios;
+
+            //Disable flags to leave canonical mode
+            //raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+            //raw.c_oflag &= ~(OPOST);
+            //raw.c_cflag |= (CS8);
+            //raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+            //raw.c_cc[VMIN] = 0;
+            //raw.c_cc[VTIME] = 1;
+
+            //Set the new terminal
+            //tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+            //if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
+                //die((int)Severity::high, "tcsetattr");
+
+            //LOG_SUCCESS << "Enabled terminal raw mode" << std::endl;
+        }
     } // namespace Terminal
 } // namespace Sustext
-
-//void Initialize()
-//{
-
-
-//}
-
-//void Terminal::die(const int severity, const char* s)
-//{
-	//Clear screen on exit
-	//write(STDOUT_FILENO, "\x1b[2J", 4);
-	//write(STDOUT_FILENO, "\x1b[H", 3);
-    //error(Severity::unknown, "Terminal Die:", s);
-//}
-
-//void Terminal::DisableRawMode()
-//{
-	//Set the attributes of the terminal back to its origional state
-	//if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tConfig.OrigTermios) == -1)
-		//die((int)Severity::high, "tcsetattr");
-
-	//system("clear");
-//}
-
-//void Terminal::EnableRawMode()
-//{
-    //LOG_INFO << "Enabling terminal raw mode" << std::endl;
-	//Store original termios attribs, if there is an error disable raw mode and exit
-	//if (tcgetattr(STDIN_FILENO, &tConfig.OrigTermios) == -1)
-		//die((int)Severity::high, "tcgetattr");
-
-	//atexit(DisableRawMode);
-
-	//Define a new terminal
-	//termios raw = tConfig.OrigTermios;
-
-	//Disable flags to leave canonical mode
-	//raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-	//raw.c_oflag &= ~(OPOST);
-	//raw.c_cflag |= (CS8);
-	//raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	//raw.c_cc[VMIN] = 0;
-	//raw.c_cc[VTIME] = 1;
-
-	//Set the new terminal
-	//tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
-	//if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
-		//die((int)Severity::high, "tcsetattr");
-
-    //LOG_SUCCESS << "Enabled terminal raw mode" << std::endl;
-//}
 
 //Editor::Key Terminal::EditorReadKey()
 //{

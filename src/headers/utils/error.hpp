@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _ERROR_H_
-#define _ERROR_H_
+#ifndef _UTILS_ERROR_HPP_
+#define _UTILS_ERROR_HPP_
 
 #include <stdarg.h>
 #include <stdint.h>
@@ -33,4 +33,4 @@ namespace Sustext
         }
     } // namespace Error
 } // namespace Sustext
-#endif // _ERROR_H_
+#endif // _UTILS_ERROR_HPP_

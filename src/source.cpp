@@ -1,7 +1,7 @@
 #include "utils/logger.hpp"
 #include "utils/skutilflagparser.hpp"
-#include "editor.hpp"
 #include "utils/common.hpp"
+#include "editor.hpp"
 #include "signals.hpp"
 
 using namespace Sustext;
