@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* TODO
  * - Flag chaining (short flags)
  *   At some point the user should be able to chain flags together assuming that none of them require any input afterwards
@@ -12,12 +13,20 @@
  */
 
 
+=======
+>>>>>>> 8cce873 (utils)
 #pragma once
 #ifndef _SKUTIL_FLAG_PARSER_HPP
 #define _SKUTIL_FLAG_PARSER_HPP
 
 #include <vector>
+<<<<<<< HEAD
 #include <iostream>
+=======
+#include <array>
+#include <iostream>
+#include <functional>
+>>>>>>> 8cce873 (utils)
 #include <cstring>
 
 namespace SKUTIL
@@ -37,6 +46,7 @@ namespace SKUTIL
  		#define OPT [[maybe_unused]]
 	#endif 
 
+<<<<<<< HEAD
 	#ifndef SKUTIL_FLAG_PARAM_FUNC
 		typedef void (*skutils_flag_param_func_)(OPT int inputCount, OPT char** inputVals);
 	#endif
@@ -123,6 +133,41 @@ namespace SKUTIL
 
 	#ifndef STRUTIL_NULL_FLAG
 		constexpr Flag NULL_FLAG = {' ', "", "", 0, nullptr};
+=======
+	#ifndef SKUTIL_FLAG_PARAM_LIST
+		typedef void (*skutils_flag_param_func_)(...);
+	#endif
+
+
+	struct Flag
+	{
+		SHORT_FLAG mShortIdentifier;
+		LONG_FLAG mLongIdentifier;
+		const char* mDescription;
+		OPT skutils_flag_param_func_ mFunction;
+
+		bool operator==(const Flag& other)
+		{
+			if (mShortIdentifier == other.mShortIdentifier ||
+				std::strcmp(mLongIdentifier, other.mLongIdentifier) == 0)
+				return true;
+
+			return false;
+		}
+
+		bool operator!=(const Flag& other)
+		{
+			if (mShortIdentifier != other.mShortIdentifier &&
+				std::strcmp(mLongIdentifier, other.mLongIdentifier) != 0)
+				return true;
+
+			return false;
+		}
+	};
+
+	#ifndef STRUTIL_NULL_FLAG
+		constexpr Flag NULL_FLAG = {' ', "", "", nullptr};
+>>>>>>> 8cce873 (utils)
 	#endif 
 
 	class FlagParser
@@ -130,6 +175,7 @@ namespace SKUTIL
 		public:
 			SK_VEC<Flag>* mAllFlags;
 			SK_VEC<Flag>* mSetFlags;
+<<<<<<< HEAD
 			FlagParser(SK_VEC<Flag>* _flags)
 			{
 				mAllFlags = _flags;
@@ -142,6 +188,13 @@ namespace SKUTIL
 				for (size_t flagIdx = 0; flagIdx < RESV.size(); flagIdx++) {
 					mAllFlags->push_back(RESV[flagIdx]);
 				}
+=======
+
+			FlagParser(SK_VEC<Flag>* _flags)
+			{
+				mAllFlags = _flags;
+				CheckForReserved();
+>>>>>>> 8cce873 (utils)
 			}
 
 			void ParseFlags(int argc, char** argv) 
@@ -158,15 +211,24 @@ namespace SKUTIL
 							idx++;
 						}
 
+<<<<<<< HEAD
+=======
+						std::cout << arg << "\n";
+>>>>>>> 8cce873 (utils)
 						FindFlag(NULL_FLAG.mShortIdentifier, arg, &f);
 					} else if (std::strncmp(argv[i], SHORT_FLAG_DELIM, 1) == 0) {
 						// Strip the delimiter
 						SHORT_FLAG arg = (char)(*(argv[i] + 1));
+<<<<<<< HEAD
+=======
+						std::cout << arg << "\n";
+>>>>>>> 8cce873 (utils)
 						FindFlag(arg, NULL_FLAG.mLongIdentifier, &f);
 					}
 
 					// If the flag is not null call its function
 					if (f == NULL_FLAG)
+<<<<<<< HEAD
 						continue;
 
 					// Get the respective values the flag wants as inputs
@@ -197,6 +259,13 @@ namespace SKUTIL
 				// for the time being 
 				//
 				// char** tmp = nullptr;
+=======
+						return;
+
+					std::cout << "Valid\n";
+					f.mFunction();
+				}
+>>>>>>> 8cce873 (utils)
 			}
 
 			~FlagParser()
@@ -205,30 +274,46 @@ namespace SKUTIL
 			}
 
 		private:
+<<<<<<< HEAD
             static void ShowHelp(OPT int inputCount, OPT char** inputVals)
             {
                 std::cout << "TODO: unimplemented\n";
             }
 
 			SK_VEC<Flag> RESV = SK_VEC<Flag> {
+=======
+			SK_VEC<Flag> RESV = SK_VEC<Flag> {
+				NULL_FLAG,
+>>>>>>> 8cce873 (utils)
 				{
 					'h',
 					"help",
 					"Show help commands",
+<<<<<<< HEAD
 					0,
 				    ShowHelp,
+=======
+					nullptr
+>>>>>>> 8cce873 (utils)
 				},
 			};
 
 			// TODO: Optimize this method further
+<<<<<<< HEAD
 			// Does not currently remove the flag from the list if it was
 			// marked as reserve flag yet
+=======
+>>>>>>> 8cce873 (utils)
 			void CheckForReserved()
 			{
 				if (mAllFlags->empty())
 					return;
 
 				bool remove;
+<<<<<<< HEAD
+=======
+				// size_t index;
+>>>>>>> 8cce873 (utils)
 				for (Flag res : RESV) {
 					remove = false;
 					for (size_t i = 0; i < mAllFlags->size(); i++) {
@@ -253,11 +338,18 @@ namespace SKUTIL
 					std::strcmp(longhand, NULL_FLAG.mLongIdentifier) == 0)
 					return;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8cce873 (utils)
 				for (Flag f : *mAllFlags) {
 					if (shorthand == f.mShortIdentifier ||
 						strcmp(longhand, f.mLongIdentifier) == 0) {
 						*outFlag = f;
+<<<<<<< HEAD
 						return;
+=======
+>>>>>>> 8cce873 (utils)
 					}
 				}	
 			}
@@ -279,5 +371,9 @@ namespace SKUTIL
 // Remove all pre-processor macros that don't need to be defined for other programs
 #undef SKUTIL_VECTOR 
 #undef SKUTIL_FLAG_TYPES
+<<<<<<< HEAD
+=======
+#undef SKUTIL_FLAG_PARAM_LIST
+>>>>>>> 8cce873 (utils)
 
 #endif // _SKUTIL_FLAG_PARSER_HPP

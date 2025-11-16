@@ -8,5 +8,9 @@ compile_commands.json
 .vimrc
 .cache/
 .ccls-cache/
+<<<<<<< HEAD
+=======
+logs/
+>>>>>>> 8cce873 (utils)
 
 sustext
